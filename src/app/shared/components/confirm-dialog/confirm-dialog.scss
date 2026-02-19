@@ -1,0 +1,77 @@
+.confirm-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 43, 92, 0.45);
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+
+  .confirm-modal {
+    background: #fff;
+    border-radius: 18px;
+    box-shadow: 0 20px 60px #0f2b5c;
+    overflow: hidden;
+    animation: scaleIn 0.25s ease-out;
+  }
+
+  .modal-title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 6px 20px;
+    background-color: #0f2b5c;
+    border-bottom: 1px solid #ffffff7c;
+    box-shadow: 0 4px 4px #0f2b5c69;
+  }
+
+  .modal-title .icon {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: rgb(255, 255, 255);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    mat-icon {
+      font-size: 25px;
+      color: #0f2b5c;
+    }
+  }
+
+  .modal-title .title {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 500;
+    color: #ffffff;
+  }
+
+  .modal-body {
+    padding: 20px;
+  }
+
+  .message {
+    margin: 0 0 24px;
+    font-size: 15px;
+    color: #000000;
+  }
+
+  .actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+  }
+
+  @keyframes scaleIn {
+    from {
+      opacity: 0;
+      transform: scale(0.9);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+}

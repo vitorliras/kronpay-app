@@ -1,0 +1,32 @@
+<ng-container *ngIf="translations$ | async as t">
+  <div class="confirm-overlay">
+    <div class="confirm-modal" [style.width.px]="data?.width || 300">
+
+      <div class="modal-title">
+        <div class="icon">
+          <mat-icon>help_outline</mat-icon>
+        </div>
+
+        <h2 class="title">{{ t[data.title] }}</h2>
+
+      </div>
+      <div class="modal-body">
+
+        <p class="message">
+          {{ t[data.message] }}
+        </p>
+
+        <div class="actions">
+          <button mat-stroked-button (click)="cancel()">
+            {{ t[data.cancelText] || t['No'] }}
+          </button>
+
+          <button mat-raised-button color="primary" (click)="confirm()">
+            {{ t[data.confirmText] || t['Yes'] }}
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</ng-container>

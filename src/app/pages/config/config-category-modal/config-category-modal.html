@@ -1,0 +1,34 @@
+<ng-container *ngIf="translations$ | async as t">
+  <div class="modal-register" [style.width.px]="data.width || 400">
+    <div class="modal-register-title">
+      <h2 mat-dialog-title>{{ t[title] }} {{ t["Category"] }}</h2>
+      <button class="close-btn"  (click)="close()"><mat-icon>close</mat-icon></button>
+
+    </div>
+
+    <div class="modal-register-body">
+
+      <form [formGroup]="form">
+        <mat-form-field appearance="outline" style="width: 100%;">
+          <mat-label>{{ t['Category'] }}</mat-label>
+          <input matInput formControlName="description" maxlength="30" minlength="1"/>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" style="width: 100%;">
+          <mat-label>{{ t['Type'] }}</mat-label>
+          <mat-select formControlName="codTypeTransaction">
+            <mat-option value="">{{ t['All'] }}</mat-option>
+            <mat-option *ngFor="let c of types" [value]="c.code">
+              {{ c.label }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </form>
+
+      <div mat-dialog-actions>
+        <button mat-raised-button color="primary" (click)="save()"><mat-icon>save</mat-icon>{{ t['Save'] }}</button>
+      </div>
+    </div>
+  </div>
+
+</ng-container>

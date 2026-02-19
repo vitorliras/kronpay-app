@@ -1,0 +1,148 @@
+<div class="login-page">
+  <div class="login-card">
+    <ng-container *ngIf="translations$ | async as t">
+
+      <!-- ================= LOGIN ================= -->
+      <ng-container *ngIf="currentView === 'login'">
+
+        <div class="logo">
+          <mat-icon class="logo-icon">bar_chart</mat-icon>
+          <span>KronPay</span>
+        </div>
+
+        <h2>{{ t['WelcomeBack'] }}</h2>
+        <p>{{ t['MakeLoginForAccessYourAccount'] }}</p>
+
+        <form [formGroup]="loginForm" (ngSubmit)="submit()">
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>E-mail</mat-label>
+            <mat-icon matPrefix>mail</mat-icon>
+            <input matInput formControlName="email" type="email">
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>{{ t['Password'] }}</mat-label>
+            <mat-icon matPrefix>lock</mat-icon>
+
+            <input matInput formControlName="password" [type]="hidePassword ? 'password' : 'text'" />
+
+            <button mat-icon-button matSuffix type="button" (click)="togglePasswordVisibility()">
+              <mat-icon>
+                {{ hidePassword ? 'visibility_off' : 'visibility' }}
+              </mat-icon>
+            </button>
+          </mat-form-field>
+
+          <div class="options">
+            <mat-checkbox>{{ t['RemindMe']}}</mat-checkbox>
+            <a class="link" (click)="goToForgotPassword()">
+              {{ t['ForgotYourPassword'] }}
+            </a>
+          </div>
+
+          <button mat-raised-button color="primary" class="login-button" type="submit">
+            {{ t['Enter'] }}
+          </button>
+        </form>
+
+        <mat-divider></mat-divider>
+
+        <p class="register">
+          {{ t['DoNotHaveAccount'] }}
+          <a class="link" (click)="goToRegister()">
+            {{ t['Register'] }}
+          </a>
+        </p>
+
+      </ng-container>
+
+      <!-- ================= REGISTER ================= -->
+      <ng-container *ngIf="currentView === 'register'">
+
+        <button class="btn-arrow" (click)="goToLogin()">
+          <mat-icon class="arrow"> chevron_left </mat-icon>
+        </button>
+
+        <h2 style="margin-bottom: 10px;">{{ t['Register'] }}</h2>
+
+        <mat-divider></mat-divider>
+
+
+        <form [formGroup]="registerForm">
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>{{ t['Name'] }}</mat-label>
+            <input matInput formControlName="name">
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>{{ t['Username'] }}</mat-label>
+            <input matInput formControlName="username">
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Email</mat-label>
+            <input matInput formControlName="email" type="email">
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>CPF</mat-label>
+            <input matInput formControlName="cpf" mask="000.000.000-00">
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>{{ t['Phone'] }}</mat-label>
+            <input matInput formControlName="phone" mask="(00) 00000-0000">
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>{{ t['Password'] }}</mat-label>
+
+            <input matInput type="password" formControlName="password">
+
+            <button mat-icon-button matSuffix type="button"  matTooltip="{{ passwordRules$ | async }}">
+              <mat-icon>info</mat-icon>
+            </button>
+
+          </mat-form-field>
+
+
+          <button mat-raised-button color="primary" class="login-button" [disabled]="registerForm.invalid" (click)="register()">
+            {{ t['Register'] }}
+          </button>
+
+        </form>
+
+
+      </ng-container>
+
+      <!-- ================= FORGOT PASSWORD ================= -->
+      <ng-container *ngIf="currentView === 'forgot'">
+
+        <button class="btn-arrow" (click)="goToLogin()">
+          <mat-icon class="arrow"> chevron_left </mat-icon>
+        </button>
+
+
+        <h2>{{ t['ForgotYourPassword'] }}</h2>
+        <p>Recuperação de senha (placeholder)</p>
+
+
+
+      </ng-container>
+
+      <!-- ================= LANGUAGES ================= -->
+
+      <div class="languages">
+        <mat-button-toggle-group [value]="currentLang" (change)="changeLang($event.value)" appearance="legacy">
+
+          <mat-button-toggle value="pt-BR">🇧🇷 Português</mat-button-toggle>
+          <mat-button-toggle value="en-US">🇺🇸 English</mat-button-toggle>
+
+        </mat-button-toggle-group>
+      </div>
+
+    </ng-container>
+  </div>
+</div>

@@ -1,0 +1,83 @@
+
+.btn-circle-1 {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: none;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: linear-gradient(180deg, #1b3c88, #0f2b5c);
+  cursor: pointer;
+
+  transition:
+    background 0.3s ease,
+    box-shadow 0.3s ease;
+
+  .icon {
+    color: #ffffff;
+    font-size: 22px;
+    line-height: 1;
+    pointer-events: none;
+  }
+
+  &:hover {
+    box-shadow: 0 0 0 3px rgba(27, 60, 136, 0.25);
+  }
+
+  &:active {
+    box-shadow: 0 0 0 5px rgba(27, 60, 136, 0.35);
+  }
+
+}
+
+
+
+ .action-buttons-1 {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 6px;
+
+  .icon-btn {
+    all: unset;
+    width: 28px;
+    height: 28px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 6px;
+    cursor: pointer;
+    transition:
+      background 0.2s ease,
+      transform 0.15s ease;
+
+    mat-icon {
+      font-size: 18px;
+    }
+
+    &:hover {
+      transform: scale(1.05);
+    }
+  }
+
+  .icon-btn.edit {
+    color: #1d4ed8;
+
+    &:hover {
+      background: rgba(29, 78, 216, 0.12);
+    }
+  }
+
+  .icon-btn.delete {
+    color: #dc2626;
+
+    &:hover {
+      background: rgba(220, 38, 38, 0.12);
+    }
+  }
+  }

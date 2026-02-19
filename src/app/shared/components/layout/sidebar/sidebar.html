@@ -1,0 +1,72 @@
+<ng-container *ngIf="translations$ | async as t">
+  <aside class="sidebar" [class.collapsed]="isCollapsed">
+
+    <div class="logo">
+      <mat-icon>bar_chart</mat-icon>
+      <span *ngIf="!isCollapsed">Kronpay</span>
+    </div>
+
+    <div class="user-box" *ngIf="!isCollapsed">
+      <div class="avatar"></div>
+
+      <div class="user-info">
+        <span class="hello">{{ t['Hello'] }}, João!</span>
+        <span class="email">joao@email.com</span>
+      </div>
+    </div>
+
+    <nav>
+      <a routerLink="/dashboard" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"
+        class="menu-item">
+        <mat-icon>insert_chart_outlined</mat-icon>
+        <span *ngIf="!isCollapsed">{{ t['Dashboard'] }}</span>
+      </a>
+
+      <a routerLink="/transactions" routerLinkActive="active" class="menu-item">
+        <mat-icon>receipt_long</mat-icon>
+        <span *ngIf="!isCollapsed">{{ t['Transactions'] }}</span>
+      </a>
+
+      <a routerLink="/cards" routerLinkActive="active" class="menu-item">
+        <mat-icon>credit_card</mat-icon>
+        <span *ngIf="!isCollapsed">{{ t['CreditCard'] }}</span>
+      </a>
+
+      <a routerLink="/config" routerLinkActive="active" class="menu-item">
+        <mat-icon>settings</mat-icon>
+        <span *ngIf="!isCollapsed">
+          <ng-container *ngIf="translations$ | async as t">
+            {{ t['Settings'] }}
+          </ng-container>
+        </span>
+      </a>
+
+      <a routerLink="/reports" routerLinkActive="active" class="menu-item">
+        <mat-icon>pie_chart</mat-icon>
+        <span *ngIf="!isCollapsed">{{ t['Reports'] }}</span>
+      </a>
+
+      <a routerLink="/investments" routerLinkActive="active" class="menu-item">
+        <mat-icon>trending_up</mat-icon>
+        <span *ngIf="!isCollapsed">{{ t['Investments'] }}</span>
+      </a>
+
+      <a routerLink="/goals" routerLinkActive="active" class="menu-item">
+        <mat-icon>flag</mat-icon>
+        <span *ngIf="!isCollapsed">{{ t['Objectives'] }}</span>
+      </a>
+
+    </nav>
+
+    <div class="language">
+      <button [class.active]="currentLang === 'pt-BR'" (click)="changeLang('pt-BR')">
+        🇧🇷 <span *ngIf="!isCollapsed">PT</span>
+      </button>
+
+      <button [class.active]="currentLang === 'en-US'" (click)="changeLang('en-US')">
+        🇺🇸 <span *ngIf="!isCollapsed">EN</span>
+      </button>
+    </div>
+
+  </aside>
+</ng-container>

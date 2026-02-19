@@ -1,0 +1,13 @@
+<header class="header-layout-component">
+  <button class="btn-circle-1" (click)="toggle.emit()">
+    <mat-icon class="icon">
+      {{ collapsed ? 'chevron_right' : 'chevron_left' }}
+    </mat-icon>
+  </button>
+
+  <div class="actions">
+    <mat-icon>notifications</mat-icon>
+    <mat-icon>account_circle</mat-icon>
+    <span>PT | BR</span>
+  </div>
+</header>

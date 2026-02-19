@@ -1,0 +1,104 @@
+
+.login-page {
+  min-height: 100vh;
+  background: url('../../../../assets/Images/WallpapperLogin.png') center / cover no-repeat;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+
+  .login-card {
+    width: 420px;
+    background: #fff;
+    border-radius: 16px;
+    padding: 32px;
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.08);
+    text-align: center;
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-weight: 600;
+    font-size: 20px;
+    margin-bottom: 16px;
+
+    .logo-icon {
+      color: #3f51b5;
+    }
+  }
+
+  h2 {
+    margin: 0;
+    font-size: 22px;
+  }
+
+  .subtitle {
+    color: #6b7280;
+    margin-bottom: 24px;
+  }
+
+  .full-width {
+    width: 100%;
+    margin-bottom: 16px;
+  }
+
+  .options {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+
+    .link {
+      font-size: 14px;
+    }
+  }
+
+  .login-button {
+    width: 100%;
+    height: 44px;
+    font-size: 15px;
+    border-radius: 8px;
+  }
+
+  .register {
+    margin-top: 16px;
+    font-size: 14px;
+  }
+
+  .languages {
+     display: flex;
+    justify-content: center;
+    margin-bottom: 0.7rem;
+    margin-top: 3.5rem;
+
+    mat-button-toggle-group {
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+    }
+
+    mat-button-toggle {
+      font-weight: 500;
+      padding: 0 1.25rem;
+      min-width: 120px;
+    }
+
+    .mat-button-toggle-checked {
+      background-color: #3f51b5;
+      color: #fff;
+    }
+  }
+
+  .link {
+    color: #3f51b5;
+    cursor: pointer;
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
