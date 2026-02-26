@@ -23,3 +23,8 @@ export interface PaymentMethodResponse {
   description: string;
   isActive: boolean;
 }
+
+export interface DeactivatePaymentMethodSelectRequest {
+  paymentMethods: PaymentMethodIdRequest[];
+}
+

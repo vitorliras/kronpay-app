@@ -1,9 +1,9 @@
 import { Component, Inject } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
-import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialog, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
-import { Base } from '../../../core/bases/base/base';
 import { CommonModule } from '@angular/common';
+import { BaseComponentes } from '../../../core/bases/base/base-componentes';
 
 @Component({
   selector: 'app-confirm-dialog',
@@ -11,13 +11,15 @@ import { CommonModule } from '@angular/common';
   templateUrl: './confirm-dialog.html',
   styleUrl: './confirm-dialog.scss',
 })
-export class ConfirmDialogComponent extends Base {
+export class ConfirmDialogComponent extends BaseComponentes {
 
   constructor(
     private dialogRef: MatDialogRef<ConfirmDialogComponent>,
+    private dialog: MatDialog,
     @Inject(MAT_DIALOG_DATA) public data: any,
   ) {
     super();
+
   }
 
   confirm() {

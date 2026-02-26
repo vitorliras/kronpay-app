@@ -47,6 +47,36 @@ export class Login extends Base {
 
   constructor() {
     super();
+
+    var conection = localStorage.getItem('connection');
+    if (conection) {
+      const maintenanceMessage = `
+          <div style="text-align: center; line-height: 1.5;">
+            <strong>⚠️ Maintenance in progress</strong><br />
+            Our services are currently under maintenance.<br />
+            Please wait a moment.<br /><br />
+
+            <strong>⚠️ Manutenção em andamento</strong><br />
+            Nossos serviços estão em manutenção no momento.<br />
+            Por favor, aguarde um instante.
+          </div>
+        `;
+      this.confirmModal(
+        'Atenção - Attention',
+        maintenanceMessage,
+        '',
+        '',
+        '600',
+        'info',
+      ).subscribe();
+
+      setTimeout(() => {
+        localStorage.setItem('connection', '');
+        window.location.reload();
+      }, 40000);
+
+
+      }
   }
 
   loginForm = this.fb.group({

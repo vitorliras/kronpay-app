@@ -16,17 +16,18 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
 
   return next(req).pipe(
     catchError((error: HttpErrorResponse) => {
+      var connection = localStorage.getItem('connection');
+
+      if (connection) {
+        if(authService.isAuthenticated())
+        authService.logout();
+        router.navigate(['/login']);
+      }
+
       if (error.error && typeof error.error === 'object') {
         const result = error.error as ResultEntity<any>;
 
-        return of(
-          new HttpResponse({
-            body: result,
-            status: error.status,
-            statusText: error.statusText,
-            url: error.url ?? undefined,
-          }),
-        );
+        return throwError(() => result);
       }
 
       if (error.status === 0) {

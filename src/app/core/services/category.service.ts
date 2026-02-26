@@ -7,33 +7,40 @@ import { CategoryResponse } from '../models/config/category/category-response.mo
 import { CreateCategoryRequest } from '../models/config/category/create-category-request.model';
 import { UpdateCategoryRequest } from '../models/config/category/update-category-request.model';
 import { DeactivateCategoryRequest } from '../models/config/category/deactivate-category-request.model';
+import { DeactivateCategorySelectRequest } from '../models/config/category/deactive-category-select-request.model';
 
 @Injectable({
   providedIn: 'root',
 })
 export class CategoryService {
   private http = inject(HttpClient);
-  private apiUrl = environment.apiUrl;
+  private apiUrl = environment.apiUrl+ '/categories';
 
   getAll(): Observable<ResultEntity<CategoryResponse[]>> {
-    return this.http.get<ResultEntity<CategoryResponse[]>>(`${this.apiUrl}/categories`);
+    return this.http.get<ResultEntity<CategoryResponse[]>>(`${this.apiUrl}`);
   }
 
   getById(id: number): Observable<ResultEntity<CategoryResponse>> {
-    return this.http.get<ResultEntity<CategoryResponse>>(`${this.apiUrl}/categories/${id}`);
+    return this.http.get<ResultEntity<CategoryResponse>>(`${this.apiUrl}/${id}`);
   }
 
   create(request: CreateCategoryRequest): Observable<ResultEntity<CategoryResponse>> {
-    return this.http.post<ResultEntity<CategoryResponse>>(`${this.apiUrl}/categories`, request);
+    return this.http.post<ResultEntity<CategoryResponse>>(`${this.apiUrl}`, request);
   }
 
   update(request: UpdateCategoryRequest): Observable<ResultEntity<CategoryResponse>> {
-    return this.http.put<ResultEntity<CategoryResponse>>(`${this.apiUrl}/categories`, request);
+    return this.http.put<ResultEntity<CategoryResponse>>(`${this.apiUrl}`, request);
   }
 
   deactivate(request: DeactivateCategoryRequest): Observable<ResultEntity<void>> {
-    return this.http.request<ResultEntity<void>>('DELETE', `${this.apiUrl}/categories`, {
+    return this.http.request<ResultEntity<void>>('DELETE', `${this.apiUrl}`, {
       body: request,
     });
   }
+
+   deactivateRange(request: DeactivateCategorySelectRequest): Observable<ResultEntity<void>> {
+      return this.http.delete<ResultEntity<void>>(this.apiUrl+'/DeactivateRange', {
+        body: request,
+      });
+    }
 }

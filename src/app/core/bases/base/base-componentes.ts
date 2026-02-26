@@ -5,10 +5,9 @@ import { take } from 'rxjs';
 import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialog/confirm-dialog';
 import { MatDialog } from '@angular/material/dialog';
 
-export abstract class Base {
+export abstract class BaseComponentes {
   protected translationService = inject(TranslationService);
   private toastrBase = inject(ToastrService);
-  private dialogBase = inject(MatDialog);
 
   currentLang: 'pt-BR' | 'en-US' =
     (localStorage.getItem('lang') as 'pt-BR' | 'en-US') ?? 'pt-BR';
@@ -59,19 +58,5 @@ export abstract class Base {
     });
   }
 
-   confirmModal(title: string, message: string, confirm: string, cancel: string, width?: string, icon?: string) {
-    return this.dialogBase
-      .open(ConfirmDialogComponent, {
-        data: {
-          title: title,
-          message: message,
-          confirmText: confirm,
-          cancelText: cancel,
-          width,
-          icon: icon,
-        },
-      })
-      .afterClosed();
-  }
 
 }

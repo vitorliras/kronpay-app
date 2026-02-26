@@ -1,1 +1,33 @@
-<p>config-category-item-modal works!</p>
+<ng-container *ngIf="translations$ | async as t">
+  <div class="modal-register" [style.width.px]="data.width || 400" cdkDrag cdkDragRootElement=".cdk-overlay-pane">
+    <div class="modal-register-title">
+      <h2 mat-dialog-title>{{ t[title] }} {{ t["Category"] }}</h2>
+      <button class="close-btn"  (click)="close()"><mat-icon>close</mat-icon></button>
+
+    </div>
+
+    <div class="modal-register-body">
+
+      <form [formGroup]="form">
+        <mat-form-field appearance="outline" style="width: 100%;">
+          <mat-label>{{ t['Description'] }}</mat-label>
+          <input cdkFocusInitial matInput formControlName="description" maxlength="30" minlength="1"/>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" style="width: 100%;">
+          <mat-label>{{ t['Category'] }}</mat-label>
+          <mat-select formControlName="categoryId">
+            <mat-option *ngFor="let c of data.categories" [value]="c.id">
+              {{ c.description }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </form>
+
+      <div mat-dialog-actions>
+        <button mat-raised-button color="primary" (click)="save()"><mat-icon>save</mat-icon>{{ t['Save'] }}</button>
+      </div>
+    </div>
+  </div>
+
+</ng-container>

@@ -1,14 +1,15 @@
 import { inject, Injectable } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { ResultEntity } from '../models/result-entity.model';
-import { environment } from '../../../environments/environment.prod';
 import {
   CreatePaymentMethodRequest,
+  DeactivatePaymentMethodSelectRequest,
   PaymentMethodIdRequest,
   PaymentMethodResponse,
   UpdatePaymentMethodRequest,
 } from '../models/config/payment-method/payment-method.models';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
@@ -37,6 +38,12 @@ export class PaymentMethodService {
 
   deactivate(request: PaymentMethodIdRequest): Observable<ResultEntity<void>> {
     return this.http.delete<ResultEntity<void>>(this.baseUrl, {
+      body: request,
+    });
+  }
+
+  deactivateRange(request: DeactivatePaymentMethodSelectRequest): Observable<ResultEntity<void>> {
+    return this.http.delete<ResultEntity<void>>(this.baseUrl + '/DeactivateRange', {
       body: request,
     });
   }

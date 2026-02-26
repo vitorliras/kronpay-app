@@ -6,67 +6,57 @@
       <div class="card-wrapper">
 
         <div class="card-filter">
-          <span class="title">{{ t['Categories'] }}</span>
+          <div class="Segmented-1">
+            <button type="button" class="all" [class.active]="typeFilter === null" (click)="setType(null)">
+              <span class="label default">{{ t['All'] }} </span>
+            </button>
+
+            <button type="button" class="Expense" [class.active]="typeFilter === 'E'" (click)="setType('E')">
+              <span class="label EXPENSE"> {{ t['Expense'] }}</span>
+            </button>
+
+            <button type="button" class="income" [class.active]="typeFilter === 'I'" (click)="setType('I')">
+              <span class="label INCOME">{{ t['Income'] }} </span>
+            </button>
+
+            <button type="button" class="investment" [class.active]="typeFilter === 'V'" (click)="setType('V')">
+              <span class="label INVESTMENT"> {{ t['Investment'] }}</span>
+            </button>
+
+          </div>
 
           <div class="actions">
-
-
-              <div class="Segmented-1">
-                <button type="button" class="all" [class.active]="typeFilter === null" (click)="setType(null)">
-                 <span class="label default">{{ t['All'] }} </span>
-                </button>
-
-                <button type="button" class="Expense" [class.active]="typeFilter === 'E'" (click)="setType('E')">
-                  <span class="label EXPENSE"> {{ t['Expense'] }}</span>
-                </button>
-
-                <button type="button" class="income" [class.active]="typeFilter === 'I'" (click)="setType('I')">
-                <span class="label INCOME">{{ t['Income'] }} </span>
-                </button>
-
-                <button type="button" class="investment" [class.active]="typeFilter === 'V'" (click)="setType('V')">
-                  <span class="label INVESTMENT"> {{ t['Investment'] }}</span>
-                </button>
-
-              </div>
-
-
 
             <div class="search-box-1">
               <mat-icon style="margin-top: 7px;" class="search-icon">search</mat-icon>
               <input type="text" [placeholder]="t['Search']" (input)="onSearchCategories($event)" />
             </div>
 
+
             <button mat-flat-button color="primary" (click)="OpenModalCategory()">
               <mat-icon>add</mat-icon>
-              {{ t['AddCategory'] }}
+              {{ t['Add'] }}
             </button>
 
-            <button mat-raised-button color="warn" (click)="addSubcategory()">
+            <button mat-raised-button color="warn" (click)="deleteSelectCategories()">
               <mat-icon>delete</mat-icon>
-              {{ t['Delete'] }} {{ t['Categories'] }}
+              {{ t['RemoveSelected'] }}
             </button>
           </div>
         </div>
 
-        <div class="table-wrapper-1">
+        <div [class.hidden]="categoriesFilterDataSource.data.length === 0" class="table-wrapper-1">
 
-          <table mat-table [dataSource]="categoriesFilterDataSource" class="table-table">
+          <table mat-table [dataSource]="categoriesFilterDataSource" class="table">
 
             <ng-container matColumnDef="select">
               <th mat-header-cell *matHeaderCellDef style="width: 10%;">
-                <mat-checkbox
-                  [checked]="isAllSelected('category')"
-                  [indeterminate]="isSomeSelected('category')"
-                  (change)="masterToggle($event, 'category')"
-                ></mat-checkbox>
+                <mat-checkbox [checked]="isAllSelected('category')" [indeterminate]="isSomeSelected('category')"
+                  (change)="masterToggle($event, 'category')"></mat-checkbox>
               </th>
               <td mat-cell *matCellDef="let row">
-                <mat-checkbox
-                  (click)="$event.stopPropagation()"
-                  [checked]="selectionCategories.isSelected(row)"
-                  (change)="toggleRow(row, 'category')"
-                ></mat-checkbox>
+                <mat-checkbox (click)="$event.stopPropagation()" [checked]="selectionCategories.isSelected(row)"
+                  (change)="toggleRow(row, 'category')"></mat-checkbox>
               </td>
             </ng-container>
 
@@ -115,9 +105,10 @@
             <tr mat-header-row *matHeaderRowDef="categoryColumns" class="table-header"></tr>
             <tr mat-row *matRowDef="let row; columns: categoryColumns" class="table-row"></tr>
           </table>
-        </div>
 
-        <mat-paginator [length]="7" [pageSize]="7" [hidePageSize]="true"></mat-paginator>
+        </div>
+        <mat-paginator [pageSize]="10" #paginatorCategories hidePageSize></mat-paginator>
+
       </div>
     </mat-tab>
 
@@ -126,15 +117,34 @@
       <div class="card-wrapper">
 
         <div class="card-filter">
-          <span class="title">{{ t['Subcategories'] }}</span>
+
+          <div class="Segmented-1">
+            <button type="button" class="all" [class.active]="typeFilter === null" (click)="setType(null)">
+              <span class="label default">{{ t['All'] }} </span>
+            </button>
+
+            <button type="button" class="Expense" [class.active]="typeFilter === 'E'" (click)="setType('E')">
+              <span class="label EXPENSE"> {{ t['Expense'] }}</span>
+            </button>
+
+            <button type="button" class="income" [class.active]="typeFilter === 'I'" (click)="setType('I')">
+              <span class="label INCOME">{{ t['Income'] }} </span>
+            </button>
+
+            <button type="button" class="investment" [class.active]="typeFilter === 'V'" (click)="setType('V')">
+              <span class="label INVESTMENT"> {{ t['Investment'] }}</span>
+            </button>
+
+          </div>
 
           <div class="actions">
 
             <div class="select-1">
-              <select [(ngModel)]="subcategoryFilter" (change)="applyFilters()">
-                <option value="">Todas categorias</option>
-
-                <option *ngFor="let c of categories" [value]="c.id">
+              <select [(ngModel)]="subcategoryFilter" (ngModelChange)="getSubCategoriesByIdCategory(subcategoryFilter)">
+                <option value="" disabled selected hidden>
+                  {{ t['Search'] }}
+                </option>
+                <option *ngFor="let c of categoriesFilter" [value]="c.id">
                   {{ c.description }}
                 </option>
               </select>
@@ -142,30 +152,32 @@
 
             <div class="search-box-1">
               <mat-icon style="margin-top: 7px;" class="search-icon">search</mat-icon>
-              <input type="text" [placeholder]="t['Search']" (input)="onSearchCategories($event)" />
+              <input type="text" [placeholder]="t['Search']" (input)="onSearchSubCategories($event)" />
             </div>
 
-            <button mat-stroked-button color="primary" (click)="addSubcategory()">
+            <button mat-flat-button  color="primary" (click)="OpenModalCategoryItem()">
               <mat-icon>add</mat-icon>
-              {{ t['AddSubcategory'] }}
+              {{ t['Add'] }}
             </button>
 
-            <button mat-stroked-button color="warn" (click)="addSubcategory()">
+            <button mat-flat-button color="warn" (click)="deleteSelectSubCategories()">
               <mat-icon>delete</mat-icon>
-              {{ t['Delete'] }} {{ t['Categories'] }}
+               {{ t['RemoveSelected'] }}
             </button>
           </div>
         </div>
 
-        <div class="table-wrapper-1">
-          <table mat-table [dataSource]="subcategories" class="table-table">
+        <div [class.hidden]="subCategoriesFilterDataSource.data.length === 0" class="table-wrapper-1">
+          <table mat-table [dataSource]="subCategoriesFilterDataSource" class="table">
 
             <ng-container matColumnDef="select">
-              <th style="width: 10%;" mat-header-cell *matHeaderCellDef>
-                <mat-checkbox></mat-checkbox>
+              <th mat-header-cell *matHeaderCellDef style="width: 10%;">
+                <mat-checkbox [checked]="isAllSelected('subcategory')" [indeterminate]="isSomeSelected('subcategory')"
+                  (change)="masterToggle($event, 'subcategory')"></mat-checkbox>
               </th>
               <td mat-cell *matCellDef="let row">
-                <mat-checkbox></mat-checkbox>
+                <mat-checkbox (click)="$event.stopPropagation()" [checked]="selectionSubCategories.isSelected(row)"
+                  (change)="toggleRow(row, 'subcategory')"></mat-checkbox>
               </td>
             </ng-container>
 
@@ -194,11 +206,11 @@
 
               <td mat-cell *matCellDef="let row" class="action-cell">
                 <div class="action-buttons-1">
-                  <button type="button" class="icon-btn edit">
+                  <button type="button" class="icon-btn edit" (click)="OpenModalCategoryItem(row)">
                     <mat-icon>edit</mat-icon>
                   </button>
 
-                  <button type="button" class="icon-btn delete">
+                  <button type="button" class="icon-btn delete" (click)="deleteSubcategory(row)">
                     <mat-icon>delete</mat-icon>
                   </button>
                 </div>
@@ -210,34 +222,48 @@
             <tr mat-row *matRowDef="let row; columns: subcategoryColumns"></tr>
 
           </table>
+          <mat-paginator [pageSize]="10" #paginatorSubCategories hidePageSize></mat-paginator>
         </div>
 
-        <mat-paginator [length]="6" [pageSize]="6" hidePageSize></mat-paginator>
       </div>
     </mat-tab>
 
     <mat-tab label="{{ t['PaymentMethods'] }}">
 
       <div class="card-wrapper">
-
         <div class="card-filter">
-          <span class="title">{{ t['PaymentMethods'] }}</span>
+          <span></span>
+          <div class="actions">
 
-          <button mat-flat-button color="primary" (click)="addPaymentMethod()">
-            <mat-icon>add</mat-icon>
-            {{ t['AddPaymentMethod'] }}
-          </button>
+                      <div class="search-box-1">
+                        <mat-icon style="margin-top: 7px;" class="search-icon">search</mat-icon>
+                        <input type="text" [placeholder]="t['Search']" (input)="onSearchSubCategories($event)" />
+                      </div>
+
+                      <button mat-flat-button color="primary" (click)="OpenModalPaymentMethod()">
+                        <mat-icon>add</mat-icon>
+                        {{ t['Add'] }}
+                      </button>
+
+                       <button mat-flat-button color="warn" (click)="deleteSelectPaymentMethods()">
+                          <mat-icon>delete</mat-icon>
+                          {{ t['RemoveSelected'] }}
+                        </button>
+
+          </div>
         </div>
 
-        <div class="table-wrapper-1">
+        <div [class.hidden]="paymentMethodsFilterDataSource.data.length === 0" class="table-wrapper-1">
 
-          <table mat-table [dataSource]="paymentMethods" class="table-table">
+          <table mat-table [dataSource]="paymentMethods" class="table">
             <ng-container matColumnDef="select">
-              <th style="width: 10%;" mat-header-cell *matHeaderCellDef>
-                <mat-checkbox></mat-checkbox>
+               <th mat-header-cell *matHeaderCellDef style="width: 10%;">
+                <mat-checkbox [checked]="isAllSelected('paymentmethod')" [indeterminate]="isSomeSelected('paymentmethod')"
+                  (change)="masterToggle($event, 'paymentmethod')"></mat-checkbox>
               </th>
               <td mat-cell *matCellDef="let row">
-                <mat-checkbox></mat-checkbox>
+                <mat-checkbox (click)="$event.stopPropagation()" [checked]="selectionPaymentMethods.isSelected(row)"
+                  (change)="toggleRow(row, 'paymentmethod')"></mat-checkbox>
               </td>
             </ng-container>
 
@@ -251,11 +277,11 @@
 
               <td mat-cell *matCellDef="let row" class="action-cell">
                 <div class="action-buttons-1">
-                  <button type="button" class="icon-btn edit">
+                  <button type="button" class="icon-btn edit" (click)="OpenModalPaymentMethod(row)">
                     <mat-icon>edit</mat-icon>
                   </button>
 
-                  <button type="button" class="icon-btn delete">
+                  <button type="button" class="icon-btn delete" (click)="deletePaymentMethod(row);">
                     <mat-icon>delete</mat-icon>
                   </button>
                 </div>
@@ -268,9 +294,9 @@
             <tr mat-row *matRowDef="let row; columns: paymentColumns"></tr>
           </table>
 
+          <mat-paginator [pageSize]="10" #paginatorPaymentMethod hidePageSize></mat-paginator>
         </div>
 
-        <mat-paginator [length]="4" [pageSize]="4" hidePageSize></mat-paginator>
       </div>
     </mat-tab>
 

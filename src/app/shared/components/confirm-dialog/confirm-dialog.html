@@ -4,25 +4,26 @@
 
       <div class="modal-title">
         <div class="icon">
-          <mat-icon>help_outline</mat-icon>
+          <mat-icon>{{data.icon ?? 'help_outline'}}</mat-icon>
         </div>
 
-        <h2 class="title">{{ t[data.title] }}</h2>
+        <h2 class="title">{{data.cancelText ?  t[data.title]  : data.title}}</h2>
 
       </div>
       <div class="modal-body">
 
-        <p class="message">
-          {{ t[data.message] }}
+        <p class="message" [innerHTML]="data.cancelText ? t[data.message] : data.message">
+          {{data.cancelText ? t[data.message]  : data.message}}
         </p>
 
         <div class="actions">
-          <button mat-stroked-button (click)="cancel()">
-            {{ t[data.cancelText] || t['No'] }}
+
+          <button mat-stroked-button *ngIf="data.cancelText" (click)="cancel()">
+            {{ t[data.cancelText] }}
           </button>
 
-          <button mat-raised-button color="primary" (click)="confirm()">
-            {{ t[data.confirmText] || t['Yes'] }}
+          <button mat-raised-button *ngIf="data.confirmText" color="primary" (click)="confirm()">
+            {{ t[data.confirmText] }}
           </button>
         </div>
       </div>

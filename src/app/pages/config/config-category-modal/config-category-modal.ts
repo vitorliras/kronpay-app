@@ -9,10 +9,6 @@ import {
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { CategoryResponse } from '../../../core/models/config/category/category-response.model';
 import { CommonModule } from '@angular/common';
-import { MatTabsModule } from '@angular/material/tabs';
-import { MatTableDataSource, MatTableModule } from '@angular/material/table';
-import { MatPaginatorModule } from '@angular/material/paginator';
-import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
@@ -20,6 +16,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { Base } from '../../../core/bases/base/base';
 import { MatSelectModule } from '@angular/material/select';
+import { DragDropModule } from '@angular/cdk/drag-drop';
 
 @Component({
   selector: 'app-config-category-modal',
@@ -33,6 +30,7 @@ import { MatSelectModule } from '@angular/material/select';
     MatSelectModule,
     FormsModule,
     ReactiveFormsModule,
+    DragDropModule
   ],
   templateUrl: './config-category-modal.html',
   styleUrls: ['./config-category-modal.scss', '../../../../styles/modal-register.scss'],
