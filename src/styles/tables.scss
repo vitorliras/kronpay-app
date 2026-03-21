@@ -1,111 +1,106 @@
 .table-wrapper-1 {
-    border-radius: 1rem;
-    max-height: 420px;
-    overflow-y: auto;
-    display: block;
-    position: relative;
+  border-radius: 1rem;
+  max-height: 420px;
+  overflow-y: auto;
+  display: block;
+  position: relative;
 
-    .table-scroll{
-
-    }
-
-    .mdc-data-table__header-row {
-      height: 42px;
-      position: sticky;
-      top: 0;
-      z-index: 10;
-      background: var(--tab-color, #1b3c88);
-    }
-
-    .paginator{
-        position: sticky;
-      bottom: 0;
-      z-index: 66;
-
-    }
-
-    .mdc-data-table__header-cell {
-      color: #ffffff !important;
-      font-size: 11px;
-      font-weight: 600;
-      letter-spacing: 0.04em;
-      padding: 0 12px;
-    }
-
-    .mdc-data-table__row {
-      height: 36px;
-      font-size: 13px;
-      transition: background 0.2s ease;
-    }
-
-    .mdc-data-table__row:nth-child(even) {
-      background: #f8fafc;
-    }
-
-    .mdc-data-table__row:nth-child(odd) {
-      background: #ffffff;
-    }
-
-    .mdc-data-table__row:hover {
-      background: rgba(27, 60, 136, 0.08);
-    }
-
-    .mdc-data-table__row:has(.mdc-checkbox--selected),
-    .mdc-data-table__row:has(.mat-mdc-checkbox-checked) {
-      background: rgba(27, 60, 136, 0.16) !important;
-    }
-
-    .mdc-data-table__cell {
-      padding: 0 12px;
-      vertical-align: middle;
-    }
-
-    button.mat-mdc-icon-button {
-      width: 30px;
-      height: 30px;
-    }
-
-    button.mat-mdc-icon-button mat-icon {
-      font-size: 18px;
-      color: #475569;
-      transition: color 0.2s ease;
-    }
-
-    button.mat-mdc-icon-button:hover mat-icon {
-      color: var(--tab-color, #1b3c88);
-    }
-
-    .action-cell {
-      white-space: nowrap;
-    }
-
-    button[mat-icon-button] {
-      border-radius: 10px;
-    }
-
-    mat-paginator {
-      margin-top: 12px;
-    }
+  .mdc-data-table__header-row {
+    height: 42px;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: var(--tab-color, #1b3c88);
   }
 
-  .table-wrapper-1::-webkit-scrollbar {
-    width: 6px;
+  .paginator {
+    position: sticky;
+    bottom: 0;
+    z-index: 66;
   }
 
-  .table-wrapper-1::-webkit-scrollbar-thumb {
-    background: rgba(27, 60, 136, 0.4);
-    border-radius: 8px;
+  .mdc-data-table__header-cell {
+    color: #ffffff ;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    padding: 0 12px;
+    vertical-align: middle;
   }
 
-  .table-wrapper-1::-webkit-scrollbar-track {
-    background: transparent;
+  .mdc-data-table__row {
+    height: 36px;
+    font-size: 13px;
+    transition: background 0.2s ease;
   }
 
-
-  @media (max-width: 600px) {
-    .table-header th,
-    .table-row td {
-      padding: 8px 10px;
-      font-size: 12px;
-    }
+  .mdc-data-table__row:nth-child(even) {
+    background: #f8fafc;
   }
+
+  .mdc-data-table__row:nth-child(odd) {
+    background: #ffffff;
+  }
+
+  .mdc-data-table__row:hover {
+    background: rgba(27, 60, 136, 0.08);
+  }
+
+  .mdc-data-table__row:has(.mdc-checkbox--selected),
+  .mdc-data-table__row:has(.mat-mdc-checkbox-checked) {
+    background: rgba(27, 60, 136, 0.16) !important;
+  }
+
+  .mdc-data-table__cell {
+    padding: 0 12px;
+    vertical-align: middle;
+  }
+
+  button.mat-mdc-icon-button {
+    width: 30px;
+    height: 30px;
+  }
+
+  button.mat-mdc-icon-button mat-icon {
+    font-size: 18px;
+    color: #475569;
+    transition: color 0.2s ease;
+  }
+
+  button.mat-mdc-icon-button:hover mat-icon {
+    color: var(--tab-color, #1b3c88);
+  }
+
+  .action-cell {
+    white-space: nowrap;
+  }
+
+  button[mat-icon-button] {
+    border-radius: 10px;
+  }
+
+  mat-paginator {
+    margin-top: 12px;
+  }
+}
+
+.table-wrapper-1::-webkit-scrollbar {
+  width: 6px;
+}
+
+.table-wrapper-1::-webkit-scrollbar-thumb {
+  background: rgba(27, 60, 136, 0.4);
+  border-radius: 8px;
+}
+
+.table-wrapper-1::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+@media (max-width: 600px) {
+  .table-header th,
+  .table-row td {
+    padding: 8px 10px;
+    font-size: 12px;
+  }
+}

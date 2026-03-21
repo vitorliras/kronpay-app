@@ -15,35 +15,39 @@ import { DeactivateCategoryItemRequest } from '../models/config/category-item/de
 })
 export class CategoryItemService {
   private http = inject(HttpClient);
-  private apiUrl = environment.apiUrl;
-
-  private baseUrl = `${this.apiUrl}/categoryitems`;
+  private apiUrl = environment.apiUrl + '/categoryitems';
 
   getAll(id: number): Observable<ResultEntity<CategoryItemResponse[]>> {
     const params = new HttpParams().set('categoryId', id);
-    return this.http.get<ResultEntity<CategoryItemResponse[]>>(`${this.baseUrl}/GetAll/`, {params});
+    return this.http.get<ResultEntity<CategoryItemResponse[]>>(`${this.apiUrl}/GetAll/`, {
+      params,
+    });
+  }
+
+  getAllByUser(): Observable<ResultEntity<CategoryItemResponse[]>> {
+    return this.http.get<ResultEntity<CategoryItemResponse[]>>(`${this.apiUrl}/GetAllByUser/`);
   }
 
   getById(id: number): Observable<ResultEntity<CategoryItemResponse>> {
-    return this.http.get<ResultEntity<CategoryItemResponse>>(`${this.baseUrl}/${id}`);
+    return this.http.get<ResultEntity<CategoryItemResponse>>(`${this.apiUrl}/${id}`);
   }
 
   create(request: CreateCategoryItemRequest): Observable<ResultEntity<CategoryItemResponse>> {
-    return this.http.post<ResultEntity<CategoryItemResponse>>(this.baseUrl, request);
+    return this.http.post<ResultEntity<CategoryItemResponse>>(this.apiUrl, request);
   }
 
   update(request: UpdateCategoryItemRequest): Observable<ResultEntity<CategoryItemResponse>> {
-    return this.http.put<ResultEntity<CategoryItemResponse>>(this.baseUrl, request);
+    return this.http.put<ResultEntity<CategoryItemResponse>>(this.apiUrl, request);
   }
 
   deactivate(request: DeactivateCategoryItemRequest): Observable<ResultEntity<void>> {
-    return this.http.delete<ResultEntity<void>>(this.baseUrl, {
+    return this.http.delete<ResultEntity<void>>(this.apiUrl, {
       body: request,
     });
   }
 
   deactivateRange(request: DeactivateCategoryItemSelectRequest): Observable<ResultEntity<void>> {
-    return this.http.delete<ResultEntity<void>>(this.baseUrl+'/DeactivateRange', {
+    return this.http.delete<ResultEntity<void>>(this.apiUrl + '/DeactivateRange', {
       body: request,
     });
   }

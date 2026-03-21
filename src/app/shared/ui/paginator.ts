@@ -9,14 +9,13 @@ export function Paginator() {
     length: number
   ) => {
     if (length === 0 || pageSize === 0) {
-      return `0 de ${length}`;
+      return `Página 0 de 0`;
     }
 
-    const start = page * pageSize + 1;
-    const end = Math.min((page + 1) * pageSize, length);
+    const totalPages = Math.ceil(length / pageSize);
+    const currentPage = page + 1;
 
-        return `${start}–${end} total ${length}`;
-
+    return ` ${currentPage} | ${totalPages}`;
   };
 
   return paginatorIntl;

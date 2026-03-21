@@ -1,4 +1,3 @@
-import { LayoutComponent } from './shared/components/layout/layout';
 import { Routes } from '@angular/router';
 import { authGuard } from './core/guards/auth.guard';
 
@@ -24,7 +23,13 @@ export const routes: Routes = [
         path: 'config',
         loadComponent: () =>
           import('./pages/config/config').then((m) => m.Config),
+
       },
+      {
+        path: 'transaction',
+        loadComponent: () =>
+          import('./pages/transaction/transaction').then((m) => m.TransactionComponente),
+      }
     ],
   },
 

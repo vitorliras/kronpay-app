@@ -1,0 +1,39 @@
+ .year-input {
+    width: 70px;
+    height: 40px;
+
+    padding: 0 12px;
+
+    border-radius: 10px;
+    border: 1px solid #d0d7e2;
+
+    font-size: 17px;
+    font-weight: 500;
+    text-align: center;
+
+    background-color: #ffffff;
+    color: #1f2a44;
+
+    outline: none;
+    transition: all 0.2s ease;
+
+    &::placeholder {
+      color: #9aa4b2;
+      font-weight: 400;
+    }
+
+    &:hover {
+      border-color: #4f6bed;
+    }
+
+    &:focus {
+      border-color: #1e3a8a;
+      box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.15);
+    }
+
+    &:disabled {
+      background-color: #f3f6fb;
+      cursor: not-allowed;
+      color: #a0a0a0;
+    }
+  }

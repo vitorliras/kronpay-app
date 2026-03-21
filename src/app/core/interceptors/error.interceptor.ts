@@ -27,6 +27,18 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
       if (error.error && typeof error.error === 'object') {
         const result = error.error as ResultEntity<any>;
 
+        if (error.error.isSuccess === false){
+           return of(
+          new HttpResponse({
+            body: {
+              isSuccess: false,
+              message: error.error.message,
+            } as ResultEntity<any>,
+            status: 200,
+          }),
+        );
+        }
+
         return throwError(() => result);
       }
 

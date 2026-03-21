@@ -1,0 +1,64 @@
+.summary-cards {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-bottom: 16px;
+
+}
+
+.summary-card {
+  background: #f6f6f6;
+  border-radius: 6px;
+  padding: 12px 16px;
+  font-size: 13px;
+  position: relative;
+}
+
+.summary-card .title {
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.summary-card .value {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.summary-card .details div {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+}
+
+.summary-card.expense {
+  border-left: 4px solid #e74c3c;
+}
+
+.summary-card.income {
+  border-left: 4px solid #2ecc71;
+}
+
+.summary-card.investment {
+  border-left: 4px solid #3498db;
+}
+
+.summary-card.result {
+  border-left: 4px solid #333;
+}
+
+.summary-card .negative {
+  color: #e74c3c;
+}
+
+@media (max-width: 1000px) {
+  .summary-cards {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .summary-cards {
+    grid-template-columns: 1fr;
+  }
+}

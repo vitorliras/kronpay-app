@@ -16,34 +16,32 @@ import { environment } from '../../../environments/environment';
 })
 export class PaymentMethodService {
   private http = inject(HttpClient);
-  private apiUrl = environment.apiUrl;
-
-  private baseUrl = `${this.apiUrl}/paymentmethods`;
+  private apiUrl = environment.apiUrl+ '/paymentmethods';
 
   getAll(): Observable<ResultEntity<PaymentMethodResponse[]>> {
-    return this.http.get<ResultEntity<PaymentMethodResponse[]>>(this.baseUrl);
+    return this.http.get<ResultEntity<PaymentMethodResponse[]>>(this.apiUrl);
   }
 
   getById(id: number): Observable<ResultEntity<PaymentMethodResponse>> {
-    return this.http.get<ResultEntity<PaymentMethodResponse>>(`${this.baseUrl}/${id}`);
+    return this.http.get<ResultEntity<PaymentMethodResponse>>(`${this.apiUrl}/${id}`);
   }
 
   create(request: CreatePaymentMethodRequest): Observable<ResultEntity<PaymentMethodResponse>> {
-    return this.http.post<ResultEntity<PaymentMethodResponse>>(this.baseUrl, request);
+    return this.http.post<ResultEntity<PaymentMethodResponse>>(this.apiUrl, request);
   }
 
   update(request: UpdatePaymentMethodRequest): Observable<ResultEntity<PaymentMethodResponse>> {
-    return this.http.put<ResultEntity<PaymentMethodResponse>>(this.baseUrl, request);
+    return this.http.put<ResultEntity<PaymentMethodResponse>>(this.apiUrl, request);
   }
 
   deactivate(request: PaymentMethodIdRequest): Observable<ResultEntity<void>> {
-    return this.http.delete<ResultEntity<void>>(this.baseUrl, {
+    return this.http.delete<ResultEntity<void>>(this.apiUrl, {
       body: request,
     });
   }
 
   deactivateRange(request: DeactivatePaymentMethodSelectRequest): Observable<ResultEntity<void>> {
-    return this.http.delete<ResultEntity<void>>(this.baseUrl + '/DeactivateRange', {
+    return this.http.delete<ResultEntity<void>>(this.apiUrl + '/DeactivateRange', {
       body: request,
     });
   }

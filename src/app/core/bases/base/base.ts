@@ -10,8 +10,7 @@ export abstract class Base {
   private toastrBase = inject(ToastrService);
   private dialogBase = inject(MatDialog);
 
-  currentLang: 'pt-BR' | 'en-US' =
-    (localStorage.getItem('lang') as 'pt-BR' | 'en-US') ?? 'pt-BR';
+  currentLang: 'pt-BR' | 'en-US' = (localStorage.getItem('lang') as 'pt-BR' | 'en-US') ?? 'pt-BR';
 
   translations$ = this.translationService.translations$;
 
@@ -27,39 +26,44 @@ export abstract class Base {
     localStorage.setItem('lang', lang);
   }
 
-  messageSucess(code: string){
-     this.translations$
-    .pipe(take(1))
-    .subscribe(t => {
+  returnMessage(code: string) {
+    this.translations$.pipe(take(1)).subscribe((t) => {
+      return t[code];
+    });
+  }
+
+  messageSucess(code: string) {
+    this.translations$.pipe(take(1)).subscribe((t) => {
       this.toastrBase.success(t[code]);
     });
   }
 
-   messageWarning(code: string){
-     this.translations$
-    .pipe(take(1))
-    .subscribe(t => {
+  messageWarning(code: string) {
+    this.translations$.pipe(take(1)).subscribe((t) => {
       this.toastrBase.warning(t[code]);
     });
   }
 
-   messageError(code: string){
-     this.translations$
-    .pipe(take(1))
-    .subscribe(t => {
+  messageError(code: string) {
+    this.translations$.pipe(take(1)).subscribe((t) => {
       this.toastrBase.error(t[code]);
     });
   }
 
-   messageInfo(code: string){
-     this.translations$
-    .pipe(take(1))
-    .subscribe(t => {
+  messageInfo(code: string) {
+    this.translations$.pipe(take(1)).subscribe((t) => {
       this.toastrBase.info(t[code]);
     });
   }
 
-   confirmModal(title: string, message: string, confirm: string, cancel: string, width?: string, icon?: string) {
+  confirmModal(
+    title: string,
+    message: string,
+    confirm: string,
+    cancel: string,
+    width?: string,
+    icon?: string,
+  ) {
     return this.dialogBase
       .open(ConfirmDialogComponent, {
         data: {
@@ -73,5 +77,4 @@ export abstract class Base {
       })
       .afterClosed();
   }
-
 }

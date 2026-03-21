@@ -1,4 +1,18 @@
-.btn-circle-1 {
+.btn-circle-1{
+  background: linear-gradient(180deg, #1b3c88, #0f2b5c);
+ .icon {
+    color: #ffffff;
+  }
+}
+
+.btn-circle-2{
+  background: linear-gradient(180deg, #e5edfc, #d4e1f8);
+ .icon {
+    color: #0f2b5c;
+  }
+}
+
+.btn-circle-1, .btn-circle-2 {
   width: 34px;
   height: 34px;
   border-radius: 50%;
@@ -8,7 +22,6 @@
   align-items: center;
   justify-content: center;
 
-  background: linear-gradient(180deg, #1b3c88, #0f2b5c);
   cursor: pointer;
 
   transition:
@@ -16,7 +29,6 @@
     box-shadow 0.3s ease;
 
   .icon {
-    color: #ffffff;
     font-size: 22px;
     line-height: 1;
     pointer-events: none;

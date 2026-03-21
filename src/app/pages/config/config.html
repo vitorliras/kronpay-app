@@ -47,7 +47,7 @@
 
         <div [class.hidden]="categoriesFilterDataSource.data.length === 0" class="table-wrapper-1">
 
-          <table mat-table [dataSource]="categoriesFilterDataSource" class="table">
+          <table  mat-table [dataSource]="categoriesFilterDataSource" class="table">
 
             <ng-container matColumnDef="select">
               <th mat-header-cell *matHeaderCellDef style="width: 10%;">
@@ -107,7 +107,7 @@
           </table>
 
         </div>
-        <mat-paginator [pageSize]="10" #paginatorCategories hidePageSize></mat-paginator>
+        <mat-paginator [class.hidden]="categoriesFilterDataSource.data.length === 0" [pageSize]="10"  [pageSizeOptions]="[5, 10, 25, 50]" #paginatorCategories [length]="categoriesFilterDataSource.data.length" ></mat-paginator>
 
       </div>
     </mat-tab>
@@ -222,7 +222,7 @@
             <tr mat-row *matRowDef="let row; columns: subcategoryColumns"></tr>
 
           </table>
-          <mat-paginator [pageSize]="10" #paginatorSubCategories hidePageSize></mat-paginator>
+          <mat-paginator [length]="subCategoriesFilterDataSource.data.length"  [pageSize]="10"  [pageSizeOptions]="[5, 10, 25, 50]" #paginatorSubCategories ></mat-paginator>
         </div>
 
       </div>
@@ -294,7 +294,7 @@
             <tr mat-row *matRowDef="let row; columns: paymentColumns"></tr>
           </table>
 
-          <mat-paginator [pageSize]="10" #paginatorPaymentMethod hidePageSize></mat-paginator>
+          <mat-paginator [length]="paymentMethodsFilterDataSource.data.length" [pageSize]="10"  [pageSizeOptions]="[5, 10, 25, 50]" #paginatorPaymentMethod ></mat-paginator>
         </div>
 
       </div>

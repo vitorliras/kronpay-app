@@ -30,7 +30,6 @@ import { MatDialog } from '@angular/material/dialog';
 import { CreateCategoryRequest } from '../../core/models/config/category/create-category-request.model';
 import { UpdateCategoryRequest } from '../../core/models/config/category/update-category-request.model';
 import { DeactivateCategoryRequest } from '../../core/models/config/category/deactivate-category-request.model';
-import { ConfirmDialogComponent } from '../../shared/components/confirm-dialog/confirm-dialog';
 import { ConfigCategoryItemModal } from './config-category-item-modal/config-category-item-modal';
 import { UpdateCategoryItemRequest } from '../../core/models/config/category-item/update-category-item-request.model';
 import { CreateCategoryItemRequest } from '../../core/models/config/category-item/create-category-item-request.model';
@@ -165,7 +164,9 @@ export class Config extends Base implements OnInit {
                   this.toastr.success(res.message);
                   this.getCategories();
                   this.typeFilter = null;
-                } else this.toastr.warning(res.message);
+                }
+                else
+                  this.toastr.warning(res.message);
               },
               (error) => {
                 console.error(error);
@@ -499,8 +500,6 @@ export class Config extends Base implements OnInit {
       });
     });
   }
-
-  toggleAll(event: any) {}
 
   setType(type: 'I' | 'E' | 'V' | null) {
     this.typeFilter = type;

@@ -18,7 +18,7 @@
           <mat-label>{{ t['Type'] }}</mat-label>
           <mat-select formControlName="codTypeTransaction">
             <mat-option *ngFor="let c of types" [value]="c.code">
-              {{ c.label }}
+              {{ t[c.label]  }}
             </mat-option>
           </mat-select>
         </mat-form-field>

@@ -1,0 +1,89 @@
+.transaction {
+.attach-container {
+  border: 2px dashed transparent;
+  padding: 10px;
+  text-align: center;
+  transition: 0.2s;
+}
+
+.attach-container.dragging {
+  border-color: #3f51b5;
+  background: rgba(63, 81, 181, 0.05);
+}
+
+.attach-btn {
+  margin-bottom: 8px;
+}
+
+.drag-text {
+  font-size: 12px;
+  color: #777;
+}
+
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.4px;
+
+    &.I {
+      background: rgba(34, 197, 94, 0.18);
+      color: #166534;
+    }
+
+    &.E {
+      background: rgba(239, 68, 68, 0.18);
+      color: #7f1d1d;
+    }
+
+    &.V {
+      background: rgba(59, 130, 246, 0.18);
+      color: #1e3a8a;
+    }
+  }
+
+  tr.row-paid td{
+    background-color: #e6f7ec !important;
+  }
+
+  tr.row-expired td{
+    background-color: #fdecea !important;
+  }
+
+  tr.row-open td{
+    background-color: transparent !important;
+  }
+
+  .mdc-data-table__row td {
+    transition: background-color 0.2s ease ;
+  }
+
+  .status-select {
+    height: 26px;
+    padding: 2px 8px;
+    font-size: 12px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    background-color: #fff;
+    cursor: pointer;
+    outline: none;
+
+    &:focus {
+      border-color: #3f51b5;
+    }
+  }
+
+  .status-select.header {
+    font-weight: 600;
+    background-color: #f5f5f5;
+  }
+
+  .status-select:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}

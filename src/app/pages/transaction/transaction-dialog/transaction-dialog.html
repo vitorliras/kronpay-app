@@ -1,0 +1,133 @@
+<ng-container *ngIf="translations$ | async as t">
+  <div class="modal-register transaction-modal" [style.width.px]="data.width || 600" cdkDrag
+    cdkDragRootElement=".cdk-overlay-pane">
+    <div class="modal-register-title">
+      <h2 mat-dialog-title>{{ t[title] }}</h2>
+      <button class="close-btn" (click)="close()">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+
+    <div class="modal-register-body">
+      <form [formGroup]="form">
+
+        <div class="row g-3">
+          <div class="col-12">
+            <mat-form-field appearance="outline" class="w-100">
+              <mat-label>{{ t['Description'] }}</mat-label>
+              <input matInput formControlName="description" maxlength="40" />
+            </mat-form-field>
+          </div>
+        </div>
+
+        <div class="row g-3 mt-1">
+          <div class="col-12 col-md-6">
+            <mat-form-field appearance="outline" class="w-100">
+              <mat-label>{{ t['Amount'] }}</mat-label>
+              <input moneyInput maxlength="9" matInput formControlName="amount" />
+            </mat-form-field>
+          </div>
+
+          <div class="col-12 col-md-6">
+            <mat-form-field matTooltip="{{ t['DateTransactionInfo'] }}"  matTooltipPosition="above"  appearance="outline" class="w-100">
+              <mat-label>{{ t['DateTransaction'] }}</mat-label>
+
+              <input  (input)="onDateInput($event)" maxlength="10"  matInput formControlName="transactionDate" [matDatepicker]="picker" (click)="picker.open()"/>
+
+              <mat-datepicker #picker panelClass="custom-datepicker"></mat-datepicker>
+
+              <mat-datepicker-toggle matSuffix [for]="picker">
+                <mat-icon matDatepickerToggleIcon>calendar_month</mat-icon>
+              </mat-datepicker-toggle>
+            </mat-form-field>
+          </div>
+        </div>
+
+
+        <div class="row g-3 mt-1">
+          <div class="col-12 col-md-4">
+            <mat-form-field appearance="outline" class="w-100">
+              <mat-label>{{ t['PaymentMethods'] }}</mat-label>
+              <mat-select formControlName="paymentMethodId">
+                <mat-option *ngFor="let p of data.paymentMethods" [value]="p.id">
+                  {{ p.description }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+
+          <div class="col-12 col-md-4">
+            <mat-form-field appearance="outline" class="w-100">
+              <mat-label>{{ t['Installments'] }}</mat-label>
+              <input matInput onlyNumbers maxlength="3" formControlName="installments"  (input)="setEndDate()" />
+            </mat-form-field>
+          </div>
+
+          <div class="col-12 col-md-4 d-flex align-items-center">
+            <div class="recurrence-box w-100">
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="recurrenceCheck"
+                  [checked]="form.get('recurrenceType')?.value === 'I'" [disabled]="form.get('Installments')?.value > 1 || title !== 'Add'"
+                  (change)="onRecurrenceChange($event)" />
+
+                <label class="form-check-label" for="recurrenceCheck">
+                  {{ t['InfiniteRecurrence'] }}
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="row g-3 mt-1">
+
+          <div class="col-12 col-md-4">
+            <mat-form-field appearance="outline" class="w-100">
+              <mat-label>{{ t['Type'] }}</mat-label>
+              <mat-select formControlName="typeTransaction">
+                <mat-option value="I">{{ t['Income'] }}</mat-option>
+                <mat-option value="E">{{ t['Expense'] }}</mat-option>
+                <mat-option value="V">{{ t['Investment'] }}</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+
+          <div class="col-12 col-md-4">
+            <mat-form-field appearance="outline" class="w-100">
+              <mat-label>{{ t['Category'] }}</mat-label>
+              <mat-select formControlName="categoryId" [disabled]="!form.get('typeTransaction')?.value">
+                <mat-option *ngFor="let c of data.categories" [value]="c.id">
+                  {{ c.description }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+
+          <div class="col-12 col-md-4">
+            <mat-form-field appearance="outline" class="w-100">
+              <mat-label>{{ t['Subcategories'] }}</mat-label>
+              <mat-select formControlName="subCategoryId" [disabled]="!form.get('categoryId')?.value">
+                <mat-option *ngFor="let s of filteredSubCategories" [value]="s.id">
+                  {{ s.description }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+
+
+        </div>
+
+      </form>
+
+      <div mat-dialog-actions class="d-flex justify-content-end gap-2 mt-4">
+        <button mat-raised-button color="primary" (click)="save()">
+          <mat-icon>save</mat-icon>
+          {{ t['Save'] }}
+        </button>
+
+        <button mat-stroked-button color="warn" (click)="close()">
+          {{ t['Cancel'] }}
+        </button>
+      </div>
+    </div>
+  </div>
+</ng-container>

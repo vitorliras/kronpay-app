@@ -2,7 +2,7 @@ import {
   ApplicationConfig,
   provideBrowserGlobalErrorListeners,
   APP_INITIALIZER,
-  inject
+  inject,
 } from '@angular/core';
 
 import { provideRouter } from '@angular/router';
@@ -23,26 +23,24 @@ import { TranslationService } from './core/services/translation.service';
 
 export const appConfig: ApplicationConfig = {
   providers: [
+    provideAnimations(),
     provideBrowserGlobalErrorListeners(),
     provideRouter(routes),
-
     provideHttpClient(
       withInterceptors([
         languageInterceptor,
         authInterceptor,
         KeyHeaderInterceptor,
-        errorInterceptor
-      ])
+        errorInterceptor,
+      ]),
     ),
     provideNgxMask(),
-    provideAnimations(),
-
     provideToastr({
       positionClass: 'toast-top-center',
       timeOut: 3500,
       preventDuplicates: true,
       closeButton: true,
-      progressBar: true
+      progressBar: true,
     }),
     {
       provide: APP_INITIALIZER,
@@ -50,14 +48,13 @@ export const appConfig: ApplicationConfig = {
       useFactory: () => {
         const translation = inject(TranslationService);
         return () => {
-          const lang =
-            (localStorage.getItem('lang') as 'pt-BR' | 'en-US') ?? 'pt-BR';
+          const lang = (localStorage.getItem('lang') as 'pt-BR' | 'en-US') ?? 'pt-BR';
 
           return translation.load(lang);
         };
-      }
+      },
     },
 
-    ...coreProviders
-  ]
+    ...coreProviders,
+  ],
 };
