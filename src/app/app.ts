@@ -12,6 +12,4 @@ import { TranslationService } from './core/services/translation.service';
 })
 export class App {
   constructor() {}
-
-
 }

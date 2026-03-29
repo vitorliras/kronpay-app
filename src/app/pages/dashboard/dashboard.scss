@@ -1,0 +1,23 @@
+.positive {
+  color: #2ecc71;
+  font-weight: 600;
+}
+
+.negative {
+  color: #e74c3c;
+  font-weight: 600;
+}
+
+.total-row {
+  background: var(--tab-color, #1b3c88);
+  color: white;
+  font-weight: bold;
+  width: 100%;
+  display: flex;
+
+
+  td {
+    padding: 3px;
+    font-size: 15px !important;
+  }
+}

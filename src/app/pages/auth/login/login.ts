@@ -50,6 +50,8 @@ export class Login extends Base {
 
     var conection = localStorage.getItem('connection');
     if (conection) {
+      localStorage.setItem('connection', '');
+
       const maintenanceMessage = `
           <div style="text-align: center; line-height: 1.5;">
             <strong>⚠️ Maintenance in progress</strong><br />
@@ -71,12 +73,9 @@ export class Login extends Base {
       ).subscribe();
 
       setTimeout(() => {
-        localStorage.setItem('connection', '');
         window.location.reload();
       }, 40000);
-
-
-      }
+    }
   }
 
   loginForm = this.fb.group({
@@ -124,7 +123,7 @@ export class Login extends Base {
         if (res.isSuccess && res.value) {
           this.toastr.success(res.message);
           localStorage.setItem('access_token', res.value.accessToken);
-          this.router.navigate(['/config']);
+          this.router.navigate(['/dashboard']);
           return;
         }
 

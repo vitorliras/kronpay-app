@@ -1,0 +1,347 @@
+<ng-container *ngIf="translations$ | async as t">
+  <div class="loader-container" *ngIf="isLoading">
+    <mat-progress-spinner mode="indeterminate" diameter="50"></mat-progress-spinner>
+  </div>
+
+  <mat-tab-group class="card-1 table" animationDuration="200ms">
+
+    <mat-tab label="{{ t['MonthlySummary'] }}">
+
+      <div class="card-wrapper" style="height: 480px !important; overflow-x: hidden !important;">
+
+        <div class="card-title"
+          style="display: flex;  align-items: center; justify-content: space-between; margin-bottom: 20px;">
+          <h2 class="title">{{t['Dashboard']}}</h2>
+          <div style="display: flex;  align-items: center; justify-content: space-between;">
+            <input onlyNumbers class="year-input" [(ngModel)]="year" matInput maxlength="4" (change)="setYear(year)" />
+
+            <div class="Segmented-1" style="height: 20px; margin-left: 20px;">
+              <button type="button" [class.active]="month === 1" (click)="setMonth(1)">
+                <span class="label default">{{ t['JAN'] }}</span>
+              </button>
+
+              <button type="button" [class.active]="month === 2" (click)="setMonth(2)">
+                <span class="label default">{{ t['FEB'] }}</span>
+              </button>
+
+              <button type="button" [class.active]="month === 3" (click)="setMonth(3)">
+                <span class="label default">{{ t['MAR'] }}</span>
+              </button>
+
+              <button type="button" [class.active]="month === 4" (click)="setMonth(4)">
+                <span class="label default">{{ t['APR'] }}</span>
+              </button>
+
+              <button type="button" [class.active]="month === 5" (click)="setMonth(5)">
+                <span class="label default">{{ t['MAY'] }}</span>
+              </button>
+
+              <button type="button" [class.active]="month === 6" (click)="setMonth(6)">
+                <span class="label default">{{ t['JUN'] }}</span>
+              </button>
+
+              <button type="button" [class.active]="month === 7" (click)="setMonth(7)">
+                <span class="label default">{{ t['JUL'] }}</span>
+              </button>
+
+              <button type="button" [class.active]="month === 8" (click)="setMonth(8)">
+                <span class="label default">{{ t['AUG'] }}</span>
+              </button>
+
+              <button type="button" [class.active]="month === 9" (click)="setMonth(9)">
+                <span class="label default">{{ t['SEP'] }}</span>
+              </button>
+
+              <button type="button" [class.active]="month === 10" (click)="setMonth(10)">
+                <span class="label default">{{ t['OCT'] }}</span>
+              </button>
+
+              <button type="button" [class.active]="month === 11" (click)="setMonth(11)">
+                <span class="label default">{{ t['NOV'] }}</span>
+              </button>
+
+              <button type="button" [class.active]="month === 12" (click)="setMonth(12)">
+                <span class="label default">{{ t['DEC'] }}</span>
+              </button>
+            </div>
+
+          </div>
+        </div>
+
+        <div class="summary-cards">
+
+          <div class="summary-card expense">
+            <div class="title">{{ t['Expense'] }}</div>
+
+            <div class="value">R$ {{ExpenseTotal}}</div>
+
+            <div class="details">
+              <div>{{ t['Paids'] }} <span>R$ {{ExpensePaid}}</span></div>
+              <div>{{ t['NotPaids'] }} <span>R$ {{ExpenseNotPaid}}</span></div>
+            </div>
+          </div>
+
+          <div class="summary-card income">
+            <div class="title">{{ t['Income'] }}</div>
+
+            <div class="value">R$ {{IncomeTotal}}</div>
+
+            <div class="details">
+              <div>{{ t['NotReceived'] }} <span>R$ {{IncomeRecieve}}</span></div>
+              <div>{{ t['Received'] }} <span>R$ {{IncomeNotRecieve}}</span></div>
+            </div>
+          </div>
+
+          <div class="summary-card investment">
+            <div class="title">{{ t['Investment'] }}</div>
+
+            <div class="value">R$ {{investment}}</div>
+          </div>
+
+
+
+          <div class="summary-card quantity">
+            <div class="title">{{ t['Transactions'] }}</div>
+
+            <div class class="value">{{Total}}</div>
+          </div>
+
+        </div>
+
+        <div class="summary-cards-3 charts">
+          <div class="summary-card  result">
+            <div class="title">{{ t['Result'] }}</div>
+
+            <div class="value" [class.negative]="Result < 0">
+              R$ {{ Result }}
+            </div>
+
+            <canvas baseChart [data]="pieChartData" [options]="pieChartOptions" [plugins]="pieChartPlugins"
+              chartType="doughnut">
+            </canvas>
+
+            <div style="display: flex; justify-content: center; gap: 10px; font-size: 12px;">
+              <span style="color:#4CAF50">■ {{ t['Income'] }}</span>
+              <span style="color:#F44336">■ {{ t['Expense'] }}</span>
+            </div>
+          </div>
+          <div class="summary-card result">
+            <div class="title">{{t['MovementPerDay']}}</div>
+
+            <canvas baseChart [data]="barChartData" [options]="barChartOptions" chartType="bar">
+            </canvas>
+          </div>
+        </div>
+      </div>
+
+
+    </mat-tab>
+
+    <mat-tab label="{{ t['AnnualSummary'] }}">
+
+      <div class="card-wrapper">
+
+        <div class="card-title"
+          style="display: flex;  align-items: center; justify-content: space-between; margin-bottom: 20px;">
+          <h2 class="title">{{t['Dashboard']}}</h2>
+          <div style="display: flex;  align-items: center; justify-content: space-between;">
+            <input onlyNumbers class="year-input" [(ngModel)]="year" matInput maxlength="4"
+              (change)="setYear(year, true)" />
+          </div>
+        </div>
+
+        <div class="card-filter">
+
+          <div class="row w-100">
+            <div class="card-1 col-md-7">
+              <div class="table-wrapper-1" style="max-height: 480px !important;">
+
+                <table mat-table [dataSource]="annualSummary" class="table">
+
+                  <ng-container matColumnDef="month">
+                    <th mat-header-cell *matHeaderCellDef>{{t['Month']}}</th>
+                    <td mat-cell *matCellDef="let row">
+                      {{ t[row.month] }}
+                    </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="income">
+                    <th mat-header-cell *matHeaderCellDef>{{t['Income']}}</th>
+                    <td mat-cell *matCellDef="let row">
+                      {{ row.income | currency:'BRL' }}
+                    </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="expense">
+                    <th mat-header-cell *matHeaderCellDef>{{t['Expense']}}</th>
+                    <td mat-cell *matCellDef="let row">
+                      {{ row.expense | currency:'BRL' }}
+                    </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="investment">
+                    <th mat-header-cell *matHeaderCellDef>{{t['Investment']}}</th>
+                    <td mat-cell *matCellDef="let row">
+                      {{ row.investiment | currency:'BRL' }}
+                    </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="result">
+                    <th mat-header-cell *matHeaderCellDef>{{t['Result']}}</th>
+                    <td mat-cell *matCellDef="let row" [ngClass]="getValueClass(row.result)">
+                      {{ row.result | currency:'BRL':'symbol':'1.2-2' }}
+                    </td>
+                  </ng-container>
+
+                  <ng-container matColumnDef="accumulated">
+                    <th mat-header-cell *matHeaderCellDef>{{t['Accumulated']}}</th>
+                    <td mat-cell *matCellDef="let row" [ngClass]="getValueClass(row.accumulated)">
+                      {{ row.accumulated | currency:'BRL':'symbol':'1.2-2' }}
+                    </td>
+                  </ng-container>
+
+                  <tr mat-header-row
+                    *matHeaderRowDef="['month','income','expense','investment','result','accumulated']"></tr>
+                  <tr mat-row
+                    *matRowDef="let row; columns: ['month','income','expense','investment','result','accumulated']">
+                  </tr>
+
+                </table>
+
+
+              </div>
+              <div class="total-row">
+                <td style="margin-right: 5%;">Total: </td>
+
+                <td style="margin-right: 5%;">
+                  {{ totalSummary.income | currency:'BRL':'symbol':'1.2-2' }}
+                </td>
+
+                <td style="margin-right: 5%;">
+                  {{ totalSummary.expense | currency:'BRL':'symbol':'1.2-2' }}
+                </td>
+
+                <td style="margin-right: 5%;">
+                  {{ totalSummary.investment | currency:'BRL':'symbol':'1.2-2' }}
+                </td>
+
+                <td style="margin-right: 5%;" [ngClass]="getValueClass(totalSummary.result)">
+                  {{ totalSummary.result | currency:'BRL':'symbol':'1.2-2' }}
+                </td>
+
+                <td style="margin-right: 5%;" [ngClass]="getValueClass(totalSummary.result)">
+                  {{ totalSummary.result | currency:'BRL':'symbol':'1.2-2' }}
+                </td>
+              </div>
+            </div>
+            <div class="col-md-5">
+              <div class="row col-md-12">
+                <div class="summary-cards-6">
+
+
+                  <div class="summary-card-mini income">
+                    <div class="title">{{t['PositiveMonths']}}</div>
+
+                    <div class="value" style="color: #4CAF50 !important;">{{ summaryStats.positiveMonths }}</div>
+                  </div>
+
+                  <div class="summary-card-mini income">
+                    <div class="title">{{t['BestMonth']}}</div>
+
+                    <div class="d-flex">
+                      <div class="value">
+                        {{ getMonthLabel(summaryStats.bestMonth, t) }}
+                      </div>
+                      <div class="value" style="color: #4CAF50 !important;">
+                        {{ summaryStats.bestMonthValue | currency:'BRL' }}
+                      </div>
+                    </div>
+
+                  </div>
+
+                  <div class="summary-card-mini income">
+                    <div class="title">{{t['HigherIncome']}}</div>
+
+                    <div class="value" style="color: #4CAF50 !important;">
+                      {{ summaryStats.maxIncome | currency:'BRL' }}
+                    </div>
+
+                  </div>
+
+                </div>
+
+              </div>
+
+              <div class="row col-md-12">
+                <div class="summary-cards-6">
+
+
+                  <div class="summary-card-mini expense">
+                    <div class="title">{{t['NegativeMonths']}}</div>
+                    <div class="value" style="color: #F44336 !important;">{{ summaryStats.negativeMonths }}</div>
+
+                  </div>
+
+                  <div class="summary-card-mini expense">
+                    <div class="title">{{t['WorstMonth']}}</div>
+
+                    <div class="d-flex">
+                      <div class="value">
+                        {{ getMonthLabel(summaryStats.worstMonth, t) }}
+                      </div>
+                      <div class="value" style="color: #F44336 !important;">
+                        {{ summaryStats.worstMonthValue | currency:'BRL' }}
+                      </div>
+                    </div>
+
+                  </div>
+
+                  <div class="summary-card-mini expense">
+                    <div class="title">{{t['HigherExpense']}}</div>
+                    <div class="value" style="color: #F44336 !important;">
+                      {{ summaryStats.maxExpense | currency:'BRL' }}
+                    </div>
+                  </div>
+                </div>
+
+
+
+              </div>
+
+              <div class="row col-md-12">
+                <div class="summary-cards-7" style="margin-top: 20px;">
+                  <div class="summary-card investment" >
+                    <div class="summary-card" >
+                      <div class="title">{{t['EvolutionInvestment']}}</div>
+
+                      <canvas baseChart [data]="evolutionChartData" [options]="evolutionChartOptions" chartType="line">
+                      </canvas>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <div class="row w-100">
+            <div class="row col-md-12">
+              <div class="summary-cards-7">
+                <div class="summary-card quantity">
+                  <div class="title">{{t['IncomeVsExpensePerMonth']}}</div>
+
+                  <canvas baseChart [data]="monthlyChartData" [options]="monthlyChartOptions" chartType="bar">
+                  </canvas>
+                </div>
+
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </mat-tab>
+
+
+  </mat-tab-group>
+</ng-container>

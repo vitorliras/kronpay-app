@@ -3,7 +3,55 @@
   grid-template-columns: repeat(4, 1fr);
   gap: 12px;
   margin-bottom: 16px;
+}
 
+.summary-cards-7 {
+  display: grid;
+  grid-template-columns: repeat(1, 1fr);
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.summary-cards-6 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 5px;
+  margin-bottom: 5px;
+}
+
+.summary-cards-2 {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.summary-cards-3 {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  gap: 12px;
+  margin-bottom: 16px;
+  max-height: 150px;
+}
+
+.summary-cards-3 .summary-card {
+  height: 280px;
+  width: 100%;
+}
+
+.summary-cards-7 .summary-card {
+  height: 300px;
+  width: 100%;
+}
+
+.summary-cards-3 .summary-card:last-child canvas {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.summary-cards-7 .summary-card:last-child canvas {
+  width: 100% !important;
+  height: 250px!important;
 }
 
 .summary-card {
@@ -12,6 +60,26 @@
   padding: 12px 16px;
   font-size: 13px;
   position: relative;
+}
+
+.summary-card-mini {
+  background: #f6f6f6;
+  border-radius: 6px;
+  padding: 12px 12px;
+  font-size: 13px;
+  position: relative;
+  .title {
+    font-weight: 600;
+    margin-bottom: 4px;
+    font-size: 14px !important;
+  }
+  .value {
+  font-size: 13.4px;
+  font-weight: 600;
+  margin-right: 3px;
+  text-align: center;
+  margin-bottom: 6px;
+}
 }
 
 .summary-card .title {
@@ -25,17 +93,20 @@
   margin-bottom: 6px;
 }
 
-.summary-card .details div {
+.summary-card .details div,
+.summary-card-mini .details div {
   display: flex;
   justify-content: space-between;
   font-size: 12px;
 }
 
-.summary-card.expense {
+.summary-card.expense,
+.summary-card-mini.expense {
   border-left: 4px solid #e74c3c;
 }
 
-.summary-card.income {
+.summary-card.income,
+.summary-card-mini.income {
   border-left: 4px solid #2ecc71;
 }
 
@@ -45,6 +116,10 @@
 
 .summary-card.result {
   border-left: 4px solid #333;
+}
+
+.summary-card.quantity {
+  border-left: 4px solid #b35cb9;
 }
 
 .summary-card .negative {

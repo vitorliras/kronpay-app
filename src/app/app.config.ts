@@ -20,6 +20,9 @@ import { KeyHeaderInterceptor } from './core/interceptors/key-header.interceptor
 import { errorInterceptor } from './core/interceptors/error.interceptor';
 
 import { TranslationService } from './core/services/translation.service';
+import { Chart, registerables } from 'chart.js';
+
+Chart.register(...registerables);
 
 export const appConfig: ApplicationConfig = {
   providers: [
