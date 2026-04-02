@@ -21,6 +21,7 @@ import { errorInterceptor } from './core/interceptors/error.interceptor';
 
 import { TranslationService } from './core/services/translation.service';
 import { Chart, registerables } from 'chart.js';
+import { ConfigService } from './core/services/config.service';
 
 Chart.register(...registerables);
 
@@ -49,15 +50,18 @@ export const appConfig: ApplicationConfig = {
       provide: APP_INITIALIZER,
       multi: true,
       useFactory: () => {
+        const config = inject(ConfigService);
         const translation = inject(TranslationService);
-        return () => {
+
+        return async () => {
+          await config.load();
+
           const lang = (localStorage.getItem('lang') as 'pt-BR' | 'en-US') ?? 'pt-BR';
 
-          return translation.load(lang);
+          translation.load(lang);
         };
       },
     },
-
     ...coreProviders,
   ],
 };

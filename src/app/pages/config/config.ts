@@ -64,7 +64,7 @@ import { DeactivateCategorySelectRequest } from '../../core/models/config/catego
   templateUrl: './config.html',
   styleUrls: ['./config.scss', '../../../styles/main.scss'],
 })
-export class Config extends Base implements OnInit {
+export class ConfigComponent extends Base implements OnInit {
   readonly paginatorSubCategories = viewChild.required<MatPaginator>('paginatorSubCategories');
   readonly paginatorCategories = viewChild.required<MatPaginator>('paginatorCategories');
   readonly paginatorPaymentMethod = viewChild.required<MatPaginator>('paginatorPaymentMethod');

@@ -9,13 +9,14 @@ import { CreateCategoryItemRequest } from '../models/config/category-item/create
 import { UpdateCategoryItemRequest } from '../models/config/category-item/update-category-item-request.model';
 import { DeactivateCategoryItemSelectRequest } from '../models/config/category-item/deactive-category-item-select-request.model';
 import { DeactivateCategoryItemRequest } from '../models/config/category-item/deactive-category-item-request.model';
+import { ConfigService } from './config.service';
+import { BaseService } from '../bases/base/base-service';
 
 @Injectable({
   providedIn: 'root',
 })
-export class CategoryItemService {
-  private http = inject(HttpClient);
-  private apiUrl = environment.apiUrl + '/categoryitems';
+export class CategoryItemService extends BaseService {
+  private apiUrl = this.url + '/categoryitems';
 
   getAll(id: number): Observable<ResultEntity<CategoryItemResponse[]>> {
     const params = new HttpParams().set('categoryId', id);

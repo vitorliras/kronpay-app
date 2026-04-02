@@ -4,15 +4,16 @@ import { Observable, tap, map } from 'rxjs';
 import { ResultEntity } from '../models/result-entity.model';
 import { LoginResponse } from '../models/auth/login-response.model';
 import { environment } from '../../../environments/environment';
+import { ConfigService } from './config.service';
+import { BaseService } from '../bases/base/base-service';
 
 @Injectable({ providedIn: 'root' })
-export class AuthService {
-  private http = inject(HttpClient);
-  private apiUrl = environment.apiUrl;
+export class AuthService extends BaseService  {
+
 
   login(email: string, password: string): Observable<ResultEntity<LoginResponse>> {
     return this.http
-      .post<ResultEntity<LoginResponse>>(`${this.apiUrl}/auth/login`, { email, password })
+      .post<ResultEntity<LoginResponse>>(`${this.url}/auth/login`, { email, password })
       .pipe(
         tap((result) => {
           if (result.isSuccess && result.value) {

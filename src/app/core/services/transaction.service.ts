@@ -24,13 +24,15 @@ import {
   TransactionRangeResponse,
   TransactionResponse,
 } from '../models/transaction/transaction-response.model';
+import { ConfigService } from './config.service';
+import { BaseService } from '../bases/base/base-service';
 
 @Injectable({
   providedIn: 'root',
 })
-export class TransactionService {
-  private http = inject(HttpClient);
-  private apiUrl = environment.apiUrl + '/transactions';
+export class TransactionService extends BaseService  {
+
+  private apiUrl = this.url + '/transactions';
 
   getAllByGroup(request: GetTransactionsByGroupRequest): Observable<ResultEntity<Transaction[]>> {
     const params = new HttpParams().set('transactionGroupId', request.transactionGroupId);
@@ -54,16 +56,26 @@ export class TransactionService {
     return this.http.post<ResultEntity<TransactionResponse>>(this.apiUrl, request);
   }
 
-  createRange(request: TransactionRangeRequest): Observable<ResultEntity<TransactionRangeResponse>> {
-    return this.http.post<ResultEntity<TransactionRangeResponse>>(`${this.apiUrl}/CreateRange`, request);
+  createRange(
+    request: TransactionRangeRequest,
+  ): Observable<ResultEntity<TransactionRangeResponse>> {
+    return this.http.post<ResultEntity<TransactionRangeResponse>>(
+      `${this.apiUrl}/CreateRange`,
+      request,
+    );
   }
 
   update(request: UpdateTransactionRequest): Observable<ResultEntity<TransactionResponse>> {
     return this.http.put<ResultEntity<TransactionResponse>>(`${this.apiUrl}/Update`, request);
   }
 
-  UpdateRange(request: UpdtadeRangeTransaction): Observable<ResultEntity<TransactionRangeResponse>> {
-    return this.http.put<ResultEntity<TransactionRangeResponse>>(`${this.apiUrl}/UpdateRange`, request);
+  UpdateRange(
+    request: UpdtadeRangeTransaction,
+  ): Observable<ResultEntity<TransactionRangeResponse>> {
+    return this.http.put<ResultEntity<TransactionRangeResponse>>(
+      `${this.apiUrl}/UpdateRange`,
+      request,
+    );
   }
 
   changeStatus(request: ChangeStatusTransactionRequest): Observable<ResultEntity<Transaction>> {

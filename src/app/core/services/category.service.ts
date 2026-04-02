@@ -8,13 +8,15 @@ import { CreateCategoryRequest } from '../models/config/category/create-category
 import { UpdateCategoryRequest } from '../models/config/category/update-category-request.model';
 import { DeactivateCategoryRequest } from '../models/config/category/deactivate-category-request.model';
 import { DeactivateCategorySelectRequest } from '../models/config/category/deactive-category-select-request.model';
+import { ConfigService } from './config.service';
+import { BaseService } from '../bases/base/base-service';
 
 @Injectable({
   providedIn: 'root',
 })
-export class CategoryService {
-  private http = inject(HttpClient);
-  private apiUrl = environment.apiUrl+ '/categories';
+export class CategoryService extends BaseService  {
+
+  private apiUrl = this.url + '/categories';
 
   getAll(): Observable<ResultEntity<CategoryResponse[]>> {
     return this.http.get<ResultEntity<CategoryResponse[]>>(`${this.apiUrl}`);
@@ -38,9 +40,9 @@ export class CategoryService {
     });
   }
 
-   deactivateRange(request: DeactivateCategorySelectRequest): Observable<ResultEntity<void>> {
-      return this.http.delete<ResultEntity<void>>(this.apiUrl+'/DeactivateRange', {
-        body: request,
-      });
-    }
+  deactivateRange(request: DeactivateCategorySelectRequest): Observable<ResultEntity<void>> {
+    return this.http.delete<ResultEntity<void>>(this.apiUrl + '/DeactivateRange', {
+      body: request,
+    });
+  }
 }

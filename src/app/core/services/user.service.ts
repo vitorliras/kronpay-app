@@ -5,15 +5,15 @@ import { environment } from '../../../environments/environment';
 import { UserResponse } from '../models/users/user-response.model';
 import { ResultEntity } from '../models/result-entity.model';
 import { Observable } from 'rxjs';
+import { ConfigService } from './config.service';
+import { BaseService } from '../bases/base/base-service';
 
 @Injectable({
   providedIn: 'root',
 })
-export class UserService {
-  private http = inject(HttpClient);
-  private apiUrl = environment.apiUrl;
+export class UserService extends BaseService {
 
   create(user: CreateUserRequest): Observable<ResultEntity<UserResponse>> {
-    return this.http.post<ResultEntity<UserResponse>>(`${this.apiUrl}/users`, user);
+    return this.http.post<ResultEntity<UserResponse>>(`${this.url}/users`, user);
   }
 }

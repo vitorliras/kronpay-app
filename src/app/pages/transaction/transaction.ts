@@ -767,7 +767,7 @@ export class TransactionComponente extends Base implements OnInit {
     );
 
     if (hasInvalid) {
-      this.toastr.warning('Existem transações com campos obrigatórios não preenchidos.');
+      this.messageWarning('SaveAttachInvalid');
       return;
     }
 

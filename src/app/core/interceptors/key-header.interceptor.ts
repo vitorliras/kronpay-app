@@ -1,10 +1,14 @@
-import { HttpInterceptorFn } from '@angular/common/http';
+import { HttpInterceptorFn } from "@angular/common/http";
+import { ConfigService } from "../services/config.service";
+import { inject } from "@angular/core";
 
 export const KeyHeaderInterceptor: HttpInterceptorFn = (req, next) => {
+  const settings = inject(ConfigService);
+
   const clonedRequest = req.clone({
     setHeaders: {
-      'X-Access-Key': 'FSDF4523GKIOP13Y642F526109A'
-    }
+      ...settings.config.headers,
+    },
   });
 
   return next(clonedRequest);

@@ -10,13 +10,15 @@ import {
   UpdatePaymentMethodRequest,
 } from '../models/config/payment-method/payment-method.models';
 import { environment } from '../../../environments/environment';
+import { ConfigService } from './config.service';
+import { BaseService } from '../bases/base/base-service';
 
 @Injectable({
   providedIn: 'root',
 })
-export class PaymentMethodService {
-  private http = inject(HttpClient);
-  private apiUrl = environment.apiUrl+ '/paymentmethods';
+export class PaymentMethodService extends BaseService {
+
+  private apiUrl = this.url + '/paymentmethods';
 
   getAll(): Observable<ResultEntity<PaymentMethodResponse[]>> {
     return this.http.get<ResultEntity<PaymentMethodResponse[]>>(this.apiUrl);
