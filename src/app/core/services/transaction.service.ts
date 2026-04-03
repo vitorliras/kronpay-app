@@ -24,7 +24,6 @@ import {
   TransactionRangeResponse,
   TransactionResponse,
 } from '../models/transaction/transaction-response.model';
-import { ConfigService } from './config.service';
 import { BaseService } from '../bases/base/base-service';
 
 @Injectable({

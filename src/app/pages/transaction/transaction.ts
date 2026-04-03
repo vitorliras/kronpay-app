@@ -619,6 +619,7 @@ export class TransactionComponente extends Base implements OnInit {
 
   toggleRow(row: any) {
     this.selectionTransactions.toggle(row);
+    console.log('masterToggle: ', this.selectionTransactions.selected);
   }
 
   isAllSelected(): boolean {
@@ -644,6 +645,8 @@ export class TransactionComponente extends Base implements OnInit {
   isDragging = false;
 
   attachTransactions(file: File) {
+          this.isLoading = true;
+
     this.confirmModal('Atention', 'DoYouWantToView', 'Yes', 'No', '380', 'help_outline').subscribe(
       (resultPreview) => {
         this.preview = resultPreview;
@@ -664,8 +667,6 @@ export class TransactionComponente extends Base implements OnInit {
 
           this.transactionService.import(request).subscribe(
             (res) => {
-              this.isLoading = true;
-
               if (res.isSuccess) {
                 this.isAttaching = true;
                 this.typeFilter = null;
@@ -679,12 +680,14 @@ export class TransactionComponente extends Base implements OnInit {
 
                 this.transactionsAttach = transactions;
                 this.transactionsAttachFilterDataSource.data = [...transactions];
+                this.isLoading = false;
               } else {
                 this.toastr.warning(res.message);
+                this.isLoading = false;
               }
-              this.isLoading = false;
             },
             (error) => {
+              this.isLoading = false;
               this.toastr.error(error);
             },
           );
@@ -780,7 +783,7 @@ export class TransactionComponente extends Base implements OnInit {
         description: t.description,
         codTypeTransaction: t.type,
         status: t.status,
-        categoryId: t.categoryId ?? null,
+        categoryId: this.categories.some((c) => c.id === t.categoryId) ? t.categoryId : null,
         categoryItemId: t.categoryItemId ?? null,
         installments: null,
         installmentsText: null,
@@ -795,6 +798,9 @@ export class TransactionComponente extends Base implements OnInit {
       };
 
       this.cancelAttach();
+
+      console.log(request.transactions.filter((x) => x.description == 'barbeiro'));
+      console.log(request.transactions);
 
       this.transactionService.createRange(request).subscribe(
         (res) => {

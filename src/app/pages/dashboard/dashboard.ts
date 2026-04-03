@@ -68,6 +68,7 @@ export class DashboardComponente extends Base implements OnInit {
 
   month: number = new Date().getMonth() + 1;
   year: number = new Date().getFullYear();
+  year2: number = new Date().getFullYear();
   currentYear = new Date().getFullYear();
 
   ExpenseTotal = 0;
@@ -207,15 +208,17 @@ export class DashboardComponente extends Base implements OnInit {
   }
 
   setYear(year: number, isYear: boolean = false) {
-    this.year = year;
     if (!isYear) {
+      this.year = year;
       if (year > 1900 || year <= this.currentYear) this.applyFiltersMonth();
     } else {
+      this.year2 = year;
       if (year > 1900 || year <= this.currentYear) this.applyFiltersYear();
     }
   }
 
   applyFiltersMonth() {
+
     let yearNumber = this.year;
     this.isLoading = true;
     if (isNaN(yearNumber) || yearNumber < 1900 || yearNumber > this.currentYear) {
@@ -247,14 +250,14 @@ export class DashboardComponente extends Base implements OnInit {
         this.cdr.detectChanges();
       },
       (error) => {
-        console.log(error);
         this.isLoading = false;
+        console.log(error);
       },
     );
   }
 
   applyFiltersYear() {
-    let yearNumber = this.year;
+    let yearNumber = this.year2;
     this.isLoading = true;
 
     if (isNaN(yearNumber) || yearNumber < 1900 || yearNumber > this.currentYear) {
@@ -273,7 +276,7 @@ export class DashboardComponente extends Base implements OnInit {
             this.transactionsYear = [...res.value!];
             this.generateAnnualSummary();
             this.calculateTotals();
-            this.calculateStats();
+            this.calculateStatus();
             this.buildMonthlyCharts();
             this.isLoading = false;
             this.cdr.detectChanges();
@@ -287,8 +290,8 @@ export class DashboardComponente extends Base implements OnInit {
         this.cdr.detectChanges();
       },
       (error) => {
-        console.log(error);
         this.isLoading = false;
+        console.log(error);
       },
     );
   }
@@ -508,7 +511,7 @@ export class DashboardComponente extends Base implements OnInit {
     this.totalSummary.result = this.round2(this.totalSummary.result);
   }
 
-  calculateStats() {
+  calculateStatus() {
     const months = Array.from({ length: 12 }, (_, i) => ({
       month: i + 1,
       income: 0,
