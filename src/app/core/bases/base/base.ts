@@ -4,11 +4,17 @@ import { ToastrService } from 'ngx-toastr';
 import { take } from 'rxjs';
 import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialog/confirm-dialog';
 import { MatDialog } from '@angular/material/dialog';
+import { UserService } from '../../services/user.service';
+import { AuthService } from '../../services/auth.service';
+import { Router } from '@angular/router';
 
 export abstract class Base {
   protected translationService = inject(TranslationService);
   private toastrBase = inject(ToastrService);
   private dialogBase = inject(MatDialog);
+  protected userService = inject(UserService);
+  protected router = inject(Router);
+  protected authService = inject(AuthService);
 
   currentLang: 'pt-BR' | 'en-US' = (localStorage.getItem('lang') as 'pt-BR' | 'en-US') ?? 'pt-BR';
 

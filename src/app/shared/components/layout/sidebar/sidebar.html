@@ -6,13 +6,16 @@
       <span *ngIf="!isCollapsed">Kronpay</span>
     </div>
 
-    <div class="user-box" *ngIf="!isCollapsed">
-      <div class="avatar"></div>
+    <div *ngIf="!isCollapsed">
+      <div class="user-box"   *ngIf="user$ | async as user">
+        <div class="avatar"></div>
 
-      <div class="user-info">
-        <span class="hello">{{ t['Hello'] }}, João!</span>
-        <span class="email">joao@email.com</span>
+        <div class="user-info">
+          <span class="hello">{{ t['Hello'] }}, {{ user.username }}</span>
+          <span class="email">{{ user.email }}</span>
+        </div>
       </div>
+
     </div>
 
     <nav>

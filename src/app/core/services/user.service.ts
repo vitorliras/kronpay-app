@@ -4,16 +4,43 @@ import { inject, Injectable } from '@angular/core';
 import { environment } from '../../../environments/environment';
 import { UserResponse } from '../models/users/user-response.model';
 import { ResultEntity } from '../models/result-entity.model';
-import { Observable } from 'rxjs';
+import { map, Observable, of, shareReplay, tap } from 'rxjs';
 import { ConfigService } from './config.service';
 import { BaseService } from '../bases/base/base-service';
+import { UserAllDatasResponse } from '../models/users/user-all-datas-response.model';
 
 @Injectable({
   providedIn: 'root',
 })
 export class UserService extends BaseService {
+  apiUrl = `${this.url}/users`;
+  private user$?: Observable<UserAllDatasResponse>;
 
   create(user: CreateUserRequest): Observable<ResultEntity<UserResponse>> {
-    return this.http.post<ResultEntity<UserResponse>>(`${this.url}/users`, user);
+    return this.http.post<ResultEntity<UserResponse>>(this.apiUrl, user);
+  }
+
+  getUser(): Observable<UserAllDatasResponse> {
+
+    if (!this.user$) {
+      this.user$ = this.http
+        .get<ResultEntity<UserAllDatasResponse>>(this.apiUrl)
+        .pipe(
+          map(res => {
+            if (!res.isSuccess || !res.value) {
+              throw new Error(res.message);
+            }
+            console.log(res.value)
+            return res.value;
+          }),
+          shareReplay(1)
+        );
+    }
+
+    return this.user$;
+  }
+
+  clearCache(): void {
+    this.user$ = undefined;
   }
 }

@@ -1,15 +1,34 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, inject, Input, Output } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
+import { Base } from '../../../../core/bases/base/base';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @Component({
   selector: 'app-header',
-  imports: [CommonModule, MatIconModule],
+  imports: [CommonModule, MatIconModule, MatTooltipModule],
   standalone: true,
   templateUrl: './header.html',
-  styleUrl: './header.scss',
+  styleUrls: ['./header.scss', '../../../../../styles/main.scss'],
 })
-export class Header {
+export class Header extends Base {
   @Input() collapsed = false;
   @Output() toggle = new EventEmitter<void>();
+
+  user$ = this.userService.getUser();
+
+  constructor() {
+    super();
+  }
+
+  logout() {
+    this.confirmModal('Atention', 'EndSession', 'Yes', 'No', '380', 'help_outline').subscribe(
+      (result) => {
+        if (!result) return;
+        this.authService.logout();
+        this.userService.clearCache();
+        this.router.navigate(['/login']);
+      },
+    );
+  }
 }

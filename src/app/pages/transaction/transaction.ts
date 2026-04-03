@@ -799,9 +799,6 @@ export class TransactionComponente extends Base implements OnInit {
 
       this.cancelAttach();
 
-      console.log(request.transactions.filter((x) => x.description == 'barbeiro'));
-      console.log(request.transactions);
-
       this.transactionService.createRange(request).subscribe(
         (res) => {
           if (res.isSuccess) {

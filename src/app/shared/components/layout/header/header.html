@@ -1,3 +1,5 @@
+<ng-container *ngIf="translations$ | async as t">
+
 <header class="header-layout-component">
   <button class="btn-circle-1" (click)="toggle.emit()">
     <mat-icon class="icon">
@@ -7,7 +9,13 @@
 
   <div class="actions">
     <mat-icon>notifications</mat-icon>
-    <mat-icon>account_circle</mat-icon>
+    <!-- <mat-icon>account_circle</mat-icon> -->
+    <button (click)="logout()" class="logout-btn" matTooltip="{{ t['Logout'] }}" matTooltipPosition="below">
+      <mat-icon>logout</mat-icon>
+    </button>
+
     <span>PT | BR</span>
   </div>
 </header>
+
+</ng-container>

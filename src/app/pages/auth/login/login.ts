@@ -40,8 +40,6 @@ import { UserService } from '../../../core/services/user.service';
 export class Login extends Base {
   private fb = inject(FormBuilder);
   private auth = inject(AuthService);
-  private router = inject(Router);
-  private userService = inject(UserService);
   private toastr = inject(ToastrService);
   currentView = 'login';
 
