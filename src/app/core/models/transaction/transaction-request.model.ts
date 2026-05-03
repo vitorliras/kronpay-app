@@ -13,6 +13,11 @@ export interface GetTransactionsByYearRequest {
   year: number;
 }
 
+export interface GetTransactionsByDatesRequest {
+  startDate: Date;
+  endDate?: Date;
+}
+
 export interface ChangeStatusTransactionRequest {
   id: number;
   status: string;
@@ -31,6 +36,7 @@ export interface DeleteTransactionRequest {
 export interface UpdateTransactionRequest {
   id: number;
   description: string;
+  type: string;
   amount: number;
   transactionDate: Date;
   updateGroup: boolean;
@@ -38,8 +44,6 @@ export interface UpdateTransactionRequest {
   categoryId: number;
   categoryItemId?: number | null;
 }
-
-
 
 export interface TransactionRangeRequest {
   transactions: readonly Transaction[];

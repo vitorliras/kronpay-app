@@ -114,6 +114,7 @@ export class TransactionComponente extends Base implements OnInit {
   IncomeNotRecieve = 0;
   IncomeRecieve = 0;
   investment = 0;
+  redemption = 0;
   Result = 0;
 
   currentYear = new Date().getFullYear();
@@ -246,6 +247,7 @@ export class TransactionComponente extends Base implements OnInit {
     this.IncomeNotRecieve = 0;
 
     this.investment = 0;
+    this.redemption = 0;
     this.Result = 0;
 
     transactions.forEach((t) => {
@@ -269,6 +271,10 @@ export class TransactionComponente extends Base implements OnInit {
         case 'V':
           this.investment += t.amount;
           break;
+
+        case 'R':
+          this.redemption += t.amount;
+          break;
       }
     });
 
@@ -280,7 +286,8 @@ export class TransactionComponente extends Base implements OnInit {
     this.IncomeRecieve = this.round2(this.IncomeRecieve);
     this.IncomeNotRecieve = this.round2(this.IncomeNotRecieve);
 
-    this.investment = this.round2(this.investment);
+    const investment = this.investment - this.redemption;
+    this.investment = this.round2(investment);
 
     this.Result = this.IncomeRecieve - this.ExpensePaid;
     this.Result = this.round2(this.Result);
@@ -347,13 +354,14 @@ export class TransactionComponente extends Base implements OnInit {
           if (transaction) {
             const request: UpdateTransactionRequest = {
               id: result.id,
+              type: result.typeTransaction,
               description: result.description,
               amount: result.amount,
-              transactionDate: result.transactionDate,
+              transactionDate: this.removeTimezone(result.transactionDate),
               updateGroup: result.updateGroup,
               status: transaction.status,
-              categoryId: result.categoryId,
-              categoryItemId: result.subCategoryId,
+              categoryId: result.categoryId ?? null,
+              categoryItemId: result.subCategoryId ?? null,
             };
             this.transactionService.update(request).subscribe(
               (res) => {
@@ -580,7 +588,7 @@ export class TransactionComponente extends Base implements OnInit {
   }
 
   getSubCategoryDescription(row?: any): string | null {
-    const id = row.categorItemyId;
+    const id = row.categoryItemId;
 
     return this.subcategories.find((s) => s.id === id)?.description ?? null;
   }
@@ -619,7 +627,6 @@ export class TransactionComponente extends Base implements OnInit {
 
   toggleRow(row: any) {
     this.selectionTransactions.toggle(row);
-    console.log('masterToggle: ', this.selectionTransactions.selected);
   }
 
   isAllSelected(): boolean {
@@ -645,7 +652,7 @@ export class TransactionComponente extends Base implements OnInit {
   isDragging = false;
 
   attachTransactions(file: File) {
-          this.isLoading = true;
+    this.isLoading = true;
 
     this.confirmModal('Atention', 'DoYouWantToView', 'Yes', 'No', '380', 'help_outline').subscribe(
       (resultPreview) => {
@@ -709,7 +716,6 @@ export class TransactionComponente extends Base implements OnInit {
     }
 
     this.attachTransactions(file);
-    console.log('Arquivo selecionado:', file);
   }
 
   onDragOver(event: DragEvent) {
@@ -762,6 +768,8 @@ export class TransactionComponente extends Base implements OnInit {
 
   onCategoryChange(row: any) {
     row.categoryItemId = null;
+    if (!row.categoryId) return;
+    this.subcategories.filter((s) => s.categoryId === row.categoryId);
   }
 
   saveAttach() {
@@ -783,8 +791,8 @@ export class TransactionComponente extends Base implements OnInit {
         description: t.description,
         codTypeTransaction: t.type,
         status: t.status,
-        categoryId: this.categories.some((c) => c.id === t.categoryId) ? t.categoryId : null,
-        categoryItemId: t.categoryItemId ?? null,
+        categoryId: t.categoryId ? Number(t.categoryId) : null,
+        categoryItemId: t.categoryItemId ? Number(t.categoryItemId) : null,
         installments: null,
         installmentsText: null,
         idPaymentMethod: t.paymentMethod,

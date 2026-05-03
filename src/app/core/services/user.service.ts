@@ -30,7 +30,6 @@ export class UserService extends BaseService {
             if (!res.isSuccess || !res.value) {
               throw new Error(res.message);
             }
-            console.log(res.value)
             return res.value;
           }),
           shareReplay(1)

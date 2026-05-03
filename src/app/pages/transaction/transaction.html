@@ -163,7 +163,7 @@
         </div>
       </div>
       <!-- [class.hidden]="transactionsFilterDataSource.data.length === 0" -->
-      <div [class.hidden]="transactionsFilterDataSource.data.length == 0 || isAttaching" class="table-wrapper-1">
+      <div [class.hidden]="transactionsFilterDataSource.data.length == 0 || isAttaching" class="table-wrapper-1" style="max-height: 480px !important">
 
         <table mat-table [dataSource]="transactionsFilterDataSource" class="table">
 
@@ -327,6 +327,7 @@
                 <option value="I">{{ t['Income'] }}</option>
                 <option value="V">{{ t['Investment'] }}</option>
                 <option value="E">{{ t['Expense'] }}</option>
+                <option value="R">{{ t['Redemption'] }}</option>
 
               </select>
 
@@ -358,7 +359,7 @@
 
               <select class="table-select w-100" [(ngModel)]="row.categoryItemId" [disabled]="!row.categoryId">
 
-                <option *ngFor="let s of getSubcategoriesByCategory(row.categoryId)" [value]="s.id">
+                <option *ngFor="let s of getSubcategoriesByCategory(row.categoryId)"  [value]="s.id">
 
                   {{ s.description }}
 

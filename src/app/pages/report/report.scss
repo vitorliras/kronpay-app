@@ -1,0 +1,89 @@
+.card-2 {
+  .summary-card .title {
+    font-size: 14px !important;
+  }
+
+  .summary-card .value {
+    font-size: 17px !important;
+  }
+
+}
+
+.report {
+  .positive {
+    color: #2ecc71;
+    font-weight: 600;
+  }
+
+  .negative {
+    color: #e74c3c;
+    font-weight: 600;
+  }
+
+  .total-row {
+    background: var(--tab-color, #1b3c88);
+    color: white;
+    font-weight: bold;
+    width: 100%;
+    display: flex;
+
+    td {
+      padding: 3px;
+      font-size: 15px !important;
+    }
+  }
+
+  .category-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+
+  .left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+  }
+
+  .name {
+    font-size: 13px;
+    color: #374151;
+  }
+
+  .right {
+    display: flex;
+    gap: 10px;
+    font-size: 13px;
+  }
+
+  .value {
+    font-weight: 500;
+  }
+
+  .percent {
+    color: #6b7280;
+  }
+
+  .total {
+    margin-top: 10px;
+    padding-top: 8px;
+    border-top: 1px solid #e5e7eb;
+    display: flex;
+    justify-content: space-between;
+    font-weight: 600;
+  }
+
+
+
+.row {
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+}
+}

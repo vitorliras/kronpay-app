@@ -1,7 +1,7 @@
-import { HttpClient, HttpParams } from '@angular/common/http';
-import { inject, Injectable } from '@angular/core';
+import { HttpParams } from '@angular/common/http';
+import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { environment } from '../../../environments/environment';
+import dayjs from 'dayjs';
 
 import { ResultEntity } from '../models/result-entity.model';
 import {
@@ -10,6 +10,7 @@ import {
   CreateTransactionRequest,
   DeactivateTransactionSelectRequest,
   DeleteTransactionRequest,
+  GetTransactionsByDatesRequest,
   GetTransactionsByGroupRequest,
   GetTransactionsByMonthRequest,
   GetTransactionsByYearRequest,
@@ -29,8 +30,7 @@ import { BaseService } from '../bases/base/base-service';
 @Injectable({
   providedIn: 'root',
 })
-export class TransactionService extends BaseService  {
-
+export class TransactionService extends BaseService {
   private apiUrl = this.url + '/transactions';
 
   getAllByGroup(request: GetTransactionsByGroupRequest): Observable<ResultEntity<Transaction[]>> {
@@ -43,6 +43,19 @@ export class TransactionService extends BaseService  {
     const params = new HttpParams().set('year', request.year).set('month', request.month);
 
     return this.http.get<ResultEntity<Transaction[]>>(`${this.apiUrl}/GetAllByMonth`, { params });
+  }
+
+  getAllByDates(request: GetTransactionsByDatesRequest): Observable<ResultEntity<Transaction[]>> {
+    let params = new HttpParams().set(
+      'startDate',
+      dayjs(request.startDate).format('YYYY-MM-DD HH:mm'),
+    );
+
+    if (request.endDate) {
+      params = params.set('endDate', dayjs(request.endDate).format('YYYY-MM-DD HH:mm'));
+    }
+
+    return this.http.get<ResultEntity<Transaction[]>>(`${this.apiUrl}/GetByDates`, { params });
   }
 
   getAllByYear(request: GetTransactionsByYearRequest): Observable<ResultEntity<Transaction[]>> {

@@ -24,6 +24,19 @@ export abstract class Base {
     this.translationService.load(this.currentLang);
   }
 
+  formatDate(date: Date): string {
+    const pad = (n: number) => n.toString().padStart(2, '0');
+
+    return (
+      `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())} ` +
+      `${pad(date.getHours())}:${pad(date.getMinutes())}:00`
+    );
+  }
+
+  removeTimezone(date: Date): Date {
+    return new Date(date.getTime() - date.getTimezoneOffset() * 60000);
+  }
+
   changeLang(lang: 'pt-BR' | 'en-US') {
     if (this.currentLang === lang) return;
 
@@ -82,5 +95,9 @@ export abstract class Base {
         },
       })
       .afterClosed();
+  }
+
+  round(value: number): number {
+    return Math.round(value * 100) / 100;
   }
 }

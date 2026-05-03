@@ -76,7 +76,6 @@ export const BR_DATE_FORMATS = {
 export class TransactionDialogComponente extends Base {
   filteredSubCategories: CategoryItemResponse[] = [];
   filteredCategories: CategoryResponse[] = [];
-
   form: FormGroup;
   title = 'Add';
 
@@ -98,7 +97,7 @@ export class TransactionDialogComponente extends Base {
       id: [null],
       amount: [null, Validators.required],
       description: ['', Validators.required],
-      transactionDate: [Date.now, Validators.required],
+      transactionDate: [new Date(), Validators.required],
       typeTransaction: ['', Validators.required], // I= Income, V = Investment, E =E Expense
       recurrenceType: [''], //F = FIXED I = INFINITE
       installments: [null],
@@ -112,7 +111,6 @@ export class TransactionDialogComponente extends Base {
     this.valueChanges();
 
     const transaction = data.transaction;
-    console.log(transaction);
 
     if (transaction) {
       let recurrenceType = '';
@@ -126,7 +124,7 @@ export class TransactionDialogComponente extends Base {
         id: transaction.id,
         amount: transaction.amount,
         description: transaction.description,
-        transactionDate: transaction.transactionDate,
+        transactionDate: new Date(transaction.transactionDate),
         typeTransaction: transaction.codTypeTransaction,
         recurrenceType: recurrenceType,
         installments: transaction.installments,
@@ -137,16 +135,22 @@ export class TransactionDialogComponente extends Base {
 
       this.form.controls['installments'].disable();
       this.form.controls['recurrenceType'].disable();
+
+      this.form.updateValueAndValidity({ emitEvent: true });
+
     }
+
   }
 
   valueChanges() {
     this.form.get('typeTransaction')?.valueChanges.subscribe((type) => {
       if (!type) {
         this.filteredCategories = [];
+        this.form.get('categoryId')?.disable();
         this.form.get('categoryId')?.reset();
       } else {
         this.filteredCategories = this.data.categories.filter((c) => c.codTypeTransaction === type);
+        this.form.get('categoryId')?.enable();
 
         this.form.get('categoryId')?.reset();
       }
@@ -155,11 +159,13 @@ export class TransactionDialogComponente extends Base {
     this.form.get('categoryId')?.valueChanges.subscribe((categoryId) => {
       if (!categoryId) {
         this.filteredSubCategories = [];
+        this.form.get('subCategoryId')?.disable();
         this.form.get('subCategoryId')?.reset();
       } else {
         this.filteredSubCategories = this.data.subCategories.filter(
           (s) => s.categoryId === categoryId,
         );
+        this.form.get('subCategoryId')?.enable();
 
         this.form.get('subCategoryId')?.reset();
       }

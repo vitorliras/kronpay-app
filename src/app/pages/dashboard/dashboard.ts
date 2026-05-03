@@ -60,7 +60,6 @@ export class DashboardComponente extends Base implements OnInit {
   annualSummary: any[] = [];
 
   categories: CategoryResponse[] = [];
-  allowedExtensions = ['csv', 'ofx'];
   transactions: Transaction[] = [];
   transactionsYear: Transaction[] = [];
 
@@ -218,7 +217,6 @@ export class DashboardComponente extends Base implements OnInit {
   }
 
   applyFiltersMonth() {
-
     let yearNumber = this.year;
     this.isLoading = true;
     if (isNaN(yearNumber) || yearNumber < 1900 || yearNumber > this.currentYear) {
@@ -251,7 +249,6 @@ export class DashboardComponente extends Base implements OnInit {
       },
       (error) => {
         this.isLoading = false;
-        console.log(error);
       },
     );
   }
@@ -291,7 +288,6 @@ export class DashboardComponente extends Base implements OnInit {
       },
       (error) => {
         this.isLoading = false;
-        console.log(error);
       },
     );
   }
@@ -332,6 +328,10 @@ export class DashboardComponente extends Base implements OnInit {
 
           case 'V':
             this.investment += t.amount;
+            break;
+
+          case 'R':
+            this.investment -= t.amount;
             break;
         }
       });
@@ -456,6 +456,7 @@ export class DashboardComponente extends Base implements OnInit {
         if (t.codTypeTransaction === 'I') incomes += t.amount;
         if (t.codTypeTransaction === 'E') expenses += t.amount;
         if (t.codTypeTransaction === 'V') investiments += t.amount;
+        if (t.codTypeTransaction === 'R') investiments -= t.amount;
       });
 
       const resultado = incomes - expenses;
@@ -498,6 +499,10 @@ export class DashboardComponente extends Base implements OnInit {
 
         case 'V':
           this.totalSummary.investment += t.amount;
+          break;
+
+        case 'R':
+          this.totalSummary.investment -= t.amount;
           break;
       }
     });
@@ -620,6 +625,10 @@ export class DashboardComponente extends Base implements OnInit {
 
         if (t.codTypeTransaction === 'V') {
           investmentByMonth[month] += t.amount;
+        }
+
+        if (t.codTypeTransaction === 'R') {
+          investmentByMonth[month] -= t.amount;
         }
       });
 
