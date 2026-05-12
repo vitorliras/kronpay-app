@@ -4,198 +4,767 @@
   </div>
 
   <div class="card-2 report">
-    <button mat-raised-button color="primary" (click)="exportPDF()">
-      <mat-icon>download</mat-icon>
-      Exportar PDF
-    </button>
 
-    <mat-tab-group class="tabs" animationDuration="200ms" (selectedTabChange)="onTabChange($event)">
 
-      <mat-tab label="{{ t['Expense'] }}">
-        <div #exportArea class="export-container" style="padding: 30px;">
-          <div class="header">
+    <div class="report-header">
 
-            <div class="title-group">
-              <h2 class="title">
-                {{ t['ExpenseRepot'] }}
-              </h2>
-              <p class="subtitle">
-                {{ t['SubtitleExpenseRepot'] }}
-              </p>
-            </div>
 
-            <div class="filters">
+      <mat-tab-group class="tabs" animationDuration="200ms" (selectedTabChange)="onTabChange($event)">
+        <div class="row d-flex" style="justify-content: space-between; ">
 
-              <mat-form-field appearance="outline" class="date-field">
-                <mat-label>{{ t['Date'] }}</mat-label>
-                <input [(ngModel)]="startDateExpense" (ngModelChange)="changeDate(startDateExpense, true)" matInput
-                  [matDatepicker]="startPicker" readonly (click)="startPicker.open()">
-                <mat-datepicker-toggle matSuffix [for]="startPicker"></mat-datepicker-toggle>
-                <mat-datepicker #startPicker></mat-datepicker>
-              </mat-form-field>
+          <mat-tab label="{{ t['Expense'] }}"></mat-tab>
+          <mat-tab label="{{ t['Income'] }}"></mat-tab>
+          <mat-tab label="{{ t['Investment'] }}"></mat-tab>
+          <mat-tab label="{{ t['Comparison'] }}"></mat-tab>
+          <!-- <mat-tab label="{{ t['CashFlow'] }}"></mat-tab> -->
+        </div>
 
-              <mat-form-field appearance="outline" class="date-field">
-                <mat-label>{{ t['Date'] }}</mat-label>
-                <input [(ngModel)]="endDateExpense" (ngModelChange)="changeDate(endDateExpense, false)" matInput
-                  [matDatepicker]="endPicker" readonly (click)="endPicker.open()">
-                <mat-datepicker-toggle matSuffix [for]="endPicker"></mat-datepicker-toggle>
-                <mat-datepicker #endPicker></mat-datepicker>
-              </mat-form-field>
+      </mat-tab-group>
 
-              <!-- <button class="filter-btn">
-            <mat-icon>filter_list</mat-icon>
-          </button> -->
+      <button mat-raised-button color="primary" (click)="exportPDF()">
+        <mat-icon>download</mat-icon>
+        {{ t['Export'] }} PDF
+      </button>
+    </div>
+
+    <div class="tab-content" *ngIf="selectedTabIndex == 0 || selectedTabIndex == 1 || selectedTabIndex == 2">
+      <div #exportArea class="export-container" style="padding: 30px;">
+        <div class="header">
+
+          <div class="title-group">
+            <div class="d-flex align-items-center gap-12">
+
+              <div class="icon-wrapper" [ngClass]="tab.toUpperCase()">
+                <mat-icon>{{ icon }}</mat-icon>
+              </div>
+
+              <div>
+                <h2 class="title">{{ t[title] }}</h2>
+                <p class="subtitle">{{ t[subTitle] }}</p>
+              </div>
+
             </div>
           </div>
+          <div class="filters box-date-filter">
 
-          <div class="summary-cards">
+            <div class="box-date-container">
 
-            <div class="summary-card expense">
-              <div class="title">{{ t['Expense'] }}</div>
+              <div class="box">
+                <div class="label">{{ t['From'] }}</div>
 
-              <div class="value negative">R$ {{expenseTotal}}</div>
+                <div class="">
+                  <mat-form-field appearance="outline" class="date-field">
+                    <mat-label>{{ t['StartDate'] }}</mat-label>
+                    <input [(ngModel)]="startDate" (ngModelChange)="changeDate(startDate, true)" matInput
+                      [matDatepicker]="startPicker" readonly (click)="startPicker.open()">
+                    <mat-datepicker-toggle matSuffix [for]="startPicker"></mat-datepicker-toggle>
+                    <mat-datepicker #startPicker></mat-datepicker>
+                  </mat-form-field>
+                </div>
+              </div>
 
-              <div class="details">
-                <!-- <div>{{ t['Paids'] }} <span>R$ {{ExpensePaid}}</span></div>
-              <div>{{ t['NotPaids'] }} <span>R$ {{ExpenseNotPaid}}</span></div> -->
+              <div class="icon">
+                <mat-icon>arrow_right_alt</mat-icon>
+              </div>
+
+              <div class="box">
+                <div class="label">{{ t['To'] }}</div>
+
+                <div class="">
+
+                  <mat-form-field appearance="outline" class="date-field">
+                    <mat-label>{{ t['EndDate'] }}</mat-label>
+                    <input [(ngModel)]="endDate" (ngModelChange)="changeDate(endDate, false)" matInput
+                      [matDatepicker]="endPicker" readonly (click)="endPicker.open()">
+                    <mat-datepicker-toggle matSuffix [for]="endPicker"></mat-datepicker-toggle>
+                    <mat-datepicker #endPicker></mat-datepicker>
+                  </mat-form-field>
+
+                </div>
               </div>
             </div>
 
-            <div class="summary-card income">
-              <div class="title">{{t['TransactionsNumber']}}</div>
+          </div>
 
-              <div class="value">{{transactionTotal}}</div>
+        </div>
 
-              <div class="details">
-                <!-- <div>{{ t['NotReceived'] }} <span>R$ {{IncomeRecieve}}</span></div>
+        <div class="summary-cards">
+
+          <div class="summary-card" [ngClass]="tab.toLowerCase()">
+            <div class="title">{{ t[tab] }}</div>
+
+            <div class="value" [ngClass]="tab">R$ {{amountTotal}}</div>
+
+          </div>
+
+          <div class="summary-card color-2">
+            <div class="title">{{t['TransactionsNumber']}}</div>
+
+            <div class="value">{{transactionTotal}}</div>
+
+            <div class="details">
+              <!-- <div>{{ t['NotReceived'] }} <span>R$ {{IncomeRecieve}}</span></div>
               <div>{{ t['Received'] }} <span>R$ {{IncomeNotRecieve}}</span></div> -->
-              </div>
             </div>
-
-            <div class="summary-card investment">
-              <div class="title">{{t['AvaregePerTransaction']}}</div>
-
-              <div class="value">R$ {{average}}</div>
-            </div>
-
-            <div class="summary-card quantity">
-              <div class="title">{{t['HighestCategory']}}</div>
-
-              <div class="value income">
-                {{ highestCategory || t['NoCategory'] }}
-              </div>
-              <div class="details">
-                <div><span>R$ {{valueHighestCategory}} ({{percentHighestCategory}}%)</span></div>
-              </div>
-            </div>
-
           </div>
 
-          <div class="row">
+          <div class="summary-card color-1">
+            <div class="title">{{t['AvaregePerTransaction']}}</div>
 
-            <div class="col-6">
-
-              <div class="row">
-
-                <div class="col-6">
-                  <canvas baseChart [data]="pieChartData" [type]="pieChartType" [options]="pieChartOptions">
-                  </canvas>
-                </div>
-
-                <div class="col-6">
-
-                  <div *ngFor="let item of report; let i = index" class="category-item">
-
-                    <div class="left">
-                      <span class="dot" [style.background]="pieChartColors[i]"></span>
-                      <span class="name">{{ item.name }}</span>
-                    </div>
-
-                    <div class="right">
-                      <span class="value">{{ item.value | currency:'BRL' }}</span>
-                      <span class="percent">{{ item.percent }}%</span>
-                    </div>
-
-                  </div>
-
-                  <div class="total">
-                    <span>Total</span>
-                    <span>{{ expenseTotal | currency:'BRL' }}</span>
-                  </div>
-
-                </div>
-
-              </div>
-
-            </div>
-
-            <div class="col-6">
-              <canvas baseChart [data]="barChartData" [type]="barChartType" [options]="barChartOptions">
-              </canvas>
-            </div>
-
+            <div class="value">R$ {{average}}</div>
           </div>
 
-          <div class="row">
-            <div class="table-wrapper-1" style="max-height: 480px !important;">
+          <div class="summary-card quantity">
+            <div class="title">{{t['HighestCategory']}}</div>
 
-              <table mat-table [dataSource]="reportTable" class="table">
-
-                <ng-container matColumnDef="name">
-                  <th mat-header-cell *matHeaderCellDef>{{t['Description']}}</th>
-                  <td mat-cell *matCellDef="let row">
-                    {{ row.name }}
-                  </td>
-                </ng-container>
-
-                <ng-container matColumnDef="value">
-                  <th mat-header-cell *matHeaderCellDef>{{t['Amount']}} Total</th>
-                  <td mat-cell *matCellDef="let row">
-                    {{ row.value | currency:'BRL' }}
-                  </td>
-                </ng-container>
-
-                <ng-container matColumnDef="percent">
-                  <th mat-header-cell *matHeaderCellDef>{{t['Percent']}} %</th>
-                  <td mat-cell *matCellDef="let row">
-                    {{ row.percent }}%
-                  </td>
-                </ng-container>
-
-                <ng-container matColumnDef="highestAmount">
-                  <th mat-header-cell *matHeaderCellDef>highestAmount</th>
-                  <td mat-cell *matCellDef="let row">
-                    {{ row.highestAmount | currency:'BRL' }}
-                  </td>
-                </ng-container>
-
-                <ng-container matColumnDef="lowestAmount">
-                  <th mat-header-cell *matHeaderCellDef>lowestAmount</th>
-                  <td mat-cell *matCellDef="let row">
-                    {{ row.lowestAmount | currency:'BRL':'symbol':'1.2-2' }}
-                  </td>
-                </ng-container>
-
-                <tr mat-header-row *matHeaderRowDef="['name','value','percent','highestAmount','lowestAmount']"></tr>
-                <tr mat-row *matRowDef="let row; columns: ['name','value','percent','highestAmount','lowestAmount']">
-                </tr>
-
-              </table>
-
-
+            <div class="value income">
+              {{ highestCategory || t['NoCategory'] }}
+            </div>
+            <div class="details">
+              <div><span>R$ {{valueHighestCategory}} ({{percentHighestCategory}}%)</span></div>
             </div>
           </div>
 
         </div>
-      </mat-tab>
+
+        <div class="row">
+
+          <div class="col-6">
+
+            <div class="row">
+
+              <div class="col-6">
+                <canvas baseChart [data]="pieChartData" [type]="pieChartType" [options]="pieChartOptions">
+                </canvas>
+              </div>
+
+              <div class="col-6">
+
+                <div *ngFor="let item of report; let i = index" class="category-item">
+
+                  <div class="left">
+                    <span class="dot" [style.background]="this.getCurrentPieColors()[i]"></span>
+                    <span class="name">{{ item.name }}</span>
+                  </div>
+
+                  <div class="right">
+                    <span class="value">{{ item.value | currency:'BRL' }}</span>
+                    <span class="percent">{{ item.percent }}%</span>
+                  </div>
+
+                </div>
+
+                <div class="total">
+                  <span>Total</span>
+                  <span>{{ amountTotal | currency:'BRL' }}</span>
+                </div>
+
+              </div>
+
+            </div>
+
+          </div>
+
+          <div class="col-6">
+            <canvas baseChart [data]="barChartData" [type]="barChartType" [options]="barChartOptions">
+            </canvas>
+          </div>
+
+        </div>
+
+        <div class="row">
+          <div class="table-wrapper-1" style="max-height: 2480px !important;">
+
+            <table mat-table [dataSource]="reportTable" class="table">
+
+              <ng-container matColumnDef="name">
+                <th mat-header-cell *matHeaderCellDef>{{t['Description']}}</th>
+                <td mat-cell *matCellDef="let row">
+                  {{ row.name }}
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="value">
+                <th mat-header-cell *matHeaderCellDef>{{t['Amount']}} Total</th>
+                <td mat-cell *matCellDef="let row">
+                  {{ row.value | currency:'BRL' }}
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="percent">
+                <th mat-header-cell *matHeaderCellDef>{{t['Percent']}} %</th>
+                <td mat-cell *matCellDef="let row">
+                  {{ row.percent }}%
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="highestAmount">
+                <th mat-header-cell *matHeaderCellDef>{{t['highestAmount']}}</th>
+                <td mat-cell *matCellDef="let row">
+                  {{ row.highestAmount | currency:'BRL' }}
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="lowestAmount">
+                <th mat-header-cell *matHeaderCellDef>{{t['lowestAmount']}}</th>
+                <td mat-cell *matCellDef="let row">
+                  {{ row.lowestAmount | currency:'BRL':'symbol':'1.2-2' }}
+                </td>
+              </ng-container>
+
+              <tr mat-header-row *matHeaderRowDef="['name','value','percent','highestAmount','lowestAmount']">
+              </tr>
+              <tr mat-row *matRowDef="let row; columns: ['name','value','percent','highestAmount','lowestAmount']">
+              </tr>
+
+            </table>
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="tab-content" *ngIf="selectedTabIndex == 3">
+      <div #exportArea class="export-container" style="padding: 30px;">
+
+        <div class="header">
+
+          <div class="title-group">
+            <div class="d-flex align-items-center gap-12">
+
+              <div class="icon-wrapper" [ngClass]="tab.toUpperCase()">
+                <mat-icon>{{ icon }}</mat-icon>
+              </div>
+
+              <div>
+                <h2 class="title">{{ t[title] }}</h2>
+                <p class="subtitle">{{ t[subTitle] }}</p>
+              </div>
+
+            </div>
+          </div>
+
+          <div class="filters box-date-filter">
+
+            <div class="box-date-container">
+
+              <div class="box">
+                <div class="label">{{t['Month']}} 1</div>
+
+                <div class="inputs">
+                  <select [(ngModel)]="month1" (change)="validateMonth('month1', true)">
+                    <option *ngFor="let m of months" [value]="m.value">
+                      {{ t[m.label] }}
+                    </option>
+                  </select>
+
+                  <input type="number" [(ngModel)]="year1" min="2000" [max]="currentYear"
+                    (ngModelChange)="validateYear('year1')">
+                </div>
+              </div>
+
+              <div class="icon">
+                <mat-icon>swap_horiz</mat-icon>
+              </div>
+
+              <div class="box">
+                <div class="label">{{t['Month']}} 2</div>
+
+                <div class="inputs">
+                  <select (change)="validateMonth('month2', false)" [(ngModel)]="month2">
+                    <option *ngFor="let m of months" [value]="m.value">
+                      {{ t[m.label] }}
+                    </option>
+                  </select>
+
+                  <input type="number" [(ngModel)]="year2" min="2000" [max]="currentYear"
+                    (ngModelChange)="validateYear('year2')">
+                </div>
+              </div>
+
+              <!-- <button class="compare-btn" (click)="compare()">
+                <mat-icon>insights</mat-icon>
+                {{t['Compare']}}
+              </button> -->
+
+            </div>
+
+          </div>
+
+        </div>
+
+        <div class="compare-cards">
+
+          <div class="summary-card expense">
+            <div class="header">
+              <div class="title">{{t['Expense']}}</div>
+              <div class="badge worse" *ngIf="amountExpenseTotalMonth2 > amountExpenseTotalMonth1">
+                ↑ {{t['Higher']}}
+              </div>
+              <div class="badge better" *ngIf="amountExpenseTotalMonth2 < amountExpenseTotalMonth1">
+                ↓ {{t['Lower']}}
+              </div>
+            </div>
+
+            <div class="values">
+              <div>{{t[descMonth1]}}/{{year1}}: <span>R$ {{amountExpenseTotalMonth1}}</span></div>
+              <div>{{t[descMonth2]}}/{{year2}}: <span>R$ {{amountExpenseTotalMonth2}}</span></div>
+            </div>
+
+            <div class="footer">
+              <div class="compare" [class.positive]="compareExpense < 0" [class.negative]="compareExpense > 0">
+
+                <mat-icon *ngIf="compareExpense < 0">arrow_downward</mat-icon>
+                <mat-icon *ngIf="compareExpense > 0">arrow_upward</mat-icon>
+
+                {{ compareExpense | number:'1.0-1' }}%
+              </div>
+
+              <div class="dual-bar">
+                <div class="progress-bar mb-1">
+                  <div class="bar bar1" [style.background]="this.getColors(1)"
+                    [style.width.%]="getPercent(amountExpenseTotalMonth1, amountExpenseTotalMonth2)">
+                    <p>{{getPercent(amountExpenseTotalMonth1, amountExpenseTotalMonth2)}}</p>
+
+                  </div>
+                </div>
+
+                <div class="progress-bar">
+                  <div class="bar bar2" [style.background]="this.getColors(2)"
+                    [style.width.%]="getPercent(amountExpenseTotalMonth2, amountExpenseTotalMonth1)">
+                    <p>{{getPercent(amountExpenseTotalMonth2, amountExpenseTotalMonth1)}}</p>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          </div>
+
+          <div class="summary-card income">
+            <div class="header">
+              <div class="title">{{t['Income']}}</div>
+              <div class="badge better" *ngIf="amountIncomeTotalMonth2 > amountIncomeTotalMonth1">
+                ↑ {{t['Higher']}}
+              </div>
+              <div class="badge worse" *ngIf="amountIncomeTotalMonth2 < amountIncomeTotalMonth1">
+                ↓ {{t['Lower']}}
+              </div>
+            </div>
+
+            <div class="values">
+              <div>{{t[descMonth1]}}/{{year1}}: <span>R$ {{amountIncomeTotalMonth1}}</span></div>
+              <div>{{t[descMonth2]}}/{{year2}}: <span>R$ {{amountIncomeTotalMonth2}}</span></div>
+            </div>
+
+            <div class="footer">
+              <div class="compare" [class.positive]="compareIncome > 0" [class.negative]="compareIncome < 0">
+
+                <mat-icon *ngIf="compareIncome > 0">arrow_upward</mat-icon>
+                <mat-icon *ngIf="compareIncome < 0">arrow_downward</mat-icon>
+
+                {{ compareIncome | number:'1.0-1' }}%
+              </div>
+
+              <div class="dual-bar">
+                <div class="progress-bar mb-1">
+                  <div class="bar bar1" [style.background]="this.getColors(3)"
+                    [style.width.%]="getPercent(amountIncomeTotalMonth1, amountIncomeTotalMonth2)">
+                    <p>{{getPercent(amountIncomeTotalMonth1, amountIncomeTotalMonth2)}}</p>
+
+                  </div>
+                </div>
+
+                <div class="progress-bar">
+                  <div class="bar bar2" [style.background]="this.getColors(4)"
+                    [style.width.%]="getPercent(amountIncomeTotalMonth2, amountIncomeTotalMonth1)">
+                    <p>{{getPercent(amountIncomeTotalMonth2, amountIncomeTotalMonth1)}}</p>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          </div>
+
+          <div class="summary-card investment">
+            <div class="header">
+              <div class="title">{{t['Investment']}}</div>
+              <div class="badge better" *ngIf="InvestmentTotalMonth2 > InvestmentTotalMonth1">
+                ↑ {{t['Higher']}}
+              </div>
+              <div class="badge worse" *ngIf="InvestmentTotalMonth2 < InvestmentTotalMonth1">
+                ↓ {{t['Lower']}}
+              </div>
+            </div>
+
+            <div class="values">
+              <div>{{t[descMonth1]}}/{{year1}}: <span>R$ {{InvestmentTotalMonth1}}</span></div>
+              <div>{{t[descMonth2]}}/{{year2}}: <span>R$ {{InvestmentTotalMonth2}}</span></div>
+            </div>
+
+            <div class="footer">
+              <div class="compare" [class.positive]="compareInvestment > 0" [class.negative]="compareInvestment < 0">
+
+                <mat-icon *ngIf="compareInvestment > 0">arrow_upward</mat-icon>
+                <mat-icon *ngIf="compareInvestment < 0">arrow_downward</mat-icon>
+
+                {{ compareInvestment | number:'1.0-1' }}%
+              </div>
+
+              <div class="dual-bar">
+                <div class="progress-bar mb-1">
+                  <div class="bar bar1" [style.background]="this.getColors(5)"
+                    [style.width.%]="getPercent(InvestmentTotalMonth1, InvestmentTotalMonth2)">
+                    <p>{{getPercent(InvestmentTotalMonth1, InvestmentTotalMonth2)}}</p>
+
+                  </div>
+                </div>
+
+                <div class="progress-bar">
+                  <div class="bar bar2" [style.background]="this.getColors(6)"
+                    [style.width.%]="getPercent(InvestmentTotalMonth2, InvestmentTotalMonth1)">
+                    <p>{{getPercent(InvestmentTotalMonth2, amountIncomeTotalMonth1)}}</p>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          </div>
+
+          <div class="summary-card result">
+            <div class="header">
+              <div class="title">{{t['Result']}}</div>
+              <div class="badge better" *ngIf="amountTotalMonth2 > amountTotalMonth1">
+                ↑ {{t['Better']}}
+              </div>
+              <div class="badge worse" *ngIf="amountTotalMonth2 < amountTotalMonth1">
+                ↓ {{t['Lower']}}
+              </div>
+            </div>
+
+            <div class="values">
+              <div>{{t[descMonth1]}}/{{year1}}: <span>R$ {{amountTotalMonth1}}</span></div>
+              <div>{{t[descMonth2]}}/{{year2}}: <span>R$ {{amountTotalMonth2}}</span></div>
+            </div>
+
+            <div class="footer">
+              <div class="compare" [class.positive]="compareTotal > 0" [class.negative]="compareTotal < 0">
+
+                <mat-icon *ngIf="compareTotal > 0">arrow_upward</mat-icon>
+                <mat-icon *ngIf="compareTotal < 0">arrow_downward</mat-icon>
+
+                {{ compareTotal | number:'1.0-1' }}%
+              </div>
+
+              <div class="dual-bar">
+                <div class="progress-bar mb-1">
+                  <div class="bar bar1" [style.background]="this.getColors(7)"
+                    [style.width.%]="getPercent(amountTotalMonth1, amountTotalMonth2)">
+                    <p>{{getPercent(amountTotalMonth1, amountTotalMonth2)}}</p>
+
+                  </div>
+                </div>
+
+                <div class="progress-bar">
+                  <div class="bar bar2" [style.background]="this.getColors(8)"
+                    [style.width.%]="getPercent(amountTotalMonth2, amountTotalMonth1)">
+                    <p>{{getPercent(amountTotalMonth2, amountTotalMonth1)}}</p>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <div class=" mt-1 d-flex">
+
+          <div class="col-4">
+
+            <div class="chart-card">
+
+              <div class="chart-header">
+                <div>
+                  <!-- <div class="chart-title">
+                    {{ t['Comparison'] }}
+                  </div> -->
+
+                  <div class="chart-subtitle">
+                    {{descMonth1}}/{{year1}} x {{descMonth2}}/{{year2}}
+                  </div>
+                </div>
+              </div>
+
+              <div class="chart-container">
+                <canvas baseChart [data]="compareBarChartData" [options]="compareBarChartOptions"
+                  [type]="compareBarChartType">
+                </canvas>
+              </div>
+
+            </div>
+
+          </div>
+
+          <div class="col-6">
+
+            <div class="chart-card">
+
+              <div class="chart-header">
+                <div>
+                  <div class="chart-title">
+                    {{ t['PercentageDistribution'] }}
+                  </div>
+
+                  <div class="chart-subtitle">
+                    {{descMonth1}}/{{year1}} x {{descMonth2}}/{{year2}}
+                  </div>
+                </div>
+              </div>
+
+              <div class="distribution-grid">
+
+                <div class="distribution-item">
+
+                  <div class="distribution-label">
+                    {{ t['Income'] }}
+                  </div>
+
+                  <div class="doughnut-wrapper">
+
+                    <canvas baseChart [data]="incomeDistributionChartData" [options]="distributionChartOptions"
+                      [type]="distributionChartType">
+                    </canvas>
+
+                    <div class="chart-center">
+                      <div class="value">
+                        {{ amountIncomeTotalMonth2 | currency:'BRL' }}
+                      </div>
+
+                      <div class="percent">
+                        {{ compareIncome | number:'1.0-0' }}%
+                      </div>
+                    </div>
+
+                  </div>
+
+                </div>
+
+                <div class="distribution-item">
+
+                  <div class="distribution-label">
+                    {{ t['Expense'] }}
+                  </div>
+
+                  <div class="doughnut-wrapper">
+
+                    <canvas baseChart [data]="expenseDistributionChartData" [options]="distributionChartOptions"
+                      [type]="distributionChartType">
+                    </canvas>
+
+                    <div class="chart-center">
+                      <div class="value">
+                        {{ amountExpenseTotalMonth2 | currency:'BRL' }}
+                      </div>
+
+                      <div class="percent">
+                        {{ compareExpense | number:'1.0-0' }}%
+                      </div>
+                    </div>
+
+                  </div>
+
+                </div>
+
+                <div class="distribution-item">
+
+                  <div class="distribution-label">
+                    {{ t['Investment'] }}
+                  </div>
+
+                  <div class="doughnut-wrapper">
+
+                    <canvas baseChart [data]="investmentDistributionChartData" [options]="distributionChartOptions"
+                      [type]="distributionChartType">
+                    </canvas>
+
+                    <div class="chart-center">
+                      <div class="value">
+                        {{ InvestmentTotalMonth2 | currency:'BRL' }}
+                      </div>
+
+                      <div class="percent">
+                        {{ compareInvestment | number:'1.0-0' }}%
+                      </div>
+                    </div>
+
+                  </div>
+
+                </div>
+
+              </div>
+
+            </div>
+
+          </div>
+
+          <div class="col-2">
+
+            <div class="summary-compare-card">
+
+              <div class="summary-title">
+                {{ t['ComparisonSummary'] }}
+              </div>
+
+              <div class="summary-items">
+
+                <div class="summary-item">
+                  <div class="label">
+                    {{ t['IncomeVariation'] }}
+                  </div>
+
+                  <div class="value positive">
+                    <mat-icon>arrow_upward</mat-icon>
+                    {{ compareIncome | number:'1.0-1' }}%
+                  </div>
+                </div>
+
+                <div class="summary-item">
+                  <div class="label">
+                    {{ t['ExpenseVariation'] }}
+                  </div>
+
+                  <div class="value negative">
+                    <mat-icon>
+                      {{ compareExpense > 0 ? 'arrow_upward' : 'arrow_downward' }}
+                    </mat-icon>
+
+                    {{ compareExpense | number:'1.0-1' }}%
+                  </div>
+                </div>
+
+                <div class="summary-item">
+                  <div class="label">
+                    {{ t['InvestmentVariation'] }}
+                  </div>
+
+                  <div class="value positive">
+                    <mat-icon>arrow_upward</mat-icon>
+                    {{ compareInvestment | number:'1.0-1' }}%
+                  </div>
+                </div>
+
+                <div class="summary-item">
+                  <div class="label">
+                    {{ t['ResultVariation'] }}
+                  </div>
+
+                  <div class="value" [ngClass]="compareTotal >= 0 ? 'positive' : 'negative'">
+                    <mat-icon>
+                      {{ compareTotal >= 0 ? 'arrow_upward' : 'arrow_downward' }}
+                    </mat-icon>
+
+                    {{ compareTotal | number:'1.0-1' }}%
+                  </div>
+                </div>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+        <div class="table-wrapper-1" style="height: 100% !important;">
+
+          <table mat-table [dataSource]="expenseCategoryCompare" class="table">
+
+            <ng-container matColumnDef="name">
+              <th mat-header-cell *matHeaderCellDef style="width: 40%;">{{t['Description']}}</th>
+              <td mat-cell *matCellDef="let row">
+                {{ row.category }}
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="month1">
+              <th mat-header-cell *matHeaderCellDef style="width: 20%;">{{descMonth1}}/{{year1}}</th>
+              <td mat-cell *matCellDef="let row">
+                {{ row.month1Amount | currency:'BRL' }}
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="month2">
+              <th mat-header-cell *matHeaderCellDef style="width: 20%;">{{descMonth2}}/{{year2}}</th>
+              <td mat-cell *matCellDef="let row">
+                {{ row.month2Amount | currency:'BRL' }}
+
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="variation">
+              <th mat-header-cell *matHeaderCellDef style="width: 20%;">{{t['Variation']}}</th>
+              <td mat-cell *matCellDef="let row" [class]="row.variation > 0 ? 'positive' : 'negative'">
+                {{ row.variation | currency:'BRL' }}
+              </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="['name','month1','month2','variation']">
+            </tr>
+            <tr mat-row *matRowDef="let row; columns: ['name','month1','month2','variation']">
+            </tr>
+
+          </table>
+
+        </div>
 
 
-      <mat-tab label="{{ t['Income'] }}"></mat-tab>
-      <mat-tab label="{{ t['Investment'] }}"></mat-tab>
-      <mat-tab label="{{ t['Comparison'] }}"></mat-tab>
-      <mat-tab label="{{ t['CashFlow'] }}"></mat-tab>
+        <div class="table-wrapper-1" style="height: 240px!important;">
 
-    </mat-tab-group>
+          <table mat-table [dataSource]="incomeCategoryCompare" class="table">
+
+            <ng-container matColumnDef="name">
+              <th mat-header-cell *matHeaderCellDef style="width: 40%;">{{t['Description']}}</th>
+              <td mat-cell *matCellDef="let row">
+                {{ row.category }}
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="month1">
+              <th mat-header-cell *matHeaderCellDef>{{descMonth1}}/{{year1}}</th>
+              <td mat-cell *matCellDef="let row">
+                {{ row.month1Amount | currency:'BRL' }}
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="month2">
+              <th mat-header-cell *matHeaderCellDef>{{descMonth2}}/{{year2}}</th>
+              <td mat-cell *matCellDef="let row">
+                {{ row.month2Amount | currency:'BRL' }}
+
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="variation">
+              <th mat-header-cell *matHeaderCellDef>{{t['Variation']}}</th>
+              <td mat-cell *matCellDef="let row" [class]="row.variation > 0 ? 'positive' : 'negative'">
+                {{ row.variation | currency:'BRL' }}
+              </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="['name','month1','month2','variation']">
+            </tr>
+            <tr mat-row *matRowDef="let row; columns: ['name','month1','month2','variation']">
+            </tr>
+
+          </table>
+
+        </div>
+
+
+      </div>
+    </div>
+
 
   </div>
 </ng-container>

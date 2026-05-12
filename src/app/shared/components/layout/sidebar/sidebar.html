@@ -30,23 +30,14 @@
         <span *ngIf="!isCollapsed">{{ t['Transactions'] }}</span>
       </a>
 
-      <a routerLink="/cards" routerLinkActive="active" class="menu-item">
-        <mat-icon>credit_card</mat-icon>
-        <span *ngIf="!isCollapsed">{{ t['CreditCard'] }}</span>
-      </a>
-
-      <a routerLink="/config" routerLinkActive="active" class="menu-item">
-        <mat-icon>settings</mat-icon>
-        <span *ngIf="!isCollapsed">
-          <ng-container *ngIf="translations$ | async as t">
-            {{ t['Settings'] }}
-          </ng-container>
-        </span>
-      </a>
-
       <a routerLink="/report" routerLinkActive="active" class="menu-item">
         <mat-icon>pie_chart</mat-icon>
         <span *ngIf="!isCollapsed">{{ t['Reports'] }}</span>
+      </a>
+
+      <a routerLink="/cards" routerLinkActive="active" class="menu-item">
+        <mat-icon>credit_card</mat-icon>
+        <span *ngIf="!isCollapsed">{{ t['CreditCard'] }}</span>
       </a>
 
       <a routerLink="/investments" routerLinkActive="active" class="menu-item">
@@ -57,6 +48,15 @@
       <a routerLink="/goals" routerLinkActive="active" class="menu-item">
         <mat-icon>flag</mat-icon>
         <span *ngIf="!isCollapsed">{{ t['Objectives'] }}</span>
+      </a>
+
+      <a routerLink="/config" routerLinkActive="active" class="menu-item">
+        <mat-icon>settings</mat-icon>
+        <span *ngIf="!isCollapsed">
+          <ng-container *ngIf="translations$ | async as t">
+            {{ t['Settings'] }}
+          </ng-container>
+        </span>
       </a>
 
     </nav>

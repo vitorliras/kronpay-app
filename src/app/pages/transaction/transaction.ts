@@ -309,7 +309,11 @@ export class TransactionComponente extends Base implements OnInit {
     let filtered = [...this.transactions];
 
     if (this.typeFilter) {
-      filtered = filtered.filter((c) => c.codTypeTransaction === this.typeFilter);
+      if (this.typeFilter == 'V')
+        filtered = filtered.filter(
+          (c) => c.codTypeTransaction === this.typeFilter || c.codTypeTransaction == 'R',
+        );
+      else filtered = filtered.filter((c) => c.codTypeTransaction === this.typeFilter);
     }
 
     this.transactionsFilterDataSource.data = filtered;
@@ -320,7 +324,9 @@ export class TransactionComponente extends Base implements OnInit {
     let filtered = [...this.transactionsAttach];
 
     if (this.typeFilter) {
-      filtered = filtered.filter((c) => c.type === this.typeFilter);
+      if (this.typeFilter == 'V')
+        filtered = filtered.filter((c) => c.type === this.typeFilter || c.type == 'R');
+      else filtered = filtered.filter((c) => c.type === this.typeFilter);
     }
 
     this.transactionsAttachFilterDataSource.data = filtered;
@@ -756,9 +762,10 @@ export class TransactionComponente extends Base implements OnInit {
     return this.categories.filter((c) => c.codTypeTransaction === type);
   }
 
-  getSubcategoriesByCategory(categoryId: number | null) {
+  getSubcategoriesByCategory(categoryId: number | string | null) {
     if (!categoryId) return [];
-    return this.subcategories.filter((s) => s.categoryId === categoryId);
+
+    return this.subcategories.filter((s) => s.categoryId === Number(categoryId));
   }
 
   onTypeChange(row: any) {
@@ -768,8 +775,8 @@ export class TransactionComponente extends Base implements OnInit {
 
   onCategoryChange(row: any) {
     row.categoryItemId = null;
-    if (!row.categoryId) return;
-    this.subcategories.filter((s) => s.categoryId === row.categoryId);
+    // if (!row.categoryId) return;
+    // this.subcategories.filter((s) => s.categoryId === row.categoryId);
   }
 
   saveAttach() {

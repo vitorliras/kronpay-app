@@ -341,7 +341,7 @@
 
               <select class="table-select w-100" [(ngModel)]="row.categoryId" (change)="onCategoryChange(row)">
 
-                <option *ngFor="let c of getCategoriesByType(row.type)" [value]="c.id">
+                <option *ngFor="let c of getCategoriesByType(row.type)" [ngValue]="c.id">
 
                   {{ c.description }}
 
@@ -359,7 +359,7 @@
 
               <select class="table-select w-100" [(ngModel)]="row.categoryItemId" [disabled]="!row.categoryId">
 
-                <option *ngFor="let s of getSubcategoriesByCategory(row.categoryId)"  [value]="s.id">
+                <option *ngFor="let s of getSubcategoriesByCategory(row.categoryId)"  [ngValue]="s.id">
 
                   {{ s.description }}
 
