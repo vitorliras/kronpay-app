@@ -1,0 +1,154 @@
+<ng-container *ngIf="translations$ | async as t">
+
+
+  <div class="card-1 creditCard" animationDuration="200ms" style="height: 700px !important">
+    <div class="loader-container" *ngIf="isLoading">
+      <mat-progress-spinner mode="indeterminate" diameter="50"></mat-progress-spinner>
+    </div>
+    <div class="card-wrapper">
+      <div class="card-title" style="display: flex;  align-items: center; justify-content: space-between;">
+        <div class="title-group">
+          <div class="d-flex align-items-center gap-12">
+
+            <div class="icon-wrapper circle-color-2">
+              <mat-icon>credit_card</mat-icon>
+            </div>
+
+            <div>
+              <h2 class="title">{{ t['CreditCard'] }}</h2>
+              <!-- <p class="subtitle">{{ t[subTitle] }}</p> -->
+            </div>
+
+          </div>
+        </div>
+        <div style="width: 400px; display: flex;  align-items: center; justify-content: space-between; gap: 15px;">
+           <button *ngIf="mustEdit" mat-raised-button color="primary" (click)="add()">
+            <mat-icon>add</mat-icon>
+            {{ t['Add'] }}
+          </button>
+          <div></div>
+          <button mat-raised-button color="primary" (click)="save()">
+            <mat-icon>save</mat-icon>
+            {{ t['Save'] }}
+          </button>
+          <mat-form-field appearance="outline" class="w-50 mt-4">
+            <mat-label>Bancos</mat-label>
+
+            <mat-select [(ngModel)]="selectedBank">
+
+              <mat-option class="search-option">
+                <input matInput [(ngModel)]="searchBank" (ngModelChange)="filterBanks()"
+                  placeholder="Pesquisar banco..." (click)="$event.stopPropagation()"
+                  (keydown)="$event.stopPropagation()" (keyup)="$event.stopPropagation()">
+              </mat-option>
+
+              <mat-option *ngFor="let bank of filteredBanks" [value]="bank" (click)="clearSearch()">
+                {{ bank.name }}
+              </mat-option>
+
+            </mat-select>
+          </mat-form-field>
+
+
+        </div>
+      </div>
+
+      <div class="card-credit-wrapper" *ngIf="cards.length">
+
+        <div class="credit-card" *ngIf="selectedBank" [ngStyle]="{ 'background': getBankColor(selectedBank) }">
+
+          <div class="card-header">
+            <img [src]="selectedBank.institutionUrl" [alt]="selectedBank.name" class="bank-logo" />
+            <h4>{{selectedBank.name}}</h4>
+          </div>
+
+          <div class="card-number">
+            **** **** **** 4821
+          </div>
+
+          <div class="card-form">
+
+            <div class="field">
+              <label>Nome do cartão</label>
+              <input type="text" placeholder="Ex: Nubank Gold" [(ngModel)]="cardName" />
+            </div>
+
+            <div class="d-flex">
+              <div class="field col-2">
+                <label>Dia do Fechamento</label>
+                <input onlyNumbers maxlength="2" type="text" min="1" max="31" [(ngModel)]="closingDay"
+                  (ngModelChange)="calculateDueDate()" />
+              </div>
+              <div class="col-2"></div>
+              <div class="field col-3">
+                <label>Vencimento (automático)</label>
+                <input maxlength="2" onlyNumbers type="text" min="1" max="31"  [(ngModel)]="dueDay" />
+              </div>
+              <div class="col-2"></div>
+              <div class="field col-3">
+                <label>Limite do cartão de crédito</label>
+                <input onlyNumbers type="text" maxlength="9" [(ngModel)]="limit" />
+              </div>
+            </div>
+
+          </div>
+
+
+        </div>
+
+        <div *ngIf="!selectedBank"></div>
+
+        <div [class.hidden]="!cards" class="table-wrapper-1" style="width: 50%; max-height: 360px;">
+
+          <table mat-table [dataSource]="cards" class="table">
+
+            <ng-container matColumnDef="description">
+              <th style="width: 40%;" mat-header-cell *matHeaderCellDef>{{ t['Description'] }}</th>
+              <td mat-cell *matCellDef="let row">{{ row.description }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="bank">
+              <th style="width: 20%;" mat-header-cell *matHeaderCellDef>{{ t['Name'] }}</th>
+              <td mat-cell *matCellDef="let row">{{ nameBank(row.bankId)}}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="closingDay">
+              <th style="width: 10%;" mat-header-cell *matHeaderCellDef>Fechamento</th>
+              <td mat-cell *matCellDef="let row">{{ row.closingDay}}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="dueDay">
+              <th style="width: 10%;" mat-header-cell *matHeaderCellDef>Vencimento</th>
+              <td mat-cell *matCellDef="let row">{{ row.dueDay}}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="limit">
+              <th style="width: 10%;" mat-header-cell *matHeaderCellDef>Limite</th>
+              <td mat-cell *matCellDef="let row">{{ row.creditLimit }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="actions">
+              <th style="width: 10%;" mat-header-cell *matHeaderCellDef></th>
+
+              <td mat-cell *matCellDef="let row" class="action-cell">
+                <div class="action-buttons-1">
+                  <button type="button" class="icon-btn delete" (click)="delete(row);">
+                    <mat-icon>delete</mat-icon>
+                  </button>
+                </div>
+              </td>
+
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="cardColumns"></tr>
+            <tr class="row-table" mat-row [ngStyle]="{'--hover-color': lightenColor(row.bankId, 55)}"
+              *matRowDef="let row; columns: cardColumns" (click)="edit(row);"></tr>
+          </table>
+
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+</ng-container>

@@ -28,44 +28,6 @@
     }
   }
 
-  .title-group {
-    .d-flex {
-      display: flex;
-      align-items: center;
-    }
-
-    .gap-12 {
-      gap: 12px;
-    }
-
-    .icon-wrapper {
-      width: 44px;
-      height: 44px;
-      border-radius: 50%;
-
-      display: flex;
-      align-items: center;
-      justify-content: center;
-
-      mat-icon {
-        font-size: 22px;
-      }
-    }
-
-    .title {
-      margin: 0;
-      font-size: 20px;
-      font-weight: 600;
-      color: #111827;
-    }
-
-    .subtitle {
-      margin: 0;
-      font-size: 13px;
-      color: #1e2025;
-    }
-  }
-
   button {
     white-space: nowrap;
   }

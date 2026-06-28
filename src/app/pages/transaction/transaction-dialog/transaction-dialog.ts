@@ -8,7 +8,7 @@ import {
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { CommonModule } from '@angular/common';
-import { Component, Inject } from '@angular/core';
+import { Component, inject, Inject } from '@angular/core';
 import {
   FormBuilder,
   FormGroup,
@@ -32,6 +32,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { OnlyNumbersDirective } from '../../../shared/directives/only-numbers.directive';
 import { MoneyInputDirective } from '../../../shared/directives/money-input.directive';
 import { MatTooltip } from '@angular/material/tooltip';
+import { ToastrService } from 'ngx-toastr';
 
 export const BR_DATE_FORMATS = {
   parse: { dateInput: 'DD/MM/YYYY' },
@@ -74,6 +75,8 @@ export const BR_DATE_FORMATS = {
   styleUrls: ['./transaction-dialog.scss', '../../../../styles/modal-register.scss'],
 })
 export class TransactionDialogComponente extends Base {
+  private toastr = inject(ToastrService);
+
   filteredSubCategories: CategoryItemResponse[] = [];
   filteredCategories: CategoryResponse[] = [];
   form: FormGroup;
@@ -89,9 +92,14 @@ export class TransactionDialogComponente extends Base {
       subCategories: CategoryItemResponse[];
       paymentMethods: PaymentMethodResponse[];
       width?: string;
+      message: string
     },
   ) {
     super();
+
+    if(data.message){
+      this.toastr.success(data.message);
+    }
 
     this.form = this.fb.group({
       id: [null],
@@ -225,7 +233,7 @@ export class TransactionDialogComponente extends Base {
   }
 
   save() {
-    if (this.form.valid) {
+    if (this.form.valid && this.form.get('description')?.value.trim()) {
       const value = this.form.value;
 
       if (typeof value.transactionDate === 'string') {
@@ -258,6 +266,10 @@ export class TransactionDialogComponente extends Base {
         this.dialogRef.close(formValue);
       }
     }
+    if(!this.form.get('description')?.value.trim())
+        this.form.get('description')?.setValue('');
+
+    this.form.markAllAsTouched();
   }
 
   close() {

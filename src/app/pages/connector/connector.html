@@ -1,0 +1,64 @@
+<ng-container *ngIf="translations$ | async as t">
+
+
+  <div class="card-1 transaction" animationDuration="200ms" style="height: 700px !important" >
+    <div class="loader-container" *ngIf="isLoading">
+      <mat-progress-spinner mode="indeterminate" diameter="50"></mat-progress-spinner>
+    </div>
+    <div class="card-wrapper">
+      <div class="card-title" style="display: flex;  align-items: center; justify-content: space-between;">
+        <h2 class="title">Conectar Banco</h2>
+        <div style="display: flex;  align-items: center; justify-content: space-between;">
+          <div class="search-box-1">
+            <mat-icon style="margin-top: 7px;" class="search-icon">search</mat-icon>
+            <input type="text" [placeholder]="t['Search']" (input)="onSearchTransactions($event)" />
+          </div>
+
+        </div>
+      </div>
+
+      <div class="banks-wrapper" *ngIf="bank?.results?.length"  >
+
+        <div class="banks-title">
+          <h3>Todos os bancos</h3>
+          <span>{{ bank.total }} instituições disponíveis</span>
+        </div>
+
+        <div class="banks-grid">
+
+          <div class="bank-card" *ngFor="let b of paginatedBanks" (click)="selectBank(b)">
+            <div class="bank-left">
+              <img [src]="b.imageUrl" [alt]="b.name" />
+            </div>
+
+            <div class="bank-info">
+              <div class="bank-name">{{ b.name }}</div>
+              <div class="bank-type">{{ b.type }}</div>
+            </div>
+
+            <div class="bank-action">
+              <mat-icon>chevron_right</mat-icon>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="pagination">
+          <button mat-icon-button (click)="prevPage()" [disabled]="page === 1">
+            <mat-icon>chevron_left</mat-icon>
+          </button>
+
+          <div class="page-info">
+            Página {{ page }} de {{ totalPages }}
+          </div>
+
+          <button mat-icon-button (click)="nextPage()" [disabled]="page === totalPages">
+            <mat-icon>chevron_right</mat-icon>
+          </button>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+</ng-container>

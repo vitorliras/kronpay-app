@@ -2,7 +2,7 @@ import { ToastrService } from 'ngx-toastr';
 import { Component, inject, OnInit, viewChild } from '@angular/core';
 import { Base } from '../../core/bases/base/base';
 import { CategoryService } from '../../core/services/category.service';
-import { CategoryItemService } from '../../core/services/category.-item.service';
+import { CategoryItemService } from '../../core/services/category-item.service';
 import { PaymentMethodService } from '../../core/services/payment-method.service';
 import { CommonModule } from '@angular/common';
 import { MatTabsModule } from '@angular/material/tabs';

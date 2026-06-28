@@ -1,0 +1,67 @@
+.title-group {
+  .d-flex {
+    display: flex;
+    align-items: center;
+  }
+
+  .gap-12 {
+    gap: 12px;
+  }
+
+  .icon-wrapper {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    mat-icon {
+      font-size: 22px;
+    }
+  }
+
+  .circle-color-1 {
+    color: #01b12d;
+    background: #01b12d69;
+  }
+
+  .circle-color-2 {
+    color: #9c0afd;
+    background: #9c0afd48;
+  }
+
+  .circle-color-3{
+    color: #1a44ff;
+    background: #1a44ff4d;
+  }
+
+  .circle-color-4 {
+    color: #ff1d1d;
+    background: #ff1d1d38;
+  }
+
+  .circle-color-5 {
+    color: #00e5ec;
+    background: #00e4ec28;
+  }
+
+  .circle-color-6 {
+    color: #ffffff;
+    background: #030303e3;
+  }
+
+  .title {
+    margin: 0;
+    font-size: 23px;
+    font-weight: 600;
+    color: #111827;
+  }
+
+  .subtitle {
+    margin: 0;
+    font-size: 13px;
+    color: #1e2025;
+  }
+}

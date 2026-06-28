@@ -11,7 +11,20 @@
 
         <div class="card-title"
           style="display: flex;  align-items: center; justify-content: space-between; margin-bottom: 20px;">
-          <h2 class="title">{{t['Dashboard']}}</h2>
+          <div class="title-group">
+            <div class="d-flex align-items-center gap-12">
+
+              <div class="icon-wrapper circle-color-1">
+                <mat-icon>insert_chart_outlined</mat-icon>
+              </div>
+
+              <div>
+                <h2 class="title">{{ t['Dashboard'] }}</h2>
+                <!-- <p class="subtitle">{{ t[subTitle] }}</p> -->
+              </div>
+
+            </div>
+          </div>
           <div style="display: flex;  align-items: center; justify-content: space-between;">
             <input onlyNumbers class="year-input" [(ngModel)]="year" matInput maxlength="4" (change)="setYear(year)" />
 
@@ -143,7 +156,20 @@
 
         <div class="card-title"
           style="display: flex;  align-items: center; justify-content: space-between; margin-bottom: 20px;">
-          <h2 class="title">{{t['Dashboard']}}</h2>
+          <div class="title-group">
+            <div class="d-flex align-items-center gap-12">
+
+              <div class="icon-wrapper circle-color-1">
+                <mat-icon>insert_chart_outlined</mat-icon>
+              </div>
+
+              <div>
+                <h2 class="title">{{ t['Dashboard'] }}</h2>
+                <!-- <p class="subtitle">{{ t[subTitle] }}</p> -->
+              </div>
+
+            </div>
+          </div>
           <div style="display: flex;  align-items: center; justify-content: space-between;">
             <input onlyNumbers class="year-input" [(ngModel)]="year2" matInput maxlength="4"
               (change)="setYear(year2, true)" />
@@ -310,8 +336,8 @@
 
               <div class="row col-md-12">
                 <div class="summary-cards-7" style="margin-top: 20px;">
-                  <div class="summary-card investment" >
-                    <div class="summary-card" >
+                  <div class="summary-card investment">
+                    <div class="summary-card">
                       <div class="title">{{t['EvolutionInvestment']}}</div>
 
                       <canvas baseChart [data]="evolutionChartData" [options]="evolutionChartOptions" chartType="line">

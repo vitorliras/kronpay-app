@@ -1,24 +1,27 @@
 .transaction {
-.attach-container {
-  border: 2px dashed transparent;
-  padding: 10px;
-  text-align: center;
-  transition: 0.2s;
-}
+  .title{
+    font-size: 25px !important;
+  }
+  .attach-container {
+    border: 2px dashed transparent;
+    padding: 10px;
+    text-align: center;
+    transition: 0.2s;
+  }
 
-.attach-container.dragging {
-  border-color: #3f51b5;
-  background: rgba(63, 81, 181, 0.05);
-}
+  .attach-container.dragging {
+    border-color: #3f51b5;
+    background: rgba(63, 81, 181, 0.05);
+  }
 
-.attach-btn {
-  margin-bottom: 8px;
-}
+  .attach-btn {
+    margin-bottom: 8px;
+  }
 
-.drag-text {
-  font-size: 12px;
-  color: #777;
-}
+  .drag-text {
+    font-size: 12px;
+    color: #777;
+  }
 
   .badge {
     display: inline-flex;
@@ -51,20 +54,28 @@
     }
   }
 
-  tr.row-paid td{
+  tr.row-paid td {
     background-color: #e6f7ec !important;
   }
 
-  tr.row-expired td{
+  tr.row-expired td {
     background-color: #fdecea !important;
   }
 
-  tr.row-open td{
+  tr.row-open td {
     background-color: transparent !important;
   }
 
   .mdc-data-table__row td {
-    transition: background-color 0.2s ease ;
+    transition: background-color 0.2s ease;
+  }
+
+  .description-cell {
+    white-space: normal !important;
+    word-break: break-word;
+    overflow-wrap: break-word;
+    max-width: 400px;
+    width: 400px;
   }
 
   .status-select {

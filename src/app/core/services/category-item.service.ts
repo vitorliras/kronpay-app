@@ -1,15 +1,12 @@
-import { GetAllCategoryItemsRequest } from './../models/config/category-item/get-all-category-item-request.model';
-import { inject, Injectable } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { Injectable } from '@angular/core';
+import { HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { environment } from '../../../environments/environment';
 import { CategoryItemResponse } from '../models/config/category-item/category-item-response.model';
 import { ResultEntity } from '../models/result-entity.model';
 import { CreateCategoryItemRequest } from '../models/config/category-item/create-category-item-request.model';
 import { UpdateCategoryItemRequest } from '../models/config/category-item/update-category-item-request.model';
 import { DeactivateCategoryItemSelectRequest } from '../models/config/category-item/deactive-category-item-select-request.model';
 import { DeactivateCategoryItemRequest } from '../models/config/category-item/deactive-category-item-request.model';
-import { ConfigService } from './config.service';
 import { BaseService } from '../bases/base/base-service';
 
 @Injectable({

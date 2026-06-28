@@ -35,7 +35,12 @@
         <span *ngIf="!isCollapsed">{{ t['Reports'] }}</span>
       </a>
 
-      <a routerLink="/cards" routerLinkActive="active" class="menu-item">
+      <!-- <a routerLink="/connector" routerLinkActive="active" class="menu-item">
+        <mat-icon>account_balance</mat-icon>
+        <span *ngIf="!isCollapsed">CONEXAO</span>
+      </a> -->
+
+      <a routerLink="/credit-card" routerLinkActive="active" class="menu-item">
         <mat-icon>credit_card</mat-icon>
         <span *ngIf="!isCollapsed">{{ t['CreditCard'] }}</span>
       </a>

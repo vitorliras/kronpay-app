@@ -1,8 +1,8 @@
 import { ToastrService } from 'ngx-toastr';
-import { Component, inject, OnInit, viewChild } from '@angular/core';
+import { Component, inject, OnInit, ViewChild, viewChild } from '@angular/core';
 import { Base } from '../../core/bases/base/base';
 import { CategoryService } from '../../core/services/category.service';
-import { CategoryItemService } from '../../core/services/category.-item.service';
+import { CategoryItemService } from '../../core/services/category-item.service';
 import { PaymentMethodService } from '../../core/services/payment-method.service';
 import { CommonModule } from '@angular/common';
 import { MatTabsModule } from '@angular/material/tabs';
@@ -42,8 +42,8 @@ import { MatTooltip } from '@angular/material/tooltip';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import {
   ImportedTransactionResponse,
-  ImportTransactionsResponse,
 } from '../../core/models/transaction/transaction-response.model';
+import { MatSort, MatSortModule } from '@angular/material/sort';
 
 @Component({
   selector: 'app-transaction',
@@ -62,6 +62,7 @@ import {
     OnlyNumbersDirective,
     MatTooltip,
     MatProgressSpinnerModule,
+    MatSortModule
   ],
   providers: [
     {
@@ -148,9 +149,39 @@ export class TransactionComponente extends Base implements OnInit {
   month: number = new Date().getMonth() + 1;
   year: number = new Date().getFullYear();
 
+  @ViewChild(MatSort) sort!: MatSort;
+
   constructor() {
     super();
   }
+
+  ngAfterViewInit(): void {
+
+  this.transactionsFilterDataSource.sortingDataAccessor = (item, property) => {
+
+    switch (property) {
+      case 'date':
+      return new Date(item.transactionDate).getTime();
+
+      case 'category':
+        return this.getCategoryDescription(item);
+
+      case 'subcategory':
+        return this.getSubCategoryDescription(item);
+
+      case 'paymentMethod':
+        return this.getPaymentMethodDescription(item);
+
+      case 'type':
+        return this.getTypeLabel(item.codTypeTransaction);
+
+      default:
+        return (item as any)[property];
+    }
+  };
+
+  this.transactionsFilterDataSource.sort = this.sort;
+}
 
   ngOnInit(): void {
     this.getDatas();
@@ -342,7 +373,7 @@ export class TransactionComponente extends Base implements OnInit {
     if (year > 1900 || year <= this.currentYear) this.applyFilters();
   }
 
-  OpenModalTransaction(transaction?: Transaction) {
+  OpenModalTransaction(transaction?: Transaction, message: string = "") {
     const dialogRef = this.dialog.open(TransactionDialogComponente, {
       disableClose: true,
       data: {
@@ -351,6 +382,7 @@ export class TransactionComponente extends Base implements OnInit {
         subCategories: this.subcategories,
         paymentMethods: this.paymentMethods,
         width: '650',
+        message: message
       },
     });
     dialogRef.afterClosed().subscribe(
@@ -372,12 +404,12 @@ export class TransactionComponente extends Base implements OnInit {
             this.transactionService.update(request).subscribe(
               (res) => {
                 if (res.isSuccess) {
-                  this.toastr.success(res.message);
                   const date = new Date(request.transactionDate);
                   this.year = date.getFullYear();
                   this.month = date.getMonth() + 1;
                   this.applyFilters();
                   this.typeFilter = null;
+                  this.toastr.success(res.message);
                 } else this.toastr.warning(res.message);
 
                 this.isLoading = false;
@@ -402,17 +434,22 @@ export class TransactionComponente extends Base implements OnInit {
             this.transactionService.create(request).subscribe(
               (res) => {
                 if (res.isSuccess) {
-                  this.toastr.success(res.message);
+                  // this.toastr.success(res.message);
                   const date = new Date(request.transactionDate);
                   this.year = date.getFullYear();
                   this.month = date.getMonth() + 1;
                   this.applyFilters();
                   this.typeFilter = null;
-                } else this.toastr.warning(res.message);
+                } else {
+                  debugger;
+                  this.toastr.warning(res.message);
+                  this.isLoading = false;
+                  return;
+                }
 
                 this.isLoading = false;
 
-                this.OpenModalTransaction();
+                this.OpenModalTransaction(undefined, res.message);
               },
               (error) => {
                 console.error(error);
@@ -625,10 +662,10 @@ export class TransactionComponente extends Base implements OnInit {
     };
   }
 
-  getTypeLabel(type: string, t: any) {
-    if (type === 'I') return t['Income'];
-    if (type === 'E') return t['Expense'];
-    return t['Investment'];
+  getTypeLabel(type: string) {
+    if (type === 'I') return 'Income';
+    if (type === 'E') return'Expense';
+    return 'Investment';
   }
 
   toggleRow(row: any) {

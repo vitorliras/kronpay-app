@@ -39,6 +39,16 @@ export const routes: Routes = [
         path: 'report',
         loadComponent: () =>
           import('./pages/report/report').then((m) => m.ReportComponent),
+      },
+      {
+        path: 'connector',
+        loadComponent: () =>
+          import('./pages/connector/connector').then((m) => m.ConnectorComponent),
+      },
+      {
+        path: 'credit-card',
+        loadComponent: () =>
+          import('./pages/credit-card/credit-card').then((m) => m.CreditCardComponent),
       }
     ],
   },
