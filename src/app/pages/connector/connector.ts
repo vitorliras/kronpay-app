@@ -36,8 +36,6 @@ import { PluggyConnect } from 'pluggy-connect-sdk';
     MatFormFieldModule,
     MatInputModule,
     FormsModule,
-    OnlyNumbersDirective,
-    MatTooltip,
     MatProgressSpinnerModule,
     MatSortModule,
   ],

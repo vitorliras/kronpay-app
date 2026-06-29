@@ -55,7 +55,6 @@ import { MatSelectModule } from '@angular/material/select';
     BaseChartDirective,
     MatProgressSpinnerModule,
     MatDatepickerModule,
-    OnlyNumbersDirective,
     MatNativeDateModule,
   ],
   providers: [

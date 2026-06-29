@@ -16,12 +16,12 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
 
   return next(req).pipe(
     catchError((error: HttpErrorResponse) => {
-      var connection = localStorage.getItem('connection');
+      const connection = localStorage.getItem('connection');
 
       if (connection) {
         if(authService.isAuthenticated())
         authService.logout();
-        router.navigate(['/login']);
+        router.navigate(['/auth/login']);
       }
 
       if (error.error && typeof error.error === 'object') {
@@ -60,7 +60,7 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
         translate.getByKey('ExpiredToken').subscribe((message) => {
           toastr.error(message);
         });
-        router.navigate(['/login']);
+        router.navigate(['/auth/login']);
       }
 
       return throwError(() => error);

@@ -48,3 +48,4 @@ dist/
 .env
 .angular/
 .vscode/
+CLAUDE.md

@@ -28,7 +28,6 @@
     "@angular/common": "^21.1.0",
     "@angular/compiler": "^21.1.0",
     "@angular/core": "^21.1.0",
-    "@angular/flex-layout": "^15.0.0-beta.42",
     "@angular/forms": "^21.1.4",
     "@angular/material": "~21.1.4",
     "@angular/platform-browser": "^21.1.4",
