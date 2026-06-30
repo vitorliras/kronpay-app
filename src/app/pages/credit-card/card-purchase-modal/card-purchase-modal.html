@@ -1,0 +1,57 @@
+<ng-container *ngIf="translations$ | async as t">
+  <div class="modal-register" [style.width.px]="480" cdkDrag cdkDragRootElement=".cdk-overlay-pane">
+    <div class="modal-register-title">
+      <h2 mat-dialog-title>{{ t[title] }} {{ t['Purchase'] || 'compra' }}</h2>
+      <button class="close-btn" (click)="close()"><mat-icon>close</mat-icon></button>
+    </div>
+
+    <div class="modal-register-body">
+      <form [formGroup]="form">
+        <mat-form-field appearance="outline" style="width: 100%">
+          <mat-label>{{ t['CreditCard'] }}</mat-label>
+          <mat-select formControlName="creditCardId">
+            <mat-option *ngFor="let c of cards" [value]="c.id">{{ c.description }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" style="width: 100%">
+          <mat-label>{{ t['Description'] }}</mat-label>
+          <input cdkFocusInitial matInput formControlName="description" maxlength="60" />
+        </mat-form-field>
+
+        <div class="modal-row">
+          <mat-form-field appearance="outline">
+            <mat-label>{{ t['Value'] || 'Valor total' }}</mat-label>
+            <input matInput type="number" formControlName="totalAmount" />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>{{ t['Installments'] || 'Parcelas' }}</mat-label>
+            <input matInput type="number" min="1" formControlName="installmentsCount" />
+          </mat-form-field>
+        </div>
+
+        <div class="modal-row">
+          <mat-form-field appearance="outline">
+            <mat-label>{{ t['Date'] || 'Data' }}</mat-label>
+            <input matInput type="date" formControlName="purchaseDate" />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>{{ t['Category'] }}</mat-label>
+            <mat-select formControlName="categoryId">
+              <mat-option [value]="null">—</mat-option>
+              <mat-option *ngFor="let cat of categories" [value]="cat.id">{{ cat.description }}</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+      </form>
+
+      <div mat-dialog-actions>
+        <button mat-raised-button color="primary" (click)="save()">
+          <mat-icon>save</mat-icon>{{ t['Save'] }}
+        </button>
+      </div>
+    </div>
+  </div>
+</ng-container>

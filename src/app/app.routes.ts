@@ -47,8 +47,20 @@ export const routes: Routes = [
       },
       {
         path: 'credit-card',
+        redirectTo: 'credit-card/cards',
+        pathMatch: 'full',
+      },
+      {
+        path: 'credit-card/cards',
         loadComponent: () =>
           import('./pages/credit-card/credit-card').then((m) => m.CreditCardComponent),
+      },
+      {
+        path: 'credit-card/invoices',
+        loadComponent: () =>
+          import('./pages/credit-card/card-invoices/card-invoices').then(
+            (m) => m.CardInvoicesComponent,
+          ),
       }
     ],
   },

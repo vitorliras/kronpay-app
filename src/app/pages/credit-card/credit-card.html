@@ -27,7 +27,7 @@
             {{ t['Add'] }}
           </button>
           <div></div>
-          <button mat-raised-button color="primary" (click)="save()">
+          <button *ngIf="selectedBank" mat-raised-button color="primary" (click)="save()">
             <mat-icon>save</mat-icon>
             {{ t['Save'] }}
           </button>

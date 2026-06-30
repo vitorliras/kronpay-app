@@ -16,11 +16,23 @@ export class Sidebar extends Base {
   isCollapsed = false;
   user$ = this.userService.getUser();
 
+  creditCardOpen = false;
+
   constructor() {
     super();
+    // Abre o submenu automaticamente quando já se está numa rota de cartão.
+    this.creditCardOpen = this.router.url.startsWith('/credit-card');
+  }
+
+  get isCreditCardActive(): boolean {
+    return this.router.url.startsWith('/credit-card');
   }
 
   toggle() {
     this.isCollapsed = !this.isCollapsed;
+  }
+
+  toggleCreditCard() {
+    this.creditCardOpen = !this.creditCardOpen;
   }
 }

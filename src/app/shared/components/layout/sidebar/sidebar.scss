@@ -176,4 +176,134 @@
       box-shadow: inset 4px 0 0 #ffffff;
     }
   }
+
+  /* Grupo com submenu (Cartão de Crédito) — alinhado com os demais menus */
+  .menu-group {
+    .group-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 20px;
+      border-radius: 10px;
+      color: #f8f8f8;
+      cursor: pointer;
+      transition: background 0.25s ease;
+
+      mat-icon {
+        font-size: 22px;
+        color: #ffffff;
+      }
+
+      .label {
+        flex: 1;
+        white-space: nowrap;
+      }
+
+      .chevron {
+        font-size: 20px;
+        margin-left: auto;
+        transition: transform 0.25s ease;
+
+        &.open {
+          transform: rotate(180deg);
+        }
+      }
+
+      &:hover {
+        background: rgba(255, 255, 255, 0.12);
+      }
+
+      &.active-parent {
+        background: rgba(255, 255, 255, 0.1);
+      }
+    }
+
+    .submenu {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      margin: 4px 12px 8px;
+      padding: 6px;
+      background: rgba(255, 255, 255, 0.06);
+      border-radius: 12px;
+      animation: submenuIn 0.18s ease;
+
+      .submenu-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 14px;
+        border-radius: 8px;
+        color: #cdd6ea;
+        text-decoration: none;
+        transition:
+          background 0.2s ease,
+          color 0.2s ease;
+
+        mat-icon {
+          font-size: 20px;
+          color: #cdd6ea;
+          transition: color 0.2s ease;
+        }
+
+        &:hover {
+          background: rgba(255, 255, 255, 0.12);
+          color: #ffffff;
+
+          mat-icon {
+            color: #ffffff;
+          }
+        }
+
+        /* destaque do submenu selecionado (cores invertidas) */
+        &.active {
+          background: #ffffff;
+          color: #0f2b5c;
+          font-weight: 600;
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.28);
+
+          mat-icon {
+            color: #0f2b5c;
+          }
+        }
+      }
+    }
+  }
+
+  /* Colapsado: ícone + setinha; submenu vertical só com ícones */
+  &.collapsed {
+    .menu-group {
+      .group-header {
+        justify-content: center;
+        padding: 12px 0;
+        gap: 4px;
+
+        .chevron {
+          margin-left: 2px;
+          font-size: 16px;
+        }
+      }
+
+      .submenu {
+        margin: 4px 8px 8px;
+
+        .submenu-item {
+          justify-content: center;
+          padding: 10px 0;
+          gap: 0;
+        }
+      }
+    }
+  }
+}
+
+@keyframes submenuIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }

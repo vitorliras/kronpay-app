@@ -26,6 +26,8 @@ import {
   CreditCardResponse,
   UpdateCreditCardRequest,
 } from '../../core/models/credit-card/credit-card';
+import { DeactivateCategoryItemRequest } from '../../core/models/config/category-item/deactive-category-item-request.model';
+import { DeactivateCategoryRequest } from '../../core/models/config/category/deactivate-category-request.model';
 
 @Component({
   selector: 'app-credit-card',
@@ -254,6 +256,38 @@ export class CreditCardComponent extends Base implements OnInit {
     }
   }
 
+  delete(card: CreditCardResponse) {
+    this.confirmModal(
+      'Delete',
+      'AreYouSureRemoveDataGroup',
+      'Yes',
+      'No',
+      '380',
+      'help_outline',
+    ).subscribe((result) => {
+      if (!result) return;
+
+      const id: DeactivateCategoryRequest = {
+        id: this.card.id,
+      };
+
+      this.creditCardService.deactivate(id).subscribe(
+        (res) => {
+          if (res.isSuccess) {
+            this.toastr.success(res.message);
+            this.getCards();
+            this.selectedBank = null;
+          }
+          this.isLoading = false;
+        },
+        (error) => {
+          this.isLoading = false;
+          console.error(error);
+        },
+      );
+    });
+  }
+
   add() {
     this.selectedBank = null;
     this.searchBank = '';
@@ -273,7 +307,6 @@ export class CreditCardComponent extends Base implements OnInit {
     this.dueDay = card.dueDay;
     this.limit = card.creditLimit;
     this.mustEdit = true;
+    this.card = card;
   }
-
-  delete(card: CreditCardResponse) {}
 }

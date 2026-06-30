@@ -1,0 +1,102 @@
+<div class="card-invoices-page">
+  <div class="page-head">
+    <h2 class="page-title"><mat-icon>receipt_long</mat-icon> Faturas</h2>
+    <button mat-raised-button color="primary" (click)="openPurchaseModal()">
+      <mat-icon>add</mat-icon> Nova compra
+    </button>
+  </div>
+
+  <div class="toolbar">
+    <mat-form-field appearance="outline" class="card-select">
+      <mat-label>Cartão</mat-label>
+      <mat-select [(ngModel)]="creditCardId" (selectionChange)="onCardChange()">
+        <mat-option *ngFor="let c of cards" [value]="c.id">{{ c.description }}</mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>
+
+  <div class="summary" *ngIf="summary">
+    <div class="summary-box">
+      <span class="lbl">Limite</span><span class="val">{{ summary.creditLimit | currency: 'BRL' }}</span>
+    </div>
+    <div class="summary-box used">
+      <span class="lbl">Usado</span><span class="val">{{ summary.usedAmount | currency: 'BRL' }}</span>
+    </div>
+    <div class="summary-box available">
+      <span class="lbl">Disponível</span><span class="val">{{ summary.availableAmount | currency: 'BRL' }}</span>
+    </div>
+  </div>
+
+  <div class="invoice-list" *ngIf="invoices.length">
+    <div
+      class="invoice-card"
+      *ngFor="let inv of invoices"
+      [class.expanded]="selectedInvoiceId === inv.id"
+      [class.paid]="isPaid(inv)"
+    >
+      <div class="invoice-head" (click)="viewItems(inv)">
+        <div class="month-chip">
+          <span class="m">{{ monthLabel(inv.referenceMonth) }}</span>
+          <span class="y">{{ inv.referenceYear }}</span>
+        </div>
+
+        <div class="inv-info">
+          <span class="due"><mat-icon>event</mat-icon> Vence {{ inv.dueDate | date: 'dd/MM/yyyy' }}</span>
+          <span class="badge" [ngClass]="inv.status">{{ statusLabel(inv.status) }}</span>
+        </div>
+
+        <div class="inv-total">{{ inv.totalAmount | currency: 'BRL' }}</div>
+
+        <div class="inv-actions">
+          <button
+            mat-stroked-button
+            color="primary"
+            *ngIf="!isPaid(inv)"
+            (click)="startPay(inv); $event.stopPropagation()"
+          >
+            <mat-icon>payments</mat-icon> Pagar
+          </button>
+          <mat-icon class="chev" [class.open]="selectedInvoiceId === inv.id">expand_more</mat-icon>
+        </div>
+      </div>
+
+      <div class="invoice-items" *ngIf="selectedInvoiceId === inv.id">
+        <div class="items-title">Itens da fatura</div>
+        <div class="item-row head">
+          <span>Parcela</span><span>Compra</span><span>Valor</span><span>Status</span>
+        </div>
+        <div class="item-row" *ngFor="let it of items">
+          <span>{{ it.installmentNumber }}</span>
+          <span>#{{ it.cardPurchaseId }}</span>
+          <span>{{ it.amount | currency: 'BRL' }}</span>
+          <span class="ist" [ngClass]="it.status">{{ installmentStatusLabel(it.status) }}</span>
+        </div>
+        <div class="no-items" *ngIf="!items.length">Sem itens nesta fatura.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="empty" *ngIf="creditCardId && !invoices.length && !isLoading">
+    <mat-icon>receipt_long</mat-icon>
+    <p>Nenhuma fatura para este cartão.</p>
+  </div>
+
+  <div class="pay-overlay" *ngIf="payingInvoice">
+    <div class="pay-box">
+      <h3>Pagar fatura {{ monthLabel(payingInvoice.referenceMonth) }}/{{ payingInvoice.referenceYear }}</h3>
+      <p class="pay-total">Total: <strong>{{ payingInvoice.totalAmount | currency: 'BRL' }}</strong></p>
+      <mat-form-field appearance="outline" class="pay-field">
+        <mat-label>Forma de pagamento</mat-label>
+        <mat-select [(ngModel)]="selectedPaymentMethodId">
+          <mat-option *ngFor="let pm of paymentMethods" [value]="pm.id">{{ pm.description }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+      <div class="pay-actions">
+        <button mat-button (click)="cancelPay()">Cancelar</button>
+        <button mat-flat-button color="primary" (click)="confirmPay()" [disabled]="isLoading">
+          <mat-icon>check</mat-icon> Confirmar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

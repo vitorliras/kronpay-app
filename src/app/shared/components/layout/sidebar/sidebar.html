@@ -40,10 +40,24 @@
         <span *ngIf="!isCollapsed">CONEXAO</span>
       </a> -->
 
-      <a routerLink="/credit-card" routerLinkActive="active" class="menu-item">
-        <mat-icon>credit_card</mat-icon>
-        <span *ngIf="!isCollapsed">{{ t['CreditCard'] }}</span>
-      </a>
+      <div class="menu-group">
+        <div class="group-header" (click)="toggleCreditCard()" [class.active-parent]="isCreditCardActive">
+          <mat-icon>credit_card</mat-icon>
+          <span class="label" *ngIf="!isCollapsed">{{ t['CreditCard'] }}</span>
+          <mat-icon class="chevron" [class.open]="creditCardOpen">expand_more</mat-icon>
+        </div>
+
+        <div class="submenu" *ngIf="creditCardOpen">
+          <a routerLink="/credit-card/cards" routerLinkActive="active" class="submenu-item">
+            <mat-icon>style</mat-icon>
+            <span class="label" *ngIf="!isCollapsed">{{ t['Cards'] || 'Cartões' }}</span>
+          </a>
+          <a routerLink="/credit-card/invoices" routerLinkActive="active" class="submenu-item">
+            <mat-icon>receipt_long</mat-icon>
+            <span class="label" *ngIf="!isCollapsed">{{ t['Invoices'] || 'Faturas' }}</span>
+          </a>
+        </div>
+      </div>
 
       <a routerLink="/investments" routerLinkActive="active" class="menu-item">
         <mat-icon>trending_up</mat-icon>
