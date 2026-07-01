@@ -52,9 +52,19 @@ export class CardInvoicesComponent extends Base implements OnInit {
   cards: CreditCardResponse[] = [];
   categories: CategoryResponse[] = [];
   paymentMethods: PaymentMethodResponse[] = [];
-  invoices: CardInvoiceResponse[] = [];
+
+  invoices: CardInvoiceResponse[] = []; // lista completa vinda do backend
+  overdueInvoices: CardInvoiceResponse[] = [];
+  displayedInvoices: CardInvoiceResponse[] = [];
   items: CardInstallmentResponse[] = [];
   summary: CreditCardSummaryResponse | null = null;
+
+  // filtros
+  availableYears: number[] = [];
+  monthsOfYear: number[] = [];
+  filterYear: number | null = null;
+  filterMonths: number[] = [];
+  monthsList = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
 
   creditCardId: number | null = null;
   selectedInvoiceId: number | null = null;
@@ -62,7 +72,10 @@ export class CardInvoicesComponent extends Base implements OnInit {
   selectedPaymentMethodId: number | null = null;
   isLoading = false;
 
-  private months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  private readonly monthKeys = [
+    'JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC',
+  ];
+  private readonly maxMonths = 12;
 
   ngOnInit(): void {
     this.loadCards();
@@ -98,9 +111,12 @@ export class CardInvoicesComponent extends Base implements OnInit {
   onCardChange(): void {
     this.summary = null;
     this.invoices = [];
+    this.overdueInvoices = [];
+    this.displayedInvoices = [];
     this.items = [];
     this.selectedInvoiceId = null;
     this.payingInvoice = null;
+    this.clearFilters();
 
     if (!this.creditCardId) return;
 
@@ -114,11 +130,11 @@ export class CardInvoicesComponent extends Base implements OnInit {
     this.invoiceService.getByCard(this.creditCardId).subscribe({
       next: (res) => {
         this.isLoading = false;
-        if (res.isSuccess) {
-          this.invoices = (res.value ?? []).sort(
-            (a, b) => a.referenceYear - b.referenceYear || a.referenceMonth - b.referenceMonth,
-          );
-        }
+        this.invoices = res.isSuccess ? (res.value ?? []) : [];
+        this.availableYears = Array.from(new Set(this.invoices.map((i) => i.referenceYear))).sort(
+          (a, b) => b - a,
+        );
+        this.applyView();
         this.cdr.detectChanges();
       },
       error: () => {
@@ -127,6 +143,92 @@ export class CardInvoicesComponent extends Base implements OnInit {
     });
   }
 
+  // ------- período / atraso / filtro -------
+  applyView(): void {
+    const now = new Date();
+    const curYear = now.getFullYear();
+    const curMonth = now.getMonth() + 1;
+
+    if (this.filterYear) {
+      this.overdueInvoices = [];
+      this.displayedInvoices = this.invoices
+        .filter(
+          (i) =>
+            i.referenceYear === this.filterYear &&
+            (this.filterMonths.length === 0 || this.filterMonths.includes(i.referenceMonth)),
+        )
+        .sort((a, b) => this.compAsc(a, b));
+      return;
+    }
+
+    // padrão: atrasadas no topo + mês atual em diante (máx 12)
+    this.overdueInvoices = this.invoices
+      .filter((i) => this.isOverdue(i))
+      .sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
+
+    const overdueIds = new Set(this.overdueInvoices.map((i) => i.id));
+
+    this.displayedInvoices = this.invoices
+      .filter(
+        (i) =>
+          !overdueIds.has(i.id) &&
+          (i.referenceYear > curYear ||
+            (i.referenceYear === curYear && i.referenceMonth >= curMonth)),
+      )
+      .sort((a, b) => this.compAsc(a, b))
+      .slice(0, this.maxMonths);
+  }
+
+  private compAsc(a: CardInvoiceResponse, b: CardInvoiceResponse): number {
+    return a.referenceYear - b.referenceYear || a.referenceMonth - b.referenceMonth;
+  }
+
+  isOverdue(inv: CardInvoiceResponse): boolean {
+    if (this.isPaid(inv)) return false;
+    const due = new Date(inv.dueDate);
+    due.setHours(0, 0, 0, 0);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    return due < today;
+  }
+
+  selectYear(year: number): void {
+    this.filterYear = this.filterYear === year ? null : year;
+    this.filterMonths = [];
+    this.monthsOfYear = this.filterYear
+      ? Array.from(
+          new Set(
+            this.invoices.filter((i) => i.referenceYear === this.filterYear).map((i) => i.referenceMonth),
+          ),
+        ).sort((a, b) => a - b)
+      : [];
+    this.applyView();
+  }
+
+  isMonthAvailable(month: number): boolean {
+    return this.monthsOfYear.includes(month);
+  }
+
+  toggleMonth(month: number): void {
+    if (!this.filterYear || !this.isMonthAvailable(month)) return;
+    const idx = this.filterMonths.indexOf(month);
+    if (idx >= 0) this.filterMonths.splice(idx, 1);
+    else this.filterMonths.push(month);
+    this.applyView();
+  }
+
+  clearFilters(): void {
+    this.filterYear = null;
+    this.filterMonths = [];
+    this.monthsOfYear = [];
+    this.applyView();
+  }
+
+  isFilterActive(): boolean {
+    return this.filterYear !== null;
+  }
+
+  // ------- ações -------
   openPurchaseModal(): void {
     const dialogRef = this.dialog.open(CardPurchaseModal, {
       data: {
@@ -223,12 +325,11 @@ export class CardInvoicesComponent extends Base implements OnInit {
     });
   }
 
+  // retornam chaves de tradução (usadas como t[...] no template)
   monthLabel(month: number): string {
-    const arr = this.months;
-    return arr[(month - 1) % 12].toUpperCase() ?? '';
+    return this.monthKeys[(month - 1) % 12] ?? '';
   }
 
-  // retornam chaves de tradução (usadas como t[...] no template)
   statusLabel(status: string): string {
     return status === 'P' ? 'Paid' : status === 'F' ? 'Closed' : 'Open';
   }

@@ -4,7 +4,6 @@
       <h2 class="page-title"><mat-icon>receipt_long</mat-icon> {{ t['Invoices'] }}</h2>
 
       <div class="d-flex" style="justify-content: space-between; gap: 20px;">
-
         <div class="toolbar mt-3">
           <mat-form-field appearance="outline" class="card-select">
             <mat-label>{{ t['CreditCard'] }}</mat-label>
@@ -17,9 +16,7 @@
         <button *ngIf="creditCardId" class="mt-4" mat-raised-button color="primary" (click)="openPurchaseModal()">
           <mat-icon>add</mat-icon> {{ t['NewPurchase'] }}
         </button>
-
       </div>
-
     </div>
 
     <div class="summary" *ngIf="summary">
@@ -30,14 +27,82 @@
         <span class="lbl">{{ t['Used'] }}</span><span class="val">{{ summary.usedAmount | currency: 'BRL' }}</span>
       </div>
       <div class="summary-box available">
-        <span class="lbl">{{ t['Available'] }}</span><span class="val">{{ summary.availableAmount | currency: 'BRL'
-          }}</span>
+        <span class="lbl">{{ t['Available'] }}</span><span class="val">{{ summary.availableAmount | currency: 'BRL' }}</span>
       </div>
     </div>
 
-    <div class="invoice-list" *ngIf="invoices.length">
-      <div class="invoice-card" *ngFor="let inv of invoices" [class.expanded]="selectedInvoiceId === inv.id"
-        [class.paid]="isPaid(inv)">
+    <!-- filtro -->
+    <div class="filter-card" *ngIf="creditCardId && availableYears.length">
+      <div class="filter-head">
+        <span class="filter-title"><mat-icon>filter_list</mat-icon> {{ t['Filters'] }}</span>
+        <button *ngIf="isFilterActive()" class="clear-btn" (click)="clearFilters()">
+          <mat-icon>close</mat-icon> {{ t['ClearFilters'] }}
+        </button>
+      </div>
+
+      <div class="filter-row">
+        <span class="filter-label">{{ t['Year'] }}</span>
+        <div class="chips">
+          <button
+            type="button"
+            class="chip"
+            *ngFor="let y of availableYears"
+            [class.active]="filterYear === y"
+            (click)="selectYear(y)"
+          >
+            {{ y }}
+          </button>
+        </div>
+      </div>
+
+      <div class="filter-row" [class.disabled]="!filterYear">
+        <span class="filter-label">{{ t['Months'] }}</span>
+        <div class="chips">
+          <button
+            type="button"
+            class="chip mchip"
+            *ngFor="let m of monthsList"
+            [class.active]="filterMonths.includes(m)"
+            [class.off]="!isMonthAvailable(m)"
+            [disabled]="!filterYear || !isMonthAvailable(m)"
+            (click)="toggleMonth(m)"
+          >
+            {{ t[monthLabel(m)] }}
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- faturas em atraso -->
+    <div class="overdue-section" *ngIf="overdueInvoices.length">
+      <div class="overdue-title"><mat-icon>warning_amber</mat-icon> {{ t['OverdueInvoices'] }}</div>
+      <div class="invoice-list">
+        <ng-container *ngFor="let inv of overdueInvoices">
+          <ng-container *ngTemplateOutlet="invoiceCardTpl; context: { inv: inv }"></ng-container>
+        </ng-container>
+      </div>
+    </div>
+
+    <!-- padrão / filtrada -->
+    <div class="invoice-list" *ngIf="displayedInvoices.length">
+      <ng-container *ngFor="let inv of displayedInvoices">
+        <ng-container *ngTemplateOutlet="invoiceCardTpl; context: { inv: inv }"></ng-container>
+      </ng-container>
+    </div>
+
+    <div class="empty" *ngIf="creditCardId && !displayedInvoices.length && !overdueInvoices.length && !isLoading">
+      <mat-icon>receipt_long</mat-icon>
+      <p>{{ t['NoInvoices'] }}</p>
+    </div>
+
+    <!-- template do card de fatura (reutilizado nas duas listas) -->
+    <ng-template #invoiceCardTpl let-inv="inv">
+      <div
+        class="invoice-card"
+        [class.expanded]="selectedInvoiceId === inv.id"
+        [class.paid]="isPaid(inv)"
+        [class.overdue]="isOverdue(inv)"
+      >
         <div class="invoice-head" (click)="viewItems(inv)">
           <div class="month-chip">
             <span class="m">{{ t[monthLabel(inv.referenceMonth)] }}</span>
@@ -45,16 +110,21 @@
           </div>
 
           <div class="inv-info">
-            <span class="due"><mat-icon>event</mat-icon> {{ t['DueWord'] }} {{ inv.dueDate | date: 'dd/MM/yyyy'
-              }}</span>
-            <span class="badge" [ngClass]="inv.status">{{ t[statusLabel(inv.status)] }}</span>
+            <span class="due"><mat-icon>event</mat-icon> {{ t['DueWord'] }} {{ inv.dueDate | date: 'dd/MM/yyyy' }}</span>
+            <span class="badge" [ngClass]="isOverdue(inv) ? 'overdue' : inv.status">
+              {{ isOverdue(inv) ? t['Overdue'] : t[statusLabel(inv.status)] }}
+            </span>
           </div>
 
           <div class="inv-total">{{ inv.totalAmount | currency: 'BRL' }}</div>
 
           <div class="inv-actions">
-            <button mat-stroked-button color="primary" *ngIf="!isPaid(inv)"
-              (click)="startPay(inv); $event.stopPropagation()">
+            <button
+              mat-stroked-button
+              color="primary"
+              *ngIf="!isPaid(inv)"
+              (click)="startPay(inv); $event.stopPropagation()"
+            >
               <mat-icon>payments</mat-icon> {{ t['Pay'] }}
             </button>
             <mat-icon class="chev" [class.open]="selectedInvoiceId === inv.id">expand_more</mat-icon>
@@ -80,16 +150,12 @@
           <div class="no-items" *ngIf="!items.length">{{ t['NoItems'] }}</div>
         </div>
       </div>
-    </div>
+    </ng-template>
 
-    <div class="empty" *ngIf="creditCardId && !invoices.length && !isLoading">
-      <mat-icon>receipt_long</mat-icon>
-      <p>{{ t['NoInvoices'] }}</p>
-    </div>
-
+    <!-- pagamento -->
     <div class="pay-overlay" *ngIf="payingInvoice">
       <div class="pay-box">
-        <h3>{{ t['PayInvoice'] }} {{ monthLabel(payingInvoice.referenceMonth) }}/{{ payingInvoice.referenceYear }}</h3>
+        <h3>{{ t['PayInvoice'] }} {{ t[monthLabel(payingInvoice.referenceMonth)] }}/{{ payingInvoice.referenceYear }}</h3>
         <p class="pay-total">{{ t['Total'] }}: <strong>{{ payingInvoice.totalAmount | currency: 'BRL' }}</strong></p>
         <mat-form-field appearance="outline" class="pay-field">
           <mat-label>{{ t['PaymentMethod'] }}</mat-label>
