@@ -208,8 +208,16 @@
 
       .item-row {
         display: grid;
-        grid-template-columns: 80px 1fr 120px 110px;
+        grid-template-columns: 90px 1.5fr 1fr 110px 110px;
         gap: 12px;
+
+        .num {
+          font-weight: 700;
+          color: #1b3c88;
+        }
+        .muted {
+          color: #94a3c4;
+        }
         align-items: center;
         padding: 9px 12px;
         border-radius: 10px;

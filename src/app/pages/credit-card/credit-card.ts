@@ -45,7 +45,6 @@ import { DeactivateCategoryRequest } from '../../core/models/config/category/dea
     FormsModule,
     MatSelectModule,
     OnlyNumbersDirective,
-    MatTooltip,
     MatProgressSpinnerModule,
     MatSortModule,
   ],
@@ -179,32 +178,32 @@ export class CreditCardComponent extends Base implements OnInit {
 
   save() {
     if (!this.selectedBank) {
-      this.toastr.warning('Selecione um banco');
+      this.messageWarning('SelectBank');
       return;
     }
 
     if (!this.cardName) {
-      this.toastr.warning('Nome do cartão é obrigatório');
+      this.messageWarning('CardNameRequired');
       return;
     }
 
     if (!this.limit || this.limit <= 0) {
-      this.toastr.warning('Limite do cartão é obrigatório');
+      this.messageWarning('LimitRequired');
       return;
     }
 
     if (!this.dueDay || this.dueDay <= 0) {
-      this.toastr.warning('Vencimento do cartão é obrigatório');
+      this.messageWarning('DueDayRequired');
       return;
     }
 
     if (!this.closingDay || this.closingDay <= 0) {
-      this.toastr.warning('Dia do fechamento do cartão é obrigatório');
+      this.messageWarning('ClosingDayRequired');
       return;
     }
 
     if (this.dueDay > 31 || this.closingDay > 31) {
-      this.toastr.warning('Os dias citados não podem ser maiores que 31');
+      this.messageWarning('DaysMax31');
       return;
     }
     this.isLoading = true;

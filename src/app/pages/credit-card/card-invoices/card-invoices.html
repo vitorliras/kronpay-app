@@ -1,102 +1,109 @@
-<div class="card-invoices-page">
-  <div class="page-head">
-    <h2 class="page-title"><mat-icon>receipt_long</mat-icon> Faturas</h2>
-    <button mat-raised-button color="primary" (click)="openPurchaseModal()">
-      <mat-icon>add</mat-icon> Nova compra
-    </button>
-  </div>
+<ng-container *ngIf="translations$ | async as t">
+  <div class="card-invoices-page">
+    <div class="page-head" style="background-color: #fff; border-radius: 20px; padding: 10px;">
+      <h2 class="page-title"><mat-icon>receipt_long</mat-icon> {{ t['Invoices'] }}</h2>
 
-  <div class="toolbar">
-    <mat-form-field appearance="outline" class="card-select">
-      <mat-label>Cartão</mat-label>
-      <mat-select [(ngModel)]="creditCardId" (selectionChange)="onCardChange()">
-        <mat-option *ngFor="let c of cards" [value]="c.id">{{ c.description }}</mat-option>
-      </mat-select>
-    </mat-form-field>
-  </div>
+      <div class="d-flex" style="justify-content: space-between; gap: 20px;">
 
-  <div class="summary" *ngIf="summary">
-    <div class="summary-box">
-      <span class="lbl">Limite</span><span class="val">{{ summary.creditLimit | currency: 'BRL' }}</span>
-    </div>
-    <div class="summary-box used">
-      <span class="lbl">Usado</span><span class="val">{{ summary.usedAmount | currency: 'BRL' }}</span>
-    </div>
-    <div class="summary-box available">
-      <span class="lbl">Disponível</span><span class="val">{{ summary.availableAmount | currency: 'BRL' }}</span>
-    </div>
-  </div>
-
-  <div class="invoice-list" *ngIf="invoices.length">
-    <div
-      class="invoice-card"
-      *ngFor="let inv of invoices"
-      [class.expanded]="selectedInvoiceId === inv.id"
-      [class.paid]="isPaid(inv)"
-    >
-      <div class="invoice-head" (click)="viewItems(inv)">
-        <div class="month-chip">
-          <span class="m">{{ monthLabel(inv.referenceMonth) }}</span>
-          <span class="y">{{ inv.referenceYear }}</span>
+        <div class="toolbar mt-3">
+          <mat-form-field appearance="outline" class="card-select">
+            <mat-label>{{ t['CreditCard'] }}</mat-label>
+            <mat-select [(ngModel)]="creditCardId" (selectionChange)="onCardChange()">
+              <mat-option *ngFor="let c of cards" [value]="c.id">{{ c.description }}</mat-option>
+            </mat-select>
+          </mat-form-field>
         </div>
 
-        <div class="inv-info">
-          <span class="due"><mat-icon>event</mat-icon> Vence {{ inv.dueDate | date: 'dd/MM/yyyy' }}</span>
-          <span class="badge" [ngClass]="inv.status">{{ statusLabel(inv.status) }}</span>
-        </div>
-
-        <div class="inv-total">{{ inv.totalAmount | currency: 'BRL' }}</div>
-
-        <div class="inv-actions">
-          <button
-            mat-stroked-button
-            color="primary"
-            *ngIf="!isPaid(inv)"
-            (click)="startPay(inv); $event.stopPropagation()"
-          >
-            <mat-icon>payments</mat-icon> Pagar
-          </button>
-          <mat-icon class="chev" [class.open]="selectedInvoiceId === inv.id">expand_more</mat-icon>
-        </div>
-      </div>
-
-      <div class="invoice-items" *ngIf="selectedInvoiceId === inv.id">
-        <div class="items-title">Itens da fatura</div>
-        <div class="item-row head">
-          <span>Parcela</span><span>Compra</span><span>Valor</span><span>Status</span>
-        </div>
-        <div class="item-row" *ngFor="let it of items">
-          <span>{{ it.installmentNumber }}</span>
-          <span>#{{ it.cardPurchaseId }}</span>
-          <span>{{ it.amount | currency: 'BRL' }}</span>
-          <span class="ist" [ngClass]="it.status">{{ installmentStatusLabel(it.status) }}</span>
-        </div>
-        <div class="no-items" *ngIf="!items.length">Sem itens nesta fatura.</div>
-      </div>
-    </div>
-  </div>
-
-  <div class="empty" *ngIf="creditCardId && !invoices.length && !isLoading">
-    <mat-icon>receipt_long</mat-icon>
-    <p>Nenhuma fatura para este cartão.</p>
-  </div>
-
-  <div class="pay-overlay" *ngIf="payingInvoice">
-    <div class="pay-box">
-      <h3>Pagar fatura {{ monthLabel(payingInvoice.referenceMonth) }}/{{ payingInvoice.referenceYear }}</h3>
-      <p class="pay-total">Total: <strong>{{ payingInvoice.totalAmount | currency: 'BRL' }}</strong></p>
-      <mat-form-field appearance="outline" class="pay-field">
-        <mat-label>Forma de pagamento</mat-label>
-        <mat-select [(ngModel)]="selectedPaymentMethodId">
-          <mat-option *ngFor="let pm of paymentMethods" [value]="pm.id">{{ pm.description }}</mat-option>
-        </mat-select>
-      </mat-form-field>
-      <div class="pay-actions">
-        <button mat-button (click)="cancelPay()">Cancelar</button>
-        <button mat-flat-button color="primary" (click)="confirmPay()" [disabled]="isLoading">
-          <mat-icon>check</mat-icon> Confirmar
+        <button *ngIf="creditCardId" class="mt-4" mat-raised-button color="primary" (click)="openPurchaseModal()">
+          <mat-icon>add</mat-icon> {{ t['NewPurchase'] }}
         </button>
+
+      </div>
+
+    </div>
+
+    <div class="summary" *ngIf="summary">
+      <div class="summary-box">
+        <span class="lbl">{{ t['Limit'] }}</span><span class="val">{{ summary.creditLimit | currency: 'BRL' }}</span>
+      </div>
+      <div class="summary-box used">
+        <span class="lbl">{{ t['Used'] }}</span><span class="val">{{ summary.usedAmount | currency: 'BRL' }}</span>
+      </div>
+      <div class="summary-box available">
+        <span class="lbl">{{ t['Available'] }}</span><span class="val">{{ summary.availableAmount | currency: 'BRL'
+          }}</span>
+      </div>
+    </div>
+
+    <div class="invoice-list" *ngIf="invoices.length">
+      <div class="invoice-card" *ngFor="let inv of invoices" [class.expanded]="selectedInvoiceId === inv.id"
+        [class.paid]="isPaid(inv)">
+        <div class="invoice-head" (click)="viewItems(inv)">
+          <div class="month-chip">
+            <span class="m">{{ t[monthLabel(inv.referenceMonth)] }}</span>
+            <span class="y">{{ inv.referenceYear }}</span>
+          </div>
+
+          <div class="inv-info">
+            <span class="due"><mat-icon>event</mat-icon> {{ t['DueWord'] }} {{ inv.dueDate | date: 'dd/MM/yyyy'
+              }}</span>
+            <span class="badge" [ngClass]="inv.status">{{ t[statusLabel(inv.status)] }}</span>
+          </div>
+
+          <div class="inv-total">{{ inv.totalAmount | currency: 'BRL' }}</div>
+
+          <div class="inv-actions">
+            <button mat-stroked-button color="primary" *ngIf="!isPaid(inv)"
+              (click)="startPay(inv); $event.stopPropagation()">
+              <mat-icon>payments</mat-icon> {{ t['Pay'] }}
+            </button>
+            <mat-icon class="chev" [class.open]="selectedInvoiceId === inv.id">expand_more</mat-icon>
+          </div>
+        </div>
+
+        <div class="invoice-items" *ngIf="selectedInvoiceId === inv.id">
+          <div class="items-title">{{ t['InvoiceItems'] }}</div>
+          <div class="item-row head">
+            <span>{{ t['Installment'] }}</span>
+            <span>{{ t['Description'] }}</span>
+            <span>{{ t['Category'] }}</span>
+            <span>{{ t['Value'] }}</span>
+            <span>{{ t['Status'] }}</span>
+          </div>
+          <div class="item-row" *ngFor="let it of items">
+            <span class="num">{{ it.installmentNumber }}/{{ it.installmentsCount }}</span>
+            <span>{{ it.purchaseDescription }}</span>
+            <span class="muted">{{ it.categoryDescription || '—' }}</span>
+            <span>{{ it.amount | currency: 'BRL' }}</span>
+            <span class="ist" [ngClass]="it.status">{{ t[installmentStatusLabel(it.status)] }}</span>
+          </div>
+          <div class="no-items" *ngIf="!items.length">{{ t['NoItems'] }}</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="empty" *ngIf="creditCardId && !invoices.length && !isLoading">
+      <mat-icon>receipt_long</mat-icon>
+      <p>{{ t['NoInvoices'] }}</p>
+    </div>
+
+    <div class="pay-overlay" *ngIf="payingInvoice">
+      <div class="pay-box">
+        <h3>{{ t['PayInvoice'] }} {{ monthLabel(payingInvoice.referenceMonth) }}/{{ payingInvoice.referenceYear }}</h3>
+        <p class="pay-total">{{ t['Total'] }}: <strong>{{ payingInvoice.totalAmount | currency: 'BRL' }}</strong></p>
+        <mat-form-field appearance="outline" class="pay-field">
+          <mat-label>{{ t['PaymentMethod'] }}</mat-label>
+          <mat-select [(ngModel)]="selectedPaymentMethodId">
+            <mat-option *ngFor="let pm of paymentMethods" [value]="pm.id">{{ pm.description }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+        <div class="pay-actions">
+          <button mat-button (click)="cancelPay()">{{ t['Cancel'] }}</button>
+          <button mat-flat-button color="primary" (click)="confirmPay()" [disabled]="isLoading">
+            <mat-icon>check</mat-icon> {{ t['Confirm'] }}
+          </button>
+        </div>
       </div>
     </div>
   </div>
-</div>
+</ng-container>

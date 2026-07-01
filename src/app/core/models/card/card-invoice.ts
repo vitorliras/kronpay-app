@@ -19,9 +19,12 @@ export interface CardInvoiceResponse {
 export interface CardInstallmentResponse {
   id: number;
   cardPurchaseId: number;
+  purchaseDescription: string;
   installmentNumber: number;
+  installmentsCount: number;
   amount: number;
   status: string;
+  categoryDescription?: string | null;
 }
 
 export interface PayCardInvoiceRequest {

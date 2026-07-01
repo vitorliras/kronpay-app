@@ -62,20 +62,7 @@ export class CardInvoicesComponent extends Base implements OnInit {
   selectedPaymentMethodId: number | null = null;
   isLoading = false;
 
-  private months = [
-    'Jan',
-    'Fev',
-    'Mar',
-    'Abr',
-    'Mai',
-    'Jun',
-    'Jul',
-    'Ago',
-    'Set',
-    'Out',
-    'Nov',
-    'Dez',
-  ];
+  private months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
   ngOnInit(): void {
     this.loadCards();
@@ -128,7 +115,6 @@ export class CardInvoicesComponent extends Base implements OnInit {
       next: (res) => {
         this.isLoading = false;
         if (res.isSuccess) {
-          // mês atual no topo -> mais distante embaixo
           this.invoices = (res.value ?? []).sort(
             (a, b) => a.referenceYear - b.referenceYear || a.referenceMonth - b.referenceMonth,
           );
@@ -209,7 +195,7 @@ export class CardInvoicesComponent extends Base implements OnInit {
     if (!this.payingInvoice) return;
 
     if (!this.selectedPaymentMethodId) {
-      this.toastr.warning('Selecione a forma de pagamento');
+      this.messageWarning('SelectPaymentMethod');
       return;
     }
 
@@ -238,15 +224,17 @@ export class CardInvoicesComponent extends Base implements OnInit {
   }
 
   monthLabel(month: number): string {
-    return this.months[(month - 1) % 12] ?? '';
+    const arr = this.months;
+    return arr[(month - 1) % 12].toUpperCase() ?? '';
   }
 
+  // retornam chaves de tradução (usadas como t[...] no template)
   statusLabel(status: string): string {
-    return status === 'P' ? 'Paga' : status === 'F' ? 'Fechada' : 'Aberta';
+    return status === 'P' ? 'Paid' : status === 'F' ? 'Closed' : 'Open';
   }
 
   installmentStatusLabel(status: string): string {
-    return status === 'Q' ? 'Quitada' : status === 'C' ? 'Cancelada' : 'Pendente';
+    return status === 'Q' ? 'Settled' : status === 'C' ? 'Canceled' : 'Pending';
   }
 
   isPaid(invoice: CardInvoiceResponse): boolean {

@@ -1,7 +1,7 @@
 <ng-container *ngIf="translations$ | async as t">
   <div class="modal-register" [style.width.px]="480" cdkDrag cdkDragRootElement=".cdk-overlay-pane">
     <div class="modal-register-title">
-      <h2 mat-dialog-title>{{ t[title] }} {{ t['Purchase'] || 'compra' }}</h2>
+      <h2 mat-dialog-title>{{ t['NewPurchase'] }}</h2>
       <button class="close-btn" (click)="close()"><mat-icon>close</mat-icon></button>
     </div>
 
@@ -21,19 +21,19 @@
 
         <div class="modal-row">
           <mat-form-field appearance="outline">
-            <mat-label>{{ t['Value'] || 'Valor total' }}</mat-label>
+            <mat-label>{{ t['TotalAmount'] }}</mat-label>
             <input matInput type="number" formControlName="totalAmount" />
           </mat-form-field>
 
           <mat-form-field appearance="outline">
-            <mat-label>{{ t['Installments'] || 'Parcelas' }}</mat-label>
+            <mat-label>{{ t['Installments'] }}</mat-label>
             <input matInput type="number" min="1" formControlName="installmentsCount" />
           </mat-form-field>
         </div>
 
         <div class="modal-row">
           <mat-form-field appearance="outline">
-            <mat-label>{{ t['Date'] || 'Data' }}</mat-label>
+            <mat-label>{{ t['Date'] }}</mat-label>
             <input matInput type="date" formControlName="purchaseDate" />
           </mat-form-field>
 
