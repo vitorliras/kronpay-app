@@ -16,6 +16,7 @@
           <mat-tab label="{{ t['Income'] }}"></mat-tab>
           <mat-tab label="{{ t['Investment'] }}"></mat-tab>
           <mat-tab label="{{ t['Comparison'] }}"></mat-tab>
+          <mat-tab label="{{ t['CreditCard'] }}"></mat-tab>
           <!-- <mat-tab label="{{ t['CashFlow'] }}"></mat-tab> -->
         </div>
 
@@ -761,6 +762,228 @@
 
         </div>
 
+
+      </div>
+    </div>
+
+    <!-- ==================== CARTÃO DE CRÉDITO ==================== -->
+    <div class="tab-content cc-tab" *ngIf="selectedTabIndex == 4">
+      <div #exportArea class="export-container" style="padding: 30px;">
+
+        <div class="header">
+          <div class="title-group">
+            <div class="d-flex align-items-center gap-12">
+              <div class="icon-wrapper CREDITCARD">
+                <mat-icon>{{ icon }}</mat-icon>
+              </div>
+              <div>
+                <h2 class="title">{{ t[title] }}</h2>
+                <p class="subtitle">{{ t[subTitle] }}</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="filters box-date-filter">
+            <div class="box-date-container">
+              <div class="box">
+                <div class="label">{{ t['Card'] }}</div>
+                <div class="inputs">
+                  <select [(ngModel)]="ccCardId" (change)="onCcCardChange()">
+                    <option [ngValue]="null">{{ t['AllCards'] }}</option>
+                    <option *ngFor="let c of ccCards" [ngValue]="c.id">{{ c.description }}</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="box">
+                <div class="label">{{ t['Year'] }}</div>
+                <div class="inputs">
+                  <select [(ngModel)]="ccYear" (change)="onCcYearChange()">
+                    <option *ngFor="let y of ccAvailableYears" [ngValue]="y">{{ y }}</option>
+                  </select>
+                </div>
+              </div>
+
+              <button class="cc-clear-btn" *ngIf="isCcFilterActive()" (click)="clearCcFilters()">
+                <mat-icon>close</mat-icon> {{ t['ClearFilters'] }}
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="cc-empty" *ngIf="!ccCards.length && !isLoading">
+          <mat-icon>credit_card_off</mat-icon>
+          <p>{{ t['NoCreditCards'] }}</p>
+        </div>
+
+        <ng-container *ngIf="ccCards.length">
+
+          <!-- KPIs -->
+          <div class="summary-cards cc-kpis">
+            <div class="summary-card cc-kpi total">
+              <div class="title">{{ t['TotalInvoices'] }}</div>
+              <div class="value">{{ ccTotalInvoices | currency:'BRL' }}</div>
+              <div class="details">
+                <span class="cc-trend" [ngClass]="ccTrendPct > 0 ? 'up' : (ccTrendPct < 0 ? 'down' : '')">
+                  <mat-icon>{{ ccTrendPct > 0 ? 'trending_up' : (ccTrendPct < 0 ? 'trending_down' : 'trending_flat') }}</mat-icon>
+                  {{ ccTrendPct | number:'1.0-1' }}% · {{ t['Trend'] }}
+                </span>
+              </div>
+            </div>
+
+            <div class="summary-card cc-kpi">
+              <div class="title">{{ t['MonthlyAverage'] }}</div>
+              <div class="value">{{ ccMonthlyAverage | currency:'BRL' }}</div>
+              <div class="details"><span>{{ ccYear }}</span></div>
+            </div>
+
+            <div class="summary-card cc-kpi">
+              <div class="title">{{ t['LimitUtilization'] }}</div>
+              <div class="value">{{ ccUtilizationPct | number:'1.0-1' }}%</div>
+              <div class="cc-progress">
+                <div class="cc-progress-bar"
+                  [style.width.%]="ccUtilizationPct > 100 ? 100 : ccUtilizationPct"
+                  [ngClass]="ccUtilizationPct >= 80 ? 'danger' : (ccUtilizationPct >= 50 ? 'warn' : 'ok')"></div>
+              </div>
+              <div class="details"><span>{{ ccUsedTotal | currency:'BRL' }} / {{ ccLimitTotal | currency:'BRL' }}</span></div>
+            </div>
+
+            <div class="summary-card cc-kpi overdue" [class.has-overdue]="ccOverdueCount > 0">
+              <div class="title">{{ t['OverdueInvoices'] }}</div>
+              <div class="value">{{ ccOverdueCount }}</div>
+              <div class="details"><span>{{ ccOverdueValue | currency:'BRL' }}</span></div>
+            </div>
+          </div>
+
+          <!-- Evolução + Gastos por cartão -->
+          <div class="row cc-row">
+            <div class="col-6">
+              <div class="chart-card">
+                <div class="chart-header">
+                  <div>
+                    <div class="chart-title">{{ t['SpendingEvolution'] }}</div>
+                    <div class="chart-subtitle">{{ ccYear }}</div>
+                  </div>
+                </div>
+                <div class="chart-container cc-chart-h">
+                  <canvas baseChart [data]="ccEvolutionChartData" [type]="ccEvolutionChartType"
+                    [options]="ccEvolutionChartOptions"></canvas>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-6">
+              <div class="chart-card">
+                <div class="chart-header">
+                  <div>
+                    <div class="chart-title">{{ t['SpendingByCard'] }}</div>
+                    <div class="chart-subtitle">{{ ccYear }}</div>
+                  </div>
+                </div>
+                <div class="cc-doughnut-block">
+                  <div class="cc-doughnut">
+                    <canvas baseChart [data]="ccByCardChartData" [type]="'doughnut'" [options]="ccDoughnutOptions"></canvas>
+                  </div>
+                  <div class="cc-legend">
+                    <div *ngFor="let item of ccByCardLegend" class="category-item">
+                      <div class="left"><span class="dot" [style.background]="item.color"></span><span class="name">{{ item.name }}</span></div>
+                      <div class="right"><span class="value">{{ item.value | currency:'BRL' }}</span><span class="percent">{{ item.percent }}%</span></div>
+                    </div>
+                    <div class="cc-legend-empty" *ngIf="!ccByCardLegend.length">{{ t['NoInvoices'] }}</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Categoria + Status + Utilização por cartão -->
+          <div class="row cc-row">
+            <div class="col-4">
+              <div class="chart-card">
+                <div class="chart-header"><div><div class="chart-title">{{ t['SpendingByCategory'] }}</div><div class="chart-subtitle">{{ ccYear }}</div></div></div>
+                <div class="cc-doughnut cc-center">
+                  <canvas baseChart [data]="ccCategoryChartData" [type]="'doughnut'" [options]="ccDoughnutOptions"></canvas>
+                </div>
+                <div class="cc-legend mt-2">
+                  <div *ngFor="let item of ccCategoryLegend" class="category-item">
+                    <div class="left"><span class="dot" [style.background]="item.color"></span><span class="name">{{ item.name }}</span></div>
+                    <div class="right"><span class="value">{{ item.value | currency:'BRL' }}</span><span class="percent">{{ item.percent }}%</span></div>
+                  </div>
+                  <div class="cc-legend-empty" *ngIf="!ccCategoryLegend.length">{{ t['NoInvoices'] }}</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-4">
+              <div class="chart-card">
+                <div class="chart-header"><div><div class="chart-title">{{ t['InvoicesByStatus'] }}</div><div class="chart-subtitle">{{ ccYear }}</div></div></div>
+                <div class="cc-doughnut cc-center">
+                  <canvas baseChart [data]="ccStatusChartData" [type]="'doughnut'" [options]="ccDoughnutOptions"></canvas>
+                </div>
+                <div class="cc-status-legend">
+                  <div class="cc-status-item"><span class="dot" style="background:#22c55e"></span>{{ t['Paid'] }} <b>{{ ccPaidCount }}</b></div>
+                  <div class="cc-status-item"><span class="dot" style="background:#f59e0b"></span>{{ t['Open'] }} <b>{{ ccOpenCount }}</b></div>
+                  <div class="cc-status-item"><span class="dot" style="background:#ef4444"></span>{{ t['Overdue'] }} <b>{{ ccOverdueCount }}</b></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-4">
+              <div class="chart-card">
+                <div class="chart-header"><div><div class="chart-title">{{ t['LimitUsageByCard'] }}</div></div></div>
+                <div class="cc-limit-list">
+                  <div class="cc-limit-item" *ngFor="let r of ccLimitRows">
+                    <div class="cc-limit-head"><span class="cc-limit-name">{{ r.name }}</span><span class="cc-limit-pct">{{ r.percent }}%</span></div>
+                    <div class="cc-progress">
+                      <div class="cc-progress-bar" [style.width.%]="r.percent > 100 ? 100 : r.percent"
+                        [ngClass]="r.percent >= 80 ? 'danger' : (r.percent >= 50 ? 'warn' : 'ok')"></div>
+                    </div>
+                    <div class="cc-limit-values">{{ r.used | currency:'BRL' }} / {{ r.limit | currency:'BRL' }}</div>
+                  </div>
+                  <div class="cc-legend-empty" *ngIf="!ccLimitRows.length">{{ t['NoCreditCards'] }}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Ranking -->
+          <div class="row cc-row">
+            <div class="chart-card cc-full">
+              <div class="chart-header"><div><div class="chart-title">{{ t['CardRanking'] }}</div><div class="chart-subtitle">{{ ccYear }}</div></div></div>
+              <div class="table-wrapper-1">
+                <table mat-table [dataSource]="ccRanking" class="table">
+                  <ng-container matColumnDef="name">
+                    <th mat-header-cell *matHeaderCellDef>{{ t['Card'] }}</th>
+                    <td mat-cell *matCellDef="let row">{{ row.name }}</td>
+                  </ng-container>
+                  <ng-container matColumnDef="total">
+                    <th mat-header-cell *matHeaderCellDef>{{ t['TotalInvoices'] }}</th>
+                    <td mat-cell *matCellDef="let row">{{ row.total | currency:'BRL' }}</td>
+                  </ng-container>
+                  <ng-container matColumnDef="limit">
+                    <th mat-header-cell *matHeaderCellDef>{{ t['Limit'] }}</th>
+                    <td mat-cell *matCellDef="let row">{{ row.limit | currency:'BRL' }}</td>
+                  </ng-container>
+                  <ng-container matColumnDef="available">
+                    <th mat-header-cell *matHeaderCellDef>{{ t['Available'] }}</th>
+                    <td mat-cell *matCellDef="let row">{{ row.available | currency:'BRL' }}</td>
+                  </ng-container>
+                  <ng-container matColumnDef="utilization">
+                    <th mat-header-cell *matHeaderCellDef>{{ t['LimitUtilization'] }}</th>
+                    <td mat-cell *matCellDef="let row"><span class="cc-util-badge" [ngClass]="row.utilization >= 80 ? 'danger' : (row.utilization >= 50 ? 'warn' : 'ok')">{{ row.utilization }}%</span></td>
+                  </ng-container>
+                  <ng-container matColumnDef="overdue">
+                    <th mat-header-cell *matHeaderCellDef>{{ t['Overdue'] }}</th>
+                    <td mat-cell *matCellDef="let row"><span [class.cc-overdue-num]="row.overdue > 0">{{ row.overdue }}</span></td>
+                  </ng-container>
+                  <tr mat-header-row *matHeaderRowDef="ccRankingColumns"></tr>
+                  <tr mat-row *matRowDef="let row; columns: ccRankingColumns"></tr>
+                </table>
+              </div>
+            </div>
+          </div>
+
+        </ng-container>
 
       </div>
     </div>

@@ -540,3 +540,270 @@
         color: #ef4444;
       }
 }
+
+/* ===================== Credit Card report tab ===================== */
+.report {
+  .CREDITCARD {
+    color: #1b3c88;
+    background: rgba(27, 60, 136, 0.12);
+  }
+
+  .cc-clear-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    border: none;
+    background: #fbeaea;
+    color: #d64545;
+    font-weight: 600;
+    font-size: 13px;
+    padding: 8px 14px;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: background 0.2s ease;
+    align-self: center;
+
+    &:hover {
+      background: #f5d6d6;
+    }
+
+    mat-icon {
+      font-size: 16px;
+      width: 16px;
+      height: 16px;
+    }
+  }
+
+  .cc-kpis {
+    margin-bottom: 18px;
+  }
+
+  .cc-kpi {
+    position: relative;
+
+    .cc-trend {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 12px;
+      font-weight: 600;
+      color: #6b7280;
+
+      mat-icon {
+        font-size: 16px;
+        width: 16px;
+        height: 16px;
+      }
+
+      &.up {
+        color: #ef4444;
+      }
+      &.down {
+        color: #22c55e;
+      }
+    }
+
+    &.overdue.has-overdue {
+      .value {
+        color: #ef4444;
+      }
+    }
+  }
+
+  .cc-progress {
+    width: 100%;
+    height: 8px;
+    background: #eef2f7;
+    border-radius: 999px;
+    overflow: hidden;
+    margin: 6px 0;
+
+    .cc-progress-bar {
+      height: 100%;
+      border-radius: 999px;
+      transition: width 0.4s ease;
+
+      &.ok {
+        background: linear-gradient(90deg, #22c55e, #16a34a);
+      }
+      &.warn {
+        background: linear-gradient(90deg, #f59e0b, #d97706);
+      }
+      &.danger {
+        background: linear-gradient(90deg, #ef4444, #dc2626);
+      }
+    }
+  }
+
+  .cc-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: stretch;
+    margin: 0 0 16px;
+
+    > [class*='col-'] {
+      padding: 6px;
+      box-sizing: border-box;
+    }
+
+    .chart-card {
+      height: 100%;
+    }
+  }
+
+  .cc-chart-h {
+    height: 300px;
+    position: relative;
+  }
+
+  .cc-doughnut-block {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    flex-wrap: wrap;
+
+    .cc-doughnut {
+      width: 180px;
+      height: 180px;
+      flex: 0 0 auto;
+    }
+
+    .cc-legend {
+      flex: 1 1 180px;
+    }
+  }
+
+  .cc-doughnut {
+    position: relative;
+
+    &.cc-center {
+      width: 100%;
+      height: 200px;
+      display: flex;
+      justify-content: center;
+    }
+  }
+
+  .cc-legend {
+    .cc-legend-empty {
+      color: #94a3c4;
+      font-size: 13px;
+      padding: 8px 2px;
+    }
+  }
+
+  .cc-status-legend {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 14px;
+
+    .cc-status-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      color: #374151;
+
+      .dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+      }
+
+      b {
+        margin-left: auto;
+        font-weight: 700;
+        color: #111827;
+      }
+    }
+  }
+
+  .cc-limit-list {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    margin-top: 6px;
+
+    .cc-limit-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 4px;
+
+      .cc-limit-name {
+        font-size: 13px;
+        font-weight: 600;
+        color: #374151;
+      }
+      .cc-limit-pct {
+        font-size: 13px;
+        font-weight: 700;
+        color: #111827;
+      }
+    }
+
+    .cc-limit-values {
+      font-size: 11px;
+      color: #6b7280;
+      margin-top: 2px;
+    }
+
+    .cc-legend-empty {
+      color: #94a3c4;
+      font-size: 13px;
+    }
+  }
+
+  .cc-full {
+    width: 100%;
+    margin: 6px;
+  }
+
+  .cc-util-badge {
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 700;
+
+    &.ok {
+      background: #e2f6ec;
+      color: #16a34a;
+    }
+    &.warn {
+      background: #fff3da;
+      color: #b97e12;
+    }
+    &.danger {
+      background: #fbe3e3;
+      color: #dc2626;
+    }
+  }
+
+  .cc-overdue-num {
+    color: #dc2626;
+    font-weight: 700;
+  }
+
+  .cc-empty {
+    background: #fff;
+    border-radius: 16px;
+    padding: 48px;
+    text-align: center;
+    color: #94a3c4;
+
+    mat-icon {
+      font-size: 42px;
+      width: 42px;
+      height: 42px;
+      color: #c7d2ea;
+    }
+  }
+
+  @media (max-width: 900px) {
+    .cc-row > [class*='col-'] {
+      width: 100%;
+      flex: 0 0 100%;
+    }
+  }
+}

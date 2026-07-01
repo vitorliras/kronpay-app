@@ -29,6 +29,13 @@ import { Transaction } from '../../core/models/transaction/transaction.model';
 import { CategoryService } from '../../core/services/category.service';
 import { PaymentMethodService } from '../../core/services/payment-method.service';
 import { TransactionService } from '../../core/services/transaction.service';
+import { CreditCardService } from '../../core/services/credit-card.service';
+import { CardInvoiceService } from '../../core/services/card-invoice.service';
+import { CreditCardResponse } from '../../core/models/credit-card/credit-card';
+import {
+  CardInvoiceResponse,
+  CreditCardSummaryResponse,
+} from '../../core/models/card/card-invoice';
 import { MatDialog } from '@angular/material/dialog';
 import { ToastrService } from 'ngx-toastr';
 import { GetTransactionsByDatesRequest } from '../../core/models/transaction/transaction-request.model';
@@ -71,6 +78,8 @@ export class ReportComponent extends Base implements OnInit {
   private categoryService = inject(CategoryService);
   private paymentMethodService = inject(PaymentMethodService);
   private transactionService = inject(TransactionService);
+  private creditCardService = inject(CreditCardService);
+  private cardInvoiceService = inject(CardInvoiceService);
   private dialog = inject(MatDialog);
   private toastr = inject(ToastrService);
   private cdr = inject(ChangeDetectorRef);
@@ -362,6 +371,109 @@ export class ReportComponent extends Base implements OnInit {
     ],
   };
 
+  // ===================== Credit Card report =====================
+  ccCards: CreditCardResponse[] = [];
+  ccSummaries = new Map<number, CreditCardSummaryResponse>();
+  ccInvoicesByCard = new Map<number, CardInvoiceResponse[]>();
+  ccAvailableYears: number[] = [];
+  ccYear: number = new Date().getFullYear();
+  ccCardId: number | null = null; // null = todos os cartões
+  ccLoaded = false;
+
+  ccTotalInvoices = 0;
+  ccMonthlyAverage = 0;
+  ccLimitTotal = 0;
+  ccUsedTotal = 0;
+  ccAvailableTotal = 0;
+  ccUtilizationPct = 0;
+  ccOverdueCount = 0;
+  ccOverdueValue = 0;
+  ccPaidCount = 0;
+  ccOpenCount = 0;
+  ccTrendPct = 0;
+
+  ccLimitRows: { name: string; used: number; limit: number; percent: number }[] = [];
+  ccRanking: {
+    name: string;
+    total: number;
+    limit: number;
+    available: number;
+    utilization: number;
+    overdue: number;
+  }[] = [];
+  ccByCardLegend: { name: string; value: number; percent: number; color: string }[] = [];
+  ccCategoryLegend: { name: string; value: number; percent: number; color: string }[] = [];
+
+  ccPalette = [
+    '#1b3c88',
+    '#3b82f6',
+    '#10b981',
+    '#f59e0b',
+    '#8b5cf6',
+    '#ef4444',
+    '#14b8a6',
+    '#ec4899',
+    '#6366f1',
+    '#94a3b8',
+  ];
+
+  ccEvolutionChartType: 'bar' = 'bar';
+  ccEvolutionChartData: ChartData<'bar'> = { labels: [], datasets: [] };
+  ccEvolutionChartOptions: ChartConfiguration<'bar'>['options'] = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        callbacks: {
+          label: (context) => `R$ ${context.raw}`,
+        },
+      },
+    },
+    scales: {
+      x: {
+        grid: { display: false },
+        ticks: { color: '#4b5563', font: { size: 12, weight: 500 } },
+      },
+      y: {
+        beginAtZero: true,
+        grid: { color: '#eef2f7' },
+        border: { display: false },
+        ticks: { color: '#6b7280', callback: (value: any) => `R$ ${value}`, font: { size: 11 } },
+      },
+    },
+  };
+
+  ccByCardChartData: ChartData<'doughnut'> = {
+    labels: [],
+    datasets: [{ data: [], backgroundColor: [] }],
+  };
+  ccCategoryChartData: ChartData<'doughnut'> = {
+    labels: [],
+    datasets: [{ data: [], backgroundColor: [] }],
+  };
+  ccStatusChartData: ChartData<'doughnut'> = {
+    labels: [],
+    datasets: [{ data: [], backgroundColor: [], borderWidth: 0 }],
+  };
+
+  ccDoughnutOptions: ChartConfiguration<'doughnut'>['options'] = {
+    responsive: true,
+    maintainAspectRatio: false,
+    cutout: '68%',
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        callbacks: {
+          label: (context) => `${context.label}: R$ ${context.raw}`,
+        },
+      },
+    },
+  };
+
+  ccRankingColumns = ['name', 'total', 'limit', 'available', 'utilization', 'overdue'];
+  // ==============================================================
+
   ngOnInit(): void {
     this.startDate.setDate(this.endDate.getDate() - 90);
     this.isLoading = true;
@@ -398,7 +510,7 @@ export class ReportComponent extends Base implements OnInit {
         this.loadComparison();
         break;
       case 4:
-        this.loadCashFlow();
+        this.loadCreditCard();
         break;
     }
   }
@@ -723,6 +835,360 @@ export class ReportComponent extends Base implements OnInit {
   loadCashFlow() {
     this.icon = 'show_chart';
   }
+
+  // ===================== Credit Card report =====================
+  loadCreditCard() {
+    this.title = 'CreditCardReport';
+    this.subTitle = 'SubtitleCreditCardReport';
+    this.tab = 'CreditCard';
+    this.icon = 'credit_card';
+
+    if (this.ccLoaded) {
+      this.aggregateCreditCard();
+      return;
+    }
+    this.loadCreditCardData();
+  }
+
+  private loadCreditCardData() {
+    this.isLoading = true;
+
+    this.creditCardService.getAll().subscribe({
+      next: (res) => {
+        const cards = res.isSuccess ? (res.value ?? []) : [];
+        this.ccCards = cards;
+
+        if (!cards.length) {
+          this.ccLoaded = true;
+          this.isLoading = false;
+          this.resetCreditCardAggregates();
+          this.cdr.detectChanges();
+          return;
+        }
+
+        const calls: any[] = [];
+        cards.forEach((c) => {
+          calls.push(this.cardInvoiceService.getSummary(c.id));
+          calls.push(this.cardInvoiceService.getByCard(c.id));
+        });
+
+        forkJoin(calls).subscribe({
+          next: (results: any[]) => {
+            cards.forEach((c, i) => {
+              const summaryRes = results[i * 2];
+              const invoicesRes = results[i * 2 + 1];
+
+              if (summaryRes?.isSuccess && summaryRes.value) {
+                this.ccSummaries.set(c.id, summaryRes.value);
+              }
+              this.ccInvoicesByCard.set(
+                c.id,
+                invoicesRes?.isSuccess ? (invoicesRes.value ?? []) : [],
+              );
+            });
+
+            const years = new Set<number>();
+            this.ccInvoicesByCard.forEach((list) =>
+              list.forEach((inv) => years.add(inv.referenceYear)),
+            );
+            this.ccAvailableYears = Array.from(years).sort((a, b) => b - a);
+
+            if (this.ccAvailableYears.length && !this.ccAvailableYears.includes(this.ccYear)) {
+              this.ccYear = this.ccAvailableYears[0];
+            }
+
+            this.ccLoaded = true;
+            this.isLoading = false;
+            this.aggregateCreditCard();
+            this.cdr.detectChanges();
+          },
+          error: () => {
+            this.isLoading = false;
+          },
+        });
+      },
+      error: () => {
+        this.isLoading = false;
+      },
+    });
+  }
+
+  aggregateCreditCard() {
+    this.translations$.pipe(take(1)).subscribe((t) => {
+      const cards = this.ccCardId
+        ? this.ccCards.filter((c) => c.id === this.ccCardId)
+        : this.ccCards;
+
+      const rows: { card: CreditCardResponse; inv: CardInvoiceResponse }[] = [];
+      cards.forEach((c) => {
+        (this.ccInvoicesByCard.get(c.id) ?? [])
+          .filter((inv) => inv.referenceYear === this.ccYear)
+          .forEach((inv) => rows.push({ card: c, inv }));
+      });
+
+      // ---- KPIs ----
+      this.ccTotalInvoices = this.round(rows.reduce((s, r) => s + r.inv.totalAmount, 0));
+
+      const monthsWith = new Set(
+        rows.filter((r) => r.inv.totalAmount > 0).map((r) => r.inv.referenceMonth),
+      );
+      this.ccMonthlyAverage = this.round(
+        monthsWith.size ? this.ccTotalInvoices / monthsWith.size : 0,
+      );
+
+      this.ccLimitTotal = 0;
+      this.ccUsedTotal = 0;
+      this.ccAvailableTotal = 0;
+      cards.forEach((c) => {
+        const s = this.ccSummaries.get(c.id);
+        if (s) {
+          this.ccLimitTotal += s.creditLimit;
+          this.ccUsedTotal += s.usedAmount;
+          this.ccAvailableTotal += s.availableAmount;
+        }
+      });
+      this.ccLimitTotal = this.round(this.ccLimitTotal);
+      this.ccUsedTotal = this.round(this.ccUsedTotal);
+      this.ccAvailableTotal = this.round(this.ccAvailableTotal);
+      this.ccUtilizationPct =
+        this.ccLimitTotal > 0 ? this.round((this.ccUsedTotal / this.ccLimitTotal) * 100) : 0;
+
+      // ---- status ----
+      this.ccOverdueCount = 0;
+      this.ccOverdueValue = 0;
+      this.ccPaidCount = 0;
+      this.ccOpenCount = 0;
+      let openValue = 0;
+      let paidValue = 0;
+      rows.forEach((r) => {
+        if (this.isCcOverdue(r.inv)) {
+          this.ccOverdueCount++;
+          this.ccOverdueValue += r.inv.totalAmount;
+        } else if (r.inv.status === 'P') {
+          this.ccPaidCount++;
+          paidValue += r.inv.totalAmount;
+        } else {
+          this.ccOpenCount++;
+          openValue += r.inv.totalAmount;
+        }
+      });
+      this.ccOverdueValue = this.round(this.ccOverdueValue);
+
+      this.ccStatusChartData = {
+        labels: [t['Paid'], t['Open'], t['Overdue']],
+        datasets: [
+          {
+            data: [this.round(paidValue), this.round(openValue), this.ccOverdueValue],
+            backgroundColor: ['#22c55e', '#f59e0b', '#ef4444'],
+            borderWidth: 0,
+          },
+        ],
+      };
+
+      // ---- evolução por mês ----
+      const monthTotals: number[] = new Array(12).fill(0);
+      rows.forEach((r) => {
+        monthTotals[r.inv.referenceMonth - 1] += r.inv.totalAmount;
+      });
+      this.ccEvolutionChartData = {
+        labels: this.months.map((m) => t[m.label]),
+        datasets: [
+          {
+            label: t['TotalInvoices'],
+            data: monthTotals.map((v) => this.round(v)),
+            backgroundColor: '#1b3c88',
+            borderRadius: 6,
+            maxBarThickness: 34,
+          },
+        ],
+      };
+
+      // ---- tendência (últimos dois meses com movimento) ----
+      const monthsPresent = monthTotals
+        .map((v, i) => ({ m: i + 1, v }))
+        .filter((x) => x.v > 0);
+      if (monthsPresent.length >= 2) {
+        const last = monthsPresent[monthsPresent.length - 1].v;
+        const prev = monthsPresent[monthsPresent.length - 2].v;
+        this.ccTrendPct = this.round(this.calculatePercentage(prev, last));
+      } else {
+        this.ccTrendPct = 0;
+      }
+
+      // ---- gastos por cartão ----
+      const byCard = cards
+        .map((c, idx) => {
+          const total = rows
+            .filter((r) => r.card.id === c.id)
+            .reduce((s, r) => s + r.inv.totalAmount, 0);
+          return {
+            name: c.description,
+            value: this.round(total),
+            color: this.ccPalette[idx % this.ccPalette.length],
+          };
+        })
+        .filter((x) => x.value > 0)
+        .sort((a, b) => b.value - a.value);
+
+      const byCardTotal = byCard.reduce((s, c) => s + c.value, 0);
+      this.ccByCardLegend = byCard.map((c) => ({
+        name: c.name,
+        value: c.value,
+        percent: byCardTotal > 0 ? this.round((c.value / byCardTotal) * 100) : 0,
+        color: c.color,
+      }));
+      this.ccByCardChartData = {
+        labels: byCard.map((c) => c.name),
+        datasets: [{ data: byCard.map((c) => c.value), backgroundColor: byCard.map((c) => c.color) }],
+      };
+
+      // ---- utilização do limite por cartão ----
+      this.ccLimitRows = cards
+        .map((c) => {
+          const s = this.ccSummaries.get(c.id);
+          const limit = s?.creditLimit ?? c.creditLimit ?? 0;
+          const used = s?.usedAmount ?? 0;
+          return {
+            name: c.description,
+            used: this.round(used),
+            limit: this.round(limit),
+            percent: limit > 0 ? this.round((used / limit) * 100) : 0,
+          };
+        })
+        .sort((a, b) => b.percent - a.percent);
+
+      // ---- ranking ----
+      this.ccRanking = cards
+        .map((c) => {
+          const s = this.ccSummaries.get(c.id);
+          const total = rows
+            .filter((r) => r.card.id === c.id)
+            .reduce((sum, r) => sum + r.inv.totalAmount, 0);
+          const overdue = rows.filter((r) => r.card.id === c.id && this.isCcOverdue(r.inv)).length;
+          const limit = s?.creditLimit ?? c.creditLimit ?? 0;
+          const used = s?.usedAmount ?? 0;
+          return {
+            name: c.description,
+            total: this.round(total),
+            limit: this.round(limit),
+            available: this.round(s?.availableAmount ?? 0),
+            utilization: limit > 0 ? this.round((used / limit) * 100) : 0,
+            overdue,
+          };
+        })
+        .sort((a, b) => b.total - a.total);
+
+      this.loadCcCategories(
+        rows.map((r) => r.inv),
+        t,
+      );
+      this.cdr.detectChanges();
+    });
+  }
+
+  private loadCcCategories(invoices: CardInvoiceResponse[], t: any) {
+    const target = invoices.filter((inv) => inv.totalAmount > 0);
+
+    if (!target.length) {
+      this.ccCategoryLegend = [];
+      this.ccCategoryChartData = { labels: [], datasets: [{ data: [], backgroundColor: [] }] };
+      this.cdr.detectChanges();
+      return;
+    }
+
+    forkJoin(target.map((inv) => this.cardInvoiceService.getItems(inv.id))).subscribe({
+      next: (results) => {
+        const map: Record<string, number> = {};
+        results.forEach((res) => {
+          if (res.isSuccess && res.value) {
+            res.value.forEach((it) => {
+              if (it.status === 'C') return; // ignora parcelas canceladas
+              const key = it.categoryDescription || t['NoCategory'];
+              map[key] = (map[key] ?? 0) + it.amount;
+            });
+          }
+        });
+
+        const arr = Object.keys(map)
+          .map((k) => ({ name: k, value: this.round(map[k]) }))
+          .sort((a, b) => b.value - a.value);
+
+        const top = arr.slice(0, 6);
+        const others = arr.slice(6);
+        const othersTotal = others.reduce((s, c) => s + c.value, 0);
+        if (othersTotal > 0) top.push({ name: t['Others'], value: this.round(othersTotal) });
+
+        const total = top.reduce((s, c) => s + c.value, 0);
+        this.ccCategoryLegend = top.map((c, i) => ({
+          name: c.name,
+          value: c.value,
+          percent: total > 0 ? this.round((c.value / total) * 100) : 0,
+          color: this.ccPalette[i % this.ccPalette.length],
+        }));
+        this.ccCategoryChartData = {
+          labels: top.map((c) => c.name),
+          datasets: [
+            {
+              data: top.map((c) => c.value),
+              backgroundColor: top.map((_, i) => this.ccPalette[i % this.ccPalette.length]),
+            },
+          ],
+        };
+        this.cdr.detectChanges();
+      },
+    });
+  }
+
+  isCcOverdue(inv: CardInvoiceResponse): boolean {
+    if (inv.status === 'P') return false;
+    const due = new Date(inv.dueDate);
+    due.setHours(0, 0, 0, 0);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    return due < today;
+  }
+
+  onCcYearChange() {
+    this.aggregateCreditCard();
+  }
+
+  onCcCardChange() {
+    this.aggregateCreditCard();
+  }
+
+  clearCcFilters() {
+    this.ccCardId = null;
+    this.ccYear = this.ccAvailableYears[0] ?? new Date().getFullYear();
+    this.aggregateCreditCard();
+  }
+
+  isCcFilterActive(): boolean {
+    const defaultYear = this.ccAvailableYears[0] ?? new Date().getFullYear();
+    return this.ccCardId !== null || this.ccYear !== defaultYear;
+  }
+
+  private resetCreditCardAggregates() {
+    this.ccTotalInvoices = 0;
+    this.ccMonthlyAverage = 0;
+    this.ccLimitTotal = 0;
+    this.ccUsedTotal = 0;
+    this.ccAvailableTotal = 0;
+    this.ccUtilizationPct = 0;
+    this.ccOverdueCount = 0;
+    this.ccOverdueValue = 0;
+    this.ccPaidCount = 0;
+    this.ccOpenCount = 0;
+    this.ccTrendPct = 0;
+    this.ccLimitRows = [];
+    this.ccRanking = [];
+    this.ccByCardLegend = [];
+    this.ccCategoryLegend = [];
+    this.ccEvolutionChartData = { labels: [], datasets: [] };
+    this.ccByCardChartData = { labels: [], datasets: [{ data: [], backgroundColor: [] }] };
+    this.ccCategoryChartData = { labels: [], datasets: [{ data: [], backgroundColor: [] }] };
+    this.ccStatusChartData = { labels: [], datasets: [{ data: [], backgroundColor: [], borderWidth: 0 }] };
+  }
+  // ==============================================================
 
   getCurrentPieColors(): string[] {
     switch (this.selectedTabIndex) {
