@@ -1,0 +1,66 @@
+<ng-container *ngIf="translations$ | async as t">
+  <div class="modal-register" [style.width.px]="480" cdkDrag cdkDragRootElement=".cdk-overlay-pane">
+    <div class="modal-register-title">
+      <h2 mat-dialog-title>{{ editing ? t['EditCommitment'] : t['NewCommitment'] }}</h2>
+      <button class="close-btn" (click)="close()"><mat-icon>close</mat-icon></button>
+    </div>
+
+    <div class="modal-register-body">
+      <form [formGroup]="form">
+        <mat-form-field appearance="outline" style="width: 100%">
+          <mat-label>{{ t['Description'] }}</mat-label>
+          <input cdkFocusInitial matInput formControlName="description" maxlength="60" />
+        </mat-form-field>
+
+        <div class="modal-row">
+          <mat-form-field appearance="outline">
+            <mat-label>{{ t['Amount'] }}</mat-label>
+            <input matInput type="number" formControlName="amount" />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>{{ t['Direction'] }}</mat-label>
+            <mat-select formControlName="direction">
+              <mat-option *ngFor="let d of directions" [value]="d.value">{{ t[d.label] }}</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        <div class="modal-row">
+          <mat-form-field appearance="outline">
+            <mat-label>{{ t['Periodicity'] }}</mat-label>
+            <mat-select formControlName="periodicity">
+              <mat-option *ngFor="let p of periodicities" [value]="p.value">{{ t[p.label] }}</mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>{{ t['Category'] }}</mat-label>
+            <mat-select formControlName="categoryId">
+              <mat-option [value]="null">—</mat-option>
+              <mat-option *ngFor="let cat of categories" [value]="cat.id">{{ cat.description }}</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        <div class="modal-row">
+          <mat-form-field appearance="outline">
+            <mat-label>{{ t['StartDate'] }}</mat-label>
+            <input matInput type="date" formControlName="startDate" />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>{{ t['EndDate'] }}</mat-label>
+            <input matInput type="date" formControlName="endDate" />
+          </mat-form-field>
+        </div>
+      </form>
+
+      <div mat-dialog-actions>
+        <button mat-raised-button color="primary" (click)="save()">
+          <mat-icon>save</mat-icon>{{ t['Save'] }}
+        </button>
+      </div>
+    </div>
+  </div>
+</ng-container>

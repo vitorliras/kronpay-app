@@ -1,0 +1,343 @@
+<ng-container *ngIf="translations$ | async as t">
+  <div class="planning-page">
+    <div class="planning-head">
+      <h2 class="planning-title"><mat-icon>savings</mat-icon> {{ t['FinancialPlanning'] }}</h2>
+    </div>
+
+    <mat-tab-group class="planning-tabs" animationDuration="250ms">
+      <!-- Projeção -->
+      <mat-tab label="{{ t['Projection'] }}">
+        <div class="tab-body">
+          <div class="loader-container" *ngIf="isLoadingProjection">
+            <mat-progress-spinner mode="indeterminate" diameter="42"></mat-progress-spinner>
+          </div>
+
+          <ng-container *ngIf="!isLoadingProjection && projection">
+            <div class="proj-controls">
+              <mat-form-field appearance="outline" class="ctrl">
+                <mat-label>{{ t['Horizon'] }}</mat-label>
+                <mat-select [(ngModel)]="horizonMonths" (selectionChange)="onParamsChange()">
+                  <mat-option *ngFor="let h of horizonOptions" [value]="h">{{ h }} {{ t['Months'] }}</mat-option>
+                </mat-select>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="ctrl">
+                <mat-label>{{ t['SafetyReserve'] }}</mat-label>
+                <input matInput type="number" [(ngModel)]="safetyReserve" (change)="onParamsChange()" />
+              </mat-form-field>
+            </div>
+
+            <div class="kpi-grid">
+              <div class="kpi">
+                <span class="kpi-label">{{ t['CurrentBalance'] }}</span>
+                <span class="kpi-value">{{ currentBalance | currency: 'BRL' }}</span>
+              </div>
+              <div class="kpi">
+                <span class="kpi-label">{{ t['ProjectedBalance'] }}</span>
+                <span class="kpi-value" [class.negative]="projectedBalance < 0">{{ projectedBalance | currency: 'BRL' }}</span>
+              </div>
+              <div class="kpi">
+                <span class="kpi-label">{{ t['FirstRiskMonth'] }}</span>
+                <span class="kpi-value" [class.negative]="firstRiskLabel">{{ firstRiskLabel || t['NoRisk'] }}</span>
+              </div>
+              <div class="kpi">
+                <span class="kpi-label">{{ t['MonthlyRoom'] }}</span>
+                <span class="kpi-value" [class.negative]="monthlyRoom < 0">{{ monthlyRoom | currency: 'BRL' }}</span>
+              </div>
+            </div>
+
+            <div class="proj-main">
+              <div class="score-card" [ngClass]="verdictClass(verdict)">
+                <div class="ring" [style.background]="ringStyle(projection.viability.score, verdict)">
+                  <div class="ring-hole">
+                    <span class="score-num">{{ projection.viability.score }}</span>
+                    <span class="score-max">/100</span>
+                  </div>
+                </div>
+                <div class="score-info">
+                  <span class="verdict-badge">{{ t[verdict] }}</span>
+                  <ul class="findings">
+                    <li *ngFor="let f of projection.viability.findings" [class.veto]="f.isVeto">
+                      <mat-icon>{{ f.isVeto ? 'error' : 'info' }}</mat-icon>
+                      <span>{{ formatFinding(t, f) }}</span>
+                    </li>
+                    <li class="ok-note" *ngIf="!projection.viability.findings.length">
+                      <mat-icon>check_circle</mat-icon>
+                      <span>{{ t['HealthyProjection'] }}</span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+
+              <div class="proj-chart-card">
+                <div class="chart-title">{{ t['ProjectedBalance'] }}</div>
+                <div class="chart-wrap">
+                  <canvas baseChart [data]="lineChartData" [type]="lineChartType" [options]="lineChartOptions"></canvas>
+                </div>
+              </div>
+            </div>
+
+            <div class="proj-table-card">
+              <div class="chart-title">{{ t['MonthlyDetails'] }}</div>
+              <div class="table-scroll">
+                <table class="proj-table">
+                  <thead>
+                    <tr>
+                      <th>{{ t['Month'] }}</th>
+                      <th>{{ t['Inflows'] }}</th>
+                      <th>{{ t['PredictedOutflow'] }}</th>
+                      <th>{{ t['ProbableOutflow'] }}</th>
+                      <th>{{ t['PredictedBalance'] }}</th>
+                      <th>{{ t['ProbableBalance'] }}</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let m of projection.months; let i = index" [class.risk-row]="m.probableClosing < 0">
+                      <td class="m-cell"><span class="m-pill">{{ m.month }}/{{ m.year }}</span></td>
+                      <td class="in">{{ m.inflows | currency: 'BRL' }}</td>
+                      <td class="out">{{ m.predictedOutflow | currency: 'BRL' }}</td>
+                      <td class="out">{{ m.probableOutflow | currency: 'BRL' }}</td>
+                      <td>{{ m.predictedClosing | currency: 'BRL' }}</td>
+                      <td class="balance-cell" [class.negative]="m.probableClosing < 0">
+                        <span class="trend" [ngClass]="rowTrend(projection.months, i)">
+                          <mat-icon>{{ rowTrendIcon(rowTrend(projection.months, i)) }}</mat-icon>
+                        </span>
+                        <span class="bal-val">{{ m.probableClosing | currency: 'BRL' }}</span>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </ng-container>
+        </div>
+      </mat-tab>
+
+      <!-- Compromissos -->
+      <mat-tab label="{{ t['Commitments'] }}">
+        <div class="tab-body">
+          <div class="commitments-head">
+            <div class="fixed-summary">
+              <div class="fixed-chip income">
+                <mat-icon>arrow_upward</mat-icon>
+                <div>
+                  <span class="lbl">{{ t['FixedIncome'] }}</span>
+                  <span class="val">{{ fixedIncome | currency: 'BRL' }}</span>
+                </div>
+              </div>
+              <div class="fixed-chip expense">
+                <mat-icon>arrow_downward</mat-icon>
+                <div>
+                  <span class="lbl">{{ t['FixedExpense'] }}</span>
+                  <span class="val">{{ fixedExpense | currency: 'BRL' }}</span>
+                </div>
+              </div>
+            </div>
+
+            <button mat-raised-button color="primary" (click)="openCommitmentModal()">
+              <mat-icon>add</mat-icon> {{ t['NewCommitment'] }}
+            </button>
+          </div>
+
+          <div class="loader-container" *ngIf="isLoading">
+            <mat-progress-spinner mode="indeterminate" diameter="42"></mat-progress-spinner>
+          </div>
+
+          <div class="commitment-list" *ngIf="!isLoading">
+            <div class="commitment-card" *ngFor="let c of commitments" [class.income]="isIncome(c)">
+              <div class="dir-icon">
+                <mat-icon>{{ isIncome(c) ? 'arrow_upward' : 'arrow_downward' }}</mat-icon>
+              </div>
+
+              <div class="c-info">
+                <span class="c-desc">{{ c.description }}</span>
+                <span class="c-meta">
+                  <span class="chip">{{ t[periodicityLabel(c.periodicity)] }}</span>
+                  <span class="c-date">{{ c.startDate | date: 'dd/MM/yyyy' }}<ng-container *ngIf="c.endDate"> — {{ c.endDate | date: 'dd/MM/yyyy' }}</ng-container></span>
+                </span>
+              </div>
+
+              <div class="c-amount" [class.income]="isIncome(c)">
+                {{ isIncome(c) ? '+' : '-' }} {{ c.amount | currency: 'BRL' }}
+              </div>
+
+              <div class="c-actions">
+                <button mat-icon-button (click)="openCommitmentModal(c)"><mat-icon>edit</mat-icon></button>
+                <button mat-icon-button color="warn" (click)="deactivate(c)"><mat-icon>delete_outline</mat-icon></button>
+              </div>
+            </div>
+
+            <div class="empty" *ngIf="!commitments.length">
+              <mat-icon>event_repeat</mat-icon>
+              <p>{{ t['NoCommitments'] }}</p>
+            </div>
+          </div>
+        </div>
+      </mat-tab>
+
+      <!-- Simulação -->
+      <mat-tab label="{{ t['Simulation'] }}">
+        <div class="tab-body">
+          <div class="sim-form-card">
+            <div class="sim-form-row">
+              <mat-form-field appearance="outline" subscriptSizing="dynamic" class="f-amount">
+                <mat-label>{{ t['Amount'] }}</mat-label>
+                <input matInput type="number" [(ngModel)]="simAmount" />
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" subscriptSizing="dynamic" class="f-date">
+                <mat-label>{{ t['Date'] }}</mat-label>
+                <input matInput type="date" [(ngModel)]="simDate" />
+              </mat-form-field>
+
+              <div class="seg">
+                <button type="button" [class.active]="!simInstallment" (click)="setInstallment(false)">
+                  {{ t['Cash'] }}
+                </button>
+                <button type="button" [class.active]="simInstallment" (click)="setInstallment(true)">
+                  {{ t['InstallmentPlan'] }}
+                </button>
+              </div>
+
+              <mat-form-field appearance="outline" subscriptSizing="dynamic" class="f-sm">
+                <mat-label>{{ t['Installments'] }}</mat-label>
+                <input matInput type="number" min="1" [(ngModel)]="simInstallmentsCount" [disabled]="!simInstallment" />
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" subscriptSizing="dynamic" class="f-card">
+                <mat-label>{{ t['CreditCard'] }}</mat-label>
+                <mat-select [(ngModel)]="simCreditCardId">
+                  <mat-option [value]="null">—</mat-option>
+                  <mat-option *ngFor="let c of cards" [value]="c.id">{{ c.description }}</mat-option>
+                </mat-select>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" subscriptSizing="dynamic" class="f-horizon">
+                <mat-label>{{ t['Horizon'] }}</mat-label>
+                <mat-select [(ngModel)]="horizonMonths" (selectionChange)="onParamsChange()">
+                  <mat-option *ngFor="let h of horizonOptions" [value]="h">{{ h }}m</mat-option>
+                </mat-select>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" subscriptSizing="dynamic" class="f-reserve">
+                <mat-label>{{ t['SafetyReserve'] }}</mat-label>
+                <input matInput type="number" [(ngModel)]="safetyReserve" (change)="onParamsChange()" />
+              </mat-form-field>
+
+              <button mat-raised-button color="primary" class="sim-btn" (click)="simulate()" [disabled]="isSimulating">
+                <mat-icon>auto_graph</mat-icon> {{ t['Simulate'] }}
+              </button>
+            </div>
+          </div>
+
+          <div class="loader-container" *ngIf="isSimulating">
+            <mat-progress-spinner mode="indeterminate" diameter="42"></mat-progress-spinner>
+          </div>
+
+          <ng-container *ngIf="!isSimulating && simulation">
+            <div class="sim-result">
+              <div class="score-card" [ngClass]="verdictClass(simVerdict)">
+                <div class="ring" [style.background]="ringStyle(simulation.viability.score, simVerdict)">
+                  <div class="ring-hole">
+                    <span class="score-num">{{ simulation.viability.score }}</span>
+                    <span class="score-max">/100</span>
+                  </div>
+                </div>
+                <div class="score-info">
+                  <span class="verdict-badge">{{ t[simVerdict] }}</span>
+                  <ul class="findings">
+                    <li *ngFor="let f of simulation.viability.findings" [class.veto]="f.isVeto">
+                      <mat-icon>{{ f.isVeto ? 'error' : 'info' }}</mat-icon>
+                      <span>{{ formatFinding(t, f) }}</span>
+                    </li>
+                    <li class="ok-note" *ngIf="!simulation.viability.findings.length">
+                      <mat-icon>check_circle</mat-icon>
+                      <span>{{ t['HealthyProjection'] }}</span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+
+              <div class="sim-side">
+                <div class="before-after">
+                  <div class="ba-item">
+                    <span class="ba-label">{{ t['WithoutPurchase'] }}</span>
+                    <span class="ba-value">{{ simulation.baseFinalBalance | currency: 'BRL' }}</span>
+                  </div>
+                  <mat-icon class="ba-arrow">arrow_forward</mat-icon>
+                  <div class="ba-item">
+                    <span class="ba-label">{{ t['WithPurchase'] }}</span>
+                    <span class="ba-value" [class.negative]="simulation.simulatedFinalBalance < 0">
+                      {{ simulation.simulatedFinalBalance | currency: 'BRL' }}
+                    </span>
+                  </div>
+                  <div class="ba-impact">
+                    <span class="ba-label">{{ t['PurchaseImpact'] }}</span>
+                    <span class="ba-value">- {{ purchaseImpact | currency: 'BRL' }}</span>
+                  </div>
+                </div>
+
+                <div class="best-month">
+                  <div class="bm-head">
+                    <mat-icon>event_available</mat-icon>
+                    <span>{{ t['BestMonth'] }}:</span>
+                    <strong *ngIf="bestMonth">{{ monthLabel(bestMonth) }}</strong>
+                    <strong *ngIf="!bestMonth" class="none">{{ t['NoBestMonth'] }}</strong>
+                  </div>
+                  <div class="bm-strip">
+                    <div class="bm-chip" *ngFor="let m of comparison" [ngClass]="verdictClass(m.verdict)"
+                      [class.is-best]="bestMonth && m.year === bestMonth.year && m.month === bestMonth.month"
+                      [title]="t[m.verdict] + ' · ' + m.score">
+                      <span class="bm-month">{{ monthLabel(m) }}</span>
+                      <span class="bm-score">{{ m.score }}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="proj-chart-card sim-chart">
+              <div class="chart-title">{{ t['ProjectedBalance'] }}</div>
+              <div class="chart-wrap">
+                <canvas baseChart [data]="simChartData" [type]="lineChartType" [options]="lineChartOptions"></canvas>
+              </div>
+            </div>
+
+            <div class="proj-table-card">
+              <div class="chart-title">{{ t['MonthlyDetails'] }}</div>
+              <div class="table-scroll">
+                <table class="proj-table">
+                  <thead>
+                    <tr>
+                      <th>{{ t['Month'] }}</th>
+                      <th>{{ t['Inflows'] }}</th>
+                      <th>{{ t['PredictedOutflow'] }}</th>
+                      <th>{{ t['ProbableOutflow'] }}</th>
+                      <th>{{ t['PredictedBalance'] }}</th>
+                      <th>{{ t['ProbableBalance'] }}</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let m of simulation.months; let i = index" [class.risk-row]="m.probableClosing < 0">
+                      <td class="m-cell"><span class="m-pill">{{ m.month }}/{{ m.year }}</span></td>
+                      <td class="in">{{ m.inflows | currency: 'BRL' }}</td>
+                      <td class="out">{{ m.predictedOutflow | currency: 'BRL' }}</td>
+                      <td class="out">{{ m.probableOutflow | currency: 'BRL' }}</td>
+                      <td>{{ m.predictedClosing | currency: 'BRL' }}</td>
+                      <td class="balance-cell" [class.negative]="m.probableClosing < 0">
+                        <span class="trend" [ngClass]="rowTrend(simulation.months, i)">
+                          <mat-icon>{{ rowTrendIcon(rowTrend(simulation.months, i)) }}</mat-icon>
+                        </span>
+                        <span class="bal-val">{{ m.probableClosing | currency: 'BRL' }}</span>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </ng-container>
+        </div>
+      </mat-tab>
+    </mat-tab-group>
+  </div>
+</ng-container>
