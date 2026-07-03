@@ -59,9 +59,9 @@ export class CreditCardComponent extends Base implements OnInit {
   selectedBank: Bank | null = null;
 
   cardName = '';
-  closingDay = 6;
-  limit = 0;
-  dueDay = 0;
+  closingDay!: number;
+  limit!: number;
+  dueDay!: number;
   mustEdit = false;
 
   searchBank = '';
@@ -133,6 +133,10 @@ export class CreditCardComponent extends Base implements OnInit {
   clearSearch() {
     this.searchBank = '';
     this.filterBanks();
+    this.dueDay = 0;
+    this.limit = 0;
+    this.closingDay = 0;
+    this.cardName = '';
   }
 
   filterBanks(): void {
