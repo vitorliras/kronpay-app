@@ -1,0 +1,19 @@
+<ng-container *ngIf="translations$ | async as t">
+  <mat-form-field appearance="outline" class="full-width">
+    <mat-label>{{ t['ConfirmationCode'] }}</mat-label>
+    <input
+      matInput
+      [formControl]="control"
+      maxlength="6"
+      inputmode="numeric"
+      autocomplete="one-time-code"
+    />
+  </mat-form-field>
+
+  <div class="code-actions">
+    <span class="expires" *ngIf="remainingSeconds > 0">{{ t['CodeExpiresIn'] }} {{ formattedTime }}</span>
+    <a class="link" [class.disabled]="!canResend" (click)="onResendClick()">
+      {{ t['ResendCode'] }}
+    </a>
+  </div>
+</ng-container>

@@ -1,0 +1,32 @@
+.full-width {
+  width: 100%;
+  margin-bottom: 8px;
+}
+
+.code-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  font-size: 14px;
+
+  .expires {
+    color: #6b7280;
+  }
+
+  .link {
+    color: #3f51b5;
+    cursor: pointer;
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+
+    &.disabled {
+      color: #9ca3af;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+  }
+}

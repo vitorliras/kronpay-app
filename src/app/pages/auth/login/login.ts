@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
@@ -18,6 +18,11 @@ import { map } from 'rxjs';
 import { NgxMaskDirective } from 'ngx-mask';
 import { CreateUserRequest } from '../../../core/models/users/create-user-request.model';
 import { UserService } from '../../../core/services/user.service';
+import { CodeInput } from '../../../shared/components/code-input/code-input';
+import { MaskedPasswordDirective } from '../../../shared/directives/masked-password.directive';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+
+const CODE_VALIDITY_MS = 2 * 60 * 1000;
 
 @Component({
   selector: 'app-login',
@@ -33,6 +38,9 @@ import { UserService } from '../../../core/services/user.service';
     MatButtonToggleModule,
     MatTooltipModule,
     NgxMaskDirective,
+    CodeInput,
+    MaskedPasswordDirective,
+    MatProgressSpinnerModule,
   ],
   templateUrl: './login.html',
   styleUrl: './login.scss',
@@ -41,7 +49,14 @@ export class Login extends Base {
   private fb = inject(FormBuilder);
   private auth = inject(AuthService);
   private toastr = inject(ToastrService);
+  private cdr = inject(ChangeDetectorRef);
   currentView = 'login';
+
+  registeredEmail = '';
+  resetEmail = '';
+  codeExpiresAt: Date | null = null;
+  resetCodeValidated = false;
+  isLoading = false;
 
   constructor() {
     super();
@@ -90,6 +105,20 @@ export class Login extends Base {
     password: ['', passwordValidator],
   });
 
+  confirmEmailForm = this.fb.group({
+    code: ['', [Validators.required, Validators.pattern(/^\d{6}$/)]],
+  });
+
+  forgotForm = this.fb.group({
+    email: ['', [Validators.required, Validators.email]],
+  });
+
+  resetPasswordForm = this.fb.group({
+    code: ['', [Validators.required, Validators.pattern(/^\d{6}$/)]],
+    newPassword: ['', passwordValidator],
+    confirmPassword: ['', Validators.required],
+  });
+
   hidePassword = true;
   loading = false;
   errorMessage: string | null = null;
@@ -108,6 +137,7 @@ export class Login extends Base {
   }
 
   goToForgotPassword() {
+    this.forgotForm.reset();
     this.currentView = 'forgot';
   }
 
@@ -154,7 +184,169 @@ export class Login extends Base {
       next: (res) => {
         if (res.isSuccess) {
           this.toastr.success(res.message);
+          this.registeredEmail = payload.email;
+          this.confirmEmailForm.reset();
+          this.codeExpiresAt = new Date(Date.now() + CODE_VALIDITY_MS);
+          this.currentView = 'confirm-email';
+          // Força a atualização da view: uma pendência pré-existente no template
+          // (fora do escopo desta tarefa) impede o ciclo automático de change
+          // detection de rodar após callbacks assíncronos de HTTP.
+          this.cdr.detectChanges();
+          return;
+        }
+
+        this.toastr.warning(res.message);
+      },
+      error: (err) => {
+        this.toastr.error(err.error?.message);
+      },
+    });
+  }
+
+  confirmEmail() {
+    this.isLoading = true;
+    this.cdr.detectChanges();
+
+    if (this.confirmEmailForm.invalid) {
+      this.confirmEmailForm.markAllAsTouched();
+      return;
+    }
+
+    const { code } = this.confirmEmailForm.value;
+
+    this.auth.confirmEmail(this.registeredEmail, code!).subscribe({
+      next: (res) => {
+        if (res.isSuccess) {
+          this.toastr.success(res.message);
           this.goToLogin();
+          this.isLoading = false;
+          this.cdr.detectChanges();
+          return;
+        }
+        this.isLoading = false;
+        this.cdr.detectChanges();
+        this.toastr.warning(res.message);
+      },
+      error: (err) => {
+        this.toastr.error(err.error?.message);
+        this.isLoading = false;
+        this.cdr.detectChanges();
+      },
+    });
+  }
+
+  resendConfirmationCode() {
+    this.auth.resendConfirmationCode(this.registeredEmail).subscribe({
+      next: (res) => {
+        if (res.isSuccess) {
+          this.toastr.success(res.message);
+          this.codeExpiresAt = new Date(Date.now() + CODE_VALIDITY_MS);
+          this.cdr.detectChanges();
+          return;
+        }
+
+        this.toastr.warning(res.message);
+      },
+      error: (err) => {
+        this.toastr.error(err.error?.message);
+      },
+    });
+  }
+
+  requestPasswordReset() {
+    this.isLoading = true;
+    this.cdr.detectChanges();
+
+    if (this.forgotForm.invalid) {
+      this.forgotForm.markAllAsTouched();
+      return;
+    }
+
+    const { email } = this.forgotForm.value;
+
+    this.auth.requestPasswordReset(email!).subscribe({
+      next: (res) => {
+        this.toastr.success(res.message);
+        this.resetEmail = email!;
+        this.resetCodeValidated = false;
+        this.resetPasswordForm.reset();
+        this.codeExpiresAt = new Date(Date.now() + CODE_VALIDITY_MS);
+        this.currentView = 'reset-password';
+        this.isLoading = false;
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        this.toastr.error(err.error?.message);
+        this.isLoading = false;
+        this.cdr.detectChanges();
+      },
+    });
+  }
+
+  resendPasswordResetCode() {
+    this.auth.requestPasswordReset(this.resetEmail).subscribe({
+      next: (res) => {
+        this.toastr.success(res.message);
+        this.codeExpiresAt = new Date(Date.now() + CODE_VALIDITY_MS);
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        this.toastr.error(err.error?.message);
+      },
+    });
+  }
+
+  onResetPasswordFormSubmit() {
+    if (this.resetCodeValidated) {
+      this.resetPassword();
+      return;
+    }
+
+    this.validateResetCode();
+  }
+
+  validateResetCode() {
+    const code = this.resetPasswordForm.controls.code.value;
+    if (!code || this.resetPasswordForm.controls.code.invalid) {
+      this.resetPasswordForm.controls.code.markAsTouched();
+      return;
+    }
+
+    this.auth.validateResetCode(this.resetEmail, code).subscribe({
+      next: (res) => {
+        if (res.isSuccess) {
+          this.resetCodeValidated = true;
+          this.cdr.detectChanges();
+          return;
+        }
+
+        this.toastr.warning(res.message);
+      },
+      error: (err) => {
+        this.toastr.error(err.error?.message);
+      },
+    });
+  }
+
+  resetPassword() {
+    if (this.resetPasswordForm.invalid) {
+      this.resetPasswordForm.markAllAsTouched();
+      return;
+    }
+
+    const { code, newPassword, confirmPassword } = this.resetPasswordForm.value;
+
+    if (newPassword !== confirmPassword) {
+      this.messageWarning('PasswordsDoNotMatch');
+      return;
+    }
+
+    this.auth.resetPassword(this.resetEmail, code!, newPassword!, confirmPassword!).subscribe({
+      next: (res) => {
+        if (res.isSuccess) {
+          this.toastr.success(res.message);
+          this.goToLogin();
+          this.cdr.detectChanges();
           return;
         }
 

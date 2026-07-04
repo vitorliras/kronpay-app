@@ -1,7 +1,9 @@
 <div class="login-page">
   <div class="login-card">
     <ng-container *ngIf="translations$ | async as t">
-
+<div class="loader-container" *ngIf="isLoading">
+      <mat-progress-spinner mode="indeterminate" diameter="50"></mat-progress-spinner>
+    </div>
       <!-- ================= LOGIN ================= -->
       <ng-container *ngIf="currentView === 'login'">
 
@@ -13,7 +15,7 @@
         <h2>{{ t['WelcomeBack'] }}</h2>
         <p>{{ t['MakeLoginForAccessYourAccount'] }}</p>
 
-        <form [formGroup]="loginForm" (ngSubmit)="submit()">
+        <form [formGroup]="loginForm" (ngSubmit)="submit()" autocomplete="off">
 
           <mat-form-field appearance="outline" class="full-width">
             <mat-label>E-mail</mat-label>
@@ -25,7 +27,7 @@
             <mat-label>{{ t['Password'] }}</mat-label>
             <mat-icon matPrefix>lock</mat-icon>
 
-            <input matInput formControlName="password" [type]="hidePassword ? 'password' : 'text'" />
+            <input matInput formControlName="password" [maskedPassword]="hidePassword" autocomplete="new-password" />
 
             <button mat-icon-button matSuffix type="button" (click)="togglePasswordVisibility()">
               <mat-icon>
@@ -69,7 +71,7 @@
         <mat-divider></mat-divider>
 
 
-        <form [formGroup]="registerForm">
+        <form [formGroup]="registerForm" autocomplete="off">
 
           <mat-form-field appearance="outline" class="full-width">
             <mat-label>{{ t['Name'] }}</mat-label>
@@ -99,7 +101,7 @@
           <mat-form-field appearance="outline" class="full-width">
             <mat-label>{{ t['Password'] }}</mat-label>
 
-            <input matInput type="password" formControlName="password">
+            <input matInput maskedPassword formControlName="password" autocomplete="new-password">
 
             <button mat-icon-button matSuffix type="button"  matTooltip="{{ passwordRules$ | async }}">
               <mat-icon>info</mat-icon>
@@ -124,11 +126,84 @@
           <mat-icon class="arrow"> chevron_left </mat-icon>
         </button>
 
+        <h2>{{ t['ForgotYourPassword'] }}</h2>
+        <p class="subtitle">{{ t['ForgotPasswordInstructions'] }}</p>
+
+        <form [formGroup]="forgotForm" (ngSubmit)="requestPasswordReset()">
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>E-mail</mat-label>
+            <mat-icon matPrefix>mail</mat-icon>
+            <input matInput formControlName="email" type="email">
+          </mat-form-field>
+
+          <button mat-raised-button color="primary" class="login-button" type="submit">
+            {{ t['Send'] }}
+          </button>
+        </form>
+
+      </ng-container>
+
+      <!-- ================= CONFIRM EMAIL ================= -->
+      <ng-container *ngIf="currentView === 'confirm-email'">
+
+        <h2>{{ t['ConfirmEmailTitle'] }}</h2>
+        <p class="subtitle">{{ t['ConfirmEmailInstructions'] }}</p>
+
+        <form [formGroup]="confirmEmailForm" (ngSubmit)="confirmEmail()">
+
+          <app-code-input
+            [control]="confirmEmailForm.controls.code"
+            [expiresAt]="codeExpiresAt"
+            (resend)="resendConfirmationCode()"
+          ></app-code-input>
+
+          <button mat-raised-button color="primary" class="login-button" type="submit">
+            {{ t['Confirm'] }}
+          </button>
+        </form>
+
+      </ng-container>
+
+      <!-- ================= RESET PASSWORD ================= -->
+      <ng-container *ngIf="currentView === 'reset-password'">
+
+        <button class="btn-arrow" (click)="goToLogin()">
+          <mat-icon class="arrow"> chevron_left </mat-icon>
+        </button>
 
         <h2>{{ t['ForgotYourPassword'] }}</h2>
-        <p>Recuperação de senha (placeholder)</p>
 
+        <form [formGroup]="resetPasswordForm" (ngSubmit)="onResetPasswordFormSubmit()" autocomplete="off">
 
+          <app-code-input
+            *ngIf="!resetCodeValidated"
+            [control]="resetPasswordForm.controls.code"
+            [expiresAt]="codeExpiresAt"
+            (resend)="resendPasswordResetCode()"
+          ></app-code-input>
+
+          <ng-container *ngIf="resetCodeValidated">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>{{ t['NewPassword'] }}</mat-label>
+
+              <input matInput maskedPassword formControlName="newPassword" autocomplete="new-password">
+
+              <button mat-icon-button matSuffix type="button" matTooltip="{{ passwordRules$ | async }}">
+                <mat-icon>info</mat-icon>
+              </button>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>{{ t['ConfirmNewPassword'] }}</mat-label>
+              <input matInput maskedPassword formControlName="confirmPassword" autocomplete="new-password">
+            </mat-form-field>
+          </ng-container>
+
+          <button mat-raised-button color="primary" class="login-button" type="submit">
+            {{ t['Confirm'] }}
+          </button>
+        </form>
 
       </ng-container>
 
