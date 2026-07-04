@@ -3,8 +3,13 @@ import { Component, inject } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialogRef } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
-import { ImageCroppedEvent, ImageCropperComponent } from 'ngx-image-cropper';
+import { ImageCroppedEvent, ImageCropperComponent, LoadedImage } from 'ngx-image-cropper';
 import { Base } from '../../../core/bases/base/base';
+
+const MAX_MODAL_SIZE = 800;
+const MIN_MODAL_SIZE = 280;
+const DEFAULT_MODAL_WIDTH = 420;
+const DEFAULT_MODAL_HEIGHT = 320;
 
 @Component({
   selector: 'app-config-profile-photo-modal',
@@ -21,6 +26,9 @@ export class ConfigProfilePhotoModal extends Base {
 
   imageChangedEvent: Event | null = null;
   private croppedBlob: Blob | null = null;
+
+  modalWidth = DEFAULT_MODAL_WIDTH;
+  cropperHeight = DEFAULT_MODAL_HEIGHT;
 
   constructor() {
     super();
@@ -45,11 +53,22 @@ export class ConfigProfilePhotoModal extends Base {
     }
 
     this.croppedBlob = null;
+    this.modalWidth = DEFAULT_MODAL_WIDTH;
+    this.cropperHeight = DEFAULT_MODAL_HEIGHT;
     this.imageChangedEvent = event;
+  }
+
+  onImageLoaded(image: LoadedImage): void {
+    this.modalWidth = this.clampSize(image.original.size.width);
+    this.cropperHeight = this.clampSize(image.original.size.height);
   }
 
   onImageCropped(event: ImageCroppedEvent): void {
     this.croppedBlob = event.blob ?? null;
+  }
+
+  private clampSize(value: number): number {
+    return Math.min(Math.max(value, MIN_MODAL_SIZE), MAX_MODAL_SIZE);
   }
 
   confirm(): void {

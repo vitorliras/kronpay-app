@@ -1,5 +1,38 @@
+.modal-register {
+  max-height: 90vh;
+}
+
+.modal-register-body {
+  overflow-y: auto;
+  min-height: 0;
+  scrollbar-width: thin;
+  scrollbar-color: #c9c9c9 transparent;
+
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #c9c9c9;
+    border-radius: 4px;
+
+    &:hover {
+      background: #a8a8a8;
+    }
+  }
+}
+
+.modal-register-footer {
+  flex-shrink: 0;
+  padding: 12px 20px;
+  border-top: 1px solid #e5e5e5;
+}
+
 image-cropper {
   display: block;
-  max-height: 320px;
   margin-top: 12px;
 }

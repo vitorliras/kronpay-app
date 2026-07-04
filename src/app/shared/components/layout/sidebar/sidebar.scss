@@ -10,6 +10,10 @@
 
   &.collapsed {
     width: 80px;
+
+    .user-box {
+      padding: 12px 20px;
+    }
   }
 
   .logo {
@@ -62,28 +66,13 @@
 
   nav {
     flex: 1;
-    a {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 12px 20px;
-      color: white;
-      text-decoration: none;
-
-      mat-icon {
-        color: white;
-      }
-
-      &:hover {
-        background: rgba(255, 255, 255, 0.1);
-      }
-    }
   }
 
   .language {
     display: flex;
     gap: 8px;
     padding: 12px 10px;
+    margin-bottom: 24px;
 
     button {
       flex: 1;
@@ -152,6 +141,10 @@
   }
 
   .menu-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 20px;
     border-radius: 10px;
 
     color: #f8f8f8;

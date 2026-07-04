@@ -6,41 +6,41 @@
       <span *ngIf="!isCollapsed">Kronpay</span>
     </div>
 
-    <div *ngIf="!isCollapsed">
-      <div class="user-box"   *ngIf="user$ | async as user">
-        <button class="avatar-btn" (click)="goToProfile()" [matTooltip]="t['Profile']" matTooltipPosition="right">
-          <app-avatar-circular [size]="44"></app-avatar-circular>
-        </button>
+    <div class="user-box" *ngIf="user$ | async as user">
+      <button class="avatar-btn" (click)="goToProfile()" [matTooltip]="t['Profile']" matTooltipPosition="right">
+        <app-avatar-circular [size]="isCollapsed ? 32 : 44"></app-avatar-circular>
+      </button>
 
-        <div class="user-info">
-          <span class="hello">{{ t['Hello'] }}, {{ user.username }}</span>
-          <span class="email">{{ user.email }}</span>
-        </div>
+      <div class="user-info" *ngIf="!isCollapsed">
+        <span class="hello">{{ t['Hello'] }}, {{ user.username }}</span>
+        <span class="email">{{ user.email }}</span>
       </div>
-
     </div>
 
     <nav>
-      <a routerLink="/dashboard" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"
-        class="menu-item">
+      <div [routerLink]="'/dashboard'" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"
+        class="menu-item" [matTooltip]="t['Dashboard']" [matTooltipDisabled]="!isCollapsed" matTooltipPosition="right">
         <mat-icon>insert_chart_outlined</mat-icon>
         <span *ngIf="!isCollapsed">{{ t['Dashboard'] }}</span>
-      </a>
+      </div>
 
-      <a routerLink="/transaction" routerLinkActive="active" class="menu-item">
+      <div [routerLink]="'/transaction'" routerLinkActive="active" class="menu-item"
+        [matTooltip]="t['Transactions']" [matTooltipDisabled]="!isCollapsed" matTooltipPosition="right">
         <mat-icon>receipt_long</mat-icon>
         <span *ngIf="!isCollapsed">{{ t['Transactions'] }}</span>
-      </a>
+      </div>
 
-      <a routerLink="/report" routerLinkActive="active" class="menu-item">
+      <div [routerLink]="'/report'" routerLinkActive="active" class="menu-item"
+        [matTooltip]="t['Reports']" [matTooltipDisabled]="!isCollapsed" matTooltipPosition="right">
         <mat-icon>pie_chart</mat-icon>
         <span *ngIf="!isCollapsed">{{ t['Reports'] }}</span>
-      </a>
+      </div>
 
-      <a routerLink="/planning" routerLinkActive="active" class="menu-item">
+      <div [routerLink]="'/planning'" routerLinkActive="active" class="menu-item"
+        [matTooltip]="t['Planning']" [matTooltipDisabled]="!isCollapsed" matTooltipPosition="right">
         <mat-icon>savings</mat-icon>
         <span *ngIf="!isCollapsed">{{ t['Planning'] }}</span>
-      </a>
+      </div>
 
       <!-- <a routerLink="/connector" routerLinkActive="active" class="menu-item">
         <mat-icon>account_balance</mat-icon>
@@ -48,42 +48,44 @@
       </a> -->
 
       <div class="menu-group">
-        <div class="group-header" (click)="toggleCreditCard()" [class.active-parent]="isCreditCardActive">
+        <div class="group-header" (click)="toggleCreditCard()" [class.active-parent]="isCreditCardActive"
+          [matTooltip]="t['CreditCard']" [matTooltipDisabled]="!isCollapsed" matTooltipPosition="right">
           <mat-icon>credit_card</mat-icon>
           <span class="label" *ngIf="!isCollapsed">{{ t['CreditCard'] }}</span>
           <mat-icon class="chevron" [class.open]="creditCardOpen">expand_more</mat-icon>
         </div>
 
         <div class="submenu" *ngIf="creditCardOpen">
-          <a routerLink="/credit-card/cards" routerLinkActive="active" class="submenu-item">
+          <div [routerLink]="'/credit-card/cards'" routerLinkActive="active" class="submenu-item"
+            [matTooltip]="t['Cards'] || 'Cartões'" [matTooltipDisabled]="!isCollapsed" matTooltipPosition="right">
             <mat-icon>style</mat-icon>
             <span class="label" *ngIf="!isCollapsed">{{ t['Cards'] || 'Cartões' }}</span>
-          </a>
-          <a routerLink="/credit-card/invoices" routerLinkActive="active" class="submenu-item">
+          </div>
+          <div [routerLink]="'/credit-card/invoices'" routerLinkActive="active" class="submenu-item"
+            [matTooltip]="t['Invoices'] || 'Faturas'" [matTooltipDisabled]="!isCollapsed" matTooltipPosition="right">
             <mat-icon>receipt_long</mat-icon>
             <span class="label" *ngIf="!isCollapsed">{{ t['Invoices'] || 'Faturas' }}</span>
-          </a>
+          </div>
         </div>
       </div>
 
-      <a routerLink="/investments" routerLinkActive="active" class="menu-item">
+      <div [routerLink]="'/investments'" routerLinkActive="active" class="menu-item"
+        [matTooltip]="t['Investments']" [matTooltipDisabled]="!isCollapsed" matTooltipPosition="right">
         <mat-icon>trending_up</mat-icon>
         <span *ngIf="!isCollapsed">{{ t['Investments'] }}</span>
-      </a>
+      </div>
 
-      <a routerLink="/goals" routerLinkActive="active" class="menu-item">
+      <div [routerLink]="'/goals'" routerLinkActive="active" class="menu-item"
+        [matTooltip]="t['Objectives']" [matTooltipDisabled]="!isCollapsed" matTooltipPosition="right">
         <mat-icon>flag</mat-icon>
         <span *ngIf="!isCollapsed">{{ t['Objectives'] }}</span>
-      </a>
+      </div>
 
-      <a routerLink="/config" routerLinkActive="active" class="menu-item">
+      <div [routerLink]="'/config'" routerLinkActive="active" class="menu-item"
+        [matTooltip]="t['Settings']" [matTooltipDisabled]="!isCollapsed" matTooltipPosition="right">
         <mat-icon>settings</mat-icon>
-        <span *ngIf="!isCollapsed">
-          <ng-container *ngIf="translations$ | async as t">
-            {{ t['Settings'] }}
-          </ng-container>
-        </span>
-      </a>
+        <span *ngIf="!isCollapsed">{{ t['Settings'] }}</span>
+      </div>
 
     </nav>
 

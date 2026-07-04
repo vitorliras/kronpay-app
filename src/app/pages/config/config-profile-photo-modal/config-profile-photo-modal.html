@@ -1,5 +1,5 @@
 <ng-container *ngIf="translations$ | async as t">
-  <div class="modal-register" style="width: 420px;">
+  <div class="modal-register" [style.width.px]="modalWidth">
     <div class="modal-register-title">
       <h2 mat-dialog-title>{{ t['ProfilePhoto'] }}</h2>
       <button class="close-btn" (click)="close()"><mat-icon>close</mat-icon></button>
@@ -27,14 +27,16 @@
         [roundCropper]="true"
         [output]="'blob'"
         format="jpeg"
+        [style.height.px]="cropperHeight"
+        (imageLoaded)="onImageLoaded($event)"
         (imageCropped)="onImageCropped($event)"
       ></image-cropper>
+    </div>
 
-      <div mat-dialog-actions>
-        <button mat-raised-button color="primary" [disabled]="!imageChangedEvent" (click)="confirm()">
-          <mat-icon>save</mat-icon>{{ t['Save'] }}
-        </button>
-      </div>
+    <div mat-dialog-actions class="modal-register-footer">
+      <button mat-raised-button color="primary" [disabled]="!imageChangedEvent" (click)="confirm()">
+        <mat-icon>save</mat-icon>{{ t['Save'] }}
+      </button>
     </div>
   </div>
 </ng-container>
