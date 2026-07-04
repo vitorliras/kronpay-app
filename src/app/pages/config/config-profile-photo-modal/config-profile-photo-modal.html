@@ -31,12 +31,12 @@
         (imageLoaded)="onImageLoaded($event)"
         (imageCropped)="onImageCropped($event)"
       ></image-cropper>
-    </div>
 
-    <div mat-dialog-actions class="modal-register-footer">
-      <button mat-raised-button color="primary" [disabled]="!imageChangedEvent" (click)="confirm()">
-        <mat-icon>save</mat-icon>{{ t['Save'] }}
-      </button>
+      <div mat-dialog-actions>
+        <button mat-raised-button color="primary" [disabled]="!imageChangedEvent" (click)="confirm()">
+          <mat-icon>save</mat-icon>{{ t['Save'] }}
+        </button>
+      </div>
     </div>
   </div>
 </ng-container>
