@@ -1,5 +1,5 @@
 import { HttpErrorResponse, HttpInterceptorFn, HttpResponse } from '@angular/common/http';
-import { catchError, of, throwError } from 'rxjs';
+import { catchError, of, switchMap, throwError } from 'rxjs';
 import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 
@@ -20,7 +20,7 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
 
       if (connection) {
         if(authService.isAuthenticated())
-        authService.logout();
+        authService.logout().subscribe();
         router.navigate(['/auth/login']);
       }
 
@@ -55,12 +55,35 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
       }
 
       if (error.status === 401 || error.status === 403) {
-        authService.logout();
+        const expireSession = () =>
+          authService.logout().pipe(
+            switchMap(() => {
+              translate.getByKey('ExpiredToken').subscribe((message) => {
+                toastr.error(message);
+              });
+              router.navigate(['/auth/login']);
+              return throwError(() => error);
+            }),
+          );
 
-        translate.getByKey('ExpiredToken').subscribe((message) => {
-          toastr.error(message);
-        });
-        router.navigate(['/auth/login']);
+        const refreshToken = authService.getRefreshToken();
+        if (!refreshToken) {
+          return expireSession();
+        }
+
+        return authService.refresh().pipe(
+          switchMap((result) => {
+            if (result.isSuccess && result.value) {
+              const retriedRequest = req.clone({
+                setHeaders: { Authorization: `Bearer ${result.value.accessToken}` },
+              });
+              return next(retriedRequest);
+            }
+
+            return expireSession();
+          }),
+          catchError(() => expireSession()),
+        );
       }
 
       return throwError(() => error);

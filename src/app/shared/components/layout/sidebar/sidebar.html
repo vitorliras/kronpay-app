@@ -8,7 +8,9 @@
 
     <div *ngIf="!isCollapsed">
       <div class="user-box"   *ngIf="user$ | async as user">
-        <div class="avatar"></div>
+        <button class="avatar-btn" (click)="goToProfile()" [matTooltip]="t['Profile']" matTooltipPosition="right">
+          <app-avatar-circular [size]="44"></app-avatar-circular>
+        </button>
 
         <div class="user-info">
           <span class="hello">{{ t['Hello'] }}, {{ user.username }}</span>

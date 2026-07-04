@@ -13,6 +13,14 @@
     display: flex;
     gap: 16px;
     align-items: center;
+
+    .avatar-btn {
+      display: flex;
+      background: none;
+      border: none;
+      padding: 0;
+      cursor: pointer;
+    }
   }
 
 }

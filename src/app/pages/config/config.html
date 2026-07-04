@@ -1,5 +1,5 @@
 <ng-container *ngIf="translations$ | async as t">
-  <mat-tab-group class="card-1 table" animationDuration="200ms">
+  <mat-tab-group class="card-1 table" animationDuration="200ms" [selectedIndex]="selectedTabIndex">
 
     <mat-tab label="{{ t['Categories'] }}">
 
@@ -297,6 +297,29 @@
           <mat-paginator [showFirstLastButtons]="true" [length]="paymentMethodsFilterDataSource.data.length" [pageSize]="10"  [pageSizeOptions]="[5, 10, 25, 50]" #paginatorPaymentMethod ></mat-paginator>
         </div>
 
+      </div>
+    </mat-tab>
+
+    <mat-tab label="{{ t['Profile'] }}">
+      <div class="card-wrapper profile-tab" *ngIf="user$ | async as user">
+        <app-avatar-circular [size]="120"></app-avatar-circular>
+
+        <div class="profile-info">
+          <span class="name">{{ user.name }}</span>
+          <span class="email">{{ user.email }}</span>
+        </div>
+
+        <div class="profile-actions">
+          <button mat-stroked-button type="button" (click)="openChangePhotoModal()">
+            <mat-icon>photo_camera</mat-icon>
+            {{ user.hasProfilePhoto ? t['ChangePhoto'] : t['SelectImage'] }}
+          </button>
+
+          <button *ngIf="user.hasProfilePhoto" mat-stroked-button color="warn" type="button" (click)="removePhoto()">
+            <mat-icon>delete</mat-icon>
+            {{ t['RemovePhoto'] }}
+          </button>
+        </div>
       </div>
     </mat-tab>
 

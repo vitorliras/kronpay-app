@@ -1,9 +1,10 @@
 <div class="login-page">
+
+  <div  class="loader-container pos-load" *ngIf="isLoading">
+  <mat-progress-spinner mode="indeterminate" diameter="50"></mat-progress-spinner>
+</div>
   <div class="login-card">
     <ng-container *ngIf="translations$ | async as t">
-<div class="loader-container" *ngIf="isLoading">
-      <mat-progress-spinner mode="indeterminate" diameter="50"></mat-progress-spinner>
-    </div>
       <!-- ================= LOGIN ================= -->
       <ng-container *ngIf="currentView === 'login'">
 
@@ -37,7 +38,7 @@
           </mat-form-field>
 
           <div class="options">
-            <mat-checkbox>{{ t['RemindMe']}}</mat-checkbox>
+            <mat-checkbox formControlName="rememberMe">{{ t['RemindMe']}}</mat-checkbox>
             <a class="link" (click)="goToForgotPassword()">
               {{ t['ForgotYourPassword'] }}
             </a>
@@ -103,14 +104,15 @@
 
             <input matInput maskedPassword formControlName="password" autocomplete="new-password">
 
-            <button mat-icon-button matSuffix type="button"  matTooltip="{{ passwordRules$ | async }}">
+            <button mat-icon-button matSuffix type="button" matTooltip="{{ passwordRules$ | async }}">
               <mat-icon>info</mat-icon>
             </button>
 
           </mat-form-field>
 
 
-          <button mat-raised-button color="primary" class="login-button" [disabled]="registerForm.invalid" (click)="register()">
+          <button mat-raised-button color="primary" class="login-button" [disabled]="registerForm.invalid"
+            (click)="register()">
             {{ t['Register'] }}
           </button>
 
@@ -152,11 +154,8 @@
 
         <form [formGroup]="confirmEmailForm" (ngSubmit)="confirmEmail()">
 
-          <app-code-input
-            [control]="confirmEmailForm.controls.code"
-            [expiresAt]="codeExpiresAt"
-            (resend)="resendConfirmationCode()"
-          ></app-code-input>
+          <app-code-input [control]="confirmEmailForm.controls.code" [expiresAt]="codeExpiresAt"
+            (resend)="resendConfirmationCode()"></app-code-input>
 
           <button mat-raised-button color="primary" class="login-button" type="submit">
             {{ t['Confirm'] }}
@@ -176,12 +175,8 @@
 
         <form [formGroup]="resetPasswordForm" (ngSubmit)="onResetPasswordFormSubmit()" autocomplete="off">
 
-          <app-code-input
-            *ngIf="!resetCodeValidated"
-            [control]="resetPasswordForm.controls.code"
-            [expiresAt]="codeExpiresAt"
-            (resend)="resendPasswordResetCode()"
-          ></app-code-input>
+          <app-code-input *ngIf="!resetCodeValidated" [control]="resetPasswordForm.controls.code"
+            [expiresAt]="codeExpiresAt" (resend)="resendPasswordResetCode()"></app-code-input>
 
           <ng-container *ngIf="resetCodeValidated">
             <mat-form-field appearance="outline" class="full-width">

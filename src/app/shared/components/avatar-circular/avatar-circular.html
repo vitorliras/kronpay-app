@@ -1,0 +1,7 @@
+<div class="avatar-circular" [style.width.px]="size" [style.height.px]="size">
+  <img *ngIf="photoUrl$ | async as url; else initialsTpl" [src]="url" alt="Avatar" />
+
+  <ng-template #initialsTpl>
+    <span class="initials" [style.font-size.px]="size / 2.5">{{ initials$ | async }}</span>
+  </ng-template>
+</div>

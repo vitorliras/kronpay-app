@@ -5,6 +5,6 @@ import { AuthService } from '../services/auth.service';
 export const loginGuard: CanActivateFn = () => {
   const auth = inject(AuthService);
 
-  auth.logout();
+  auth.logout().subscribe();
   return true;
 };

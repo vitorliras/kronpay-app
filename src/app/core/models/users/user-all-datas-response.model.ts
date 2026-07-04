@@ -3,6 +3,7 @@ export interface UserAllDatasResponse{
   username?: string;
   phone?: string;
   cpf?: string;
-  usertype?: string;
+  userType?: string;
   email?: string;
+  hasProfilePhoto?: boolean;
 }

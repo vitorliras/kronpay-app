@@ -1,0 +1,40 @@
+<ng-container *ngIf="translations$ | async as t">
+  <div class="modal-register" style="width: 420px;">
+    <div class="modal-register-title">
+      <h2 mat-dialog-title>{{ t['ProfilePhoto'] }}</h2>
+      <button class="close-btn" (click)="close()"><mat-icon>close</mat-icon></button>
+    </div>
+
+    <div class="modal-register-body">
+      <input
+        #fileInput
+        type="file"
+        accept="image/jpeg,image/png,image/webp"
+        hidden
+        (change)="onFileSelected($event)"
+      />
+
+      <button mat-stroked-button type="button" (click)="fileInput.click()">
+        <mat-icon>upload</mat-icon>
+        {{ t['SelectImage'] }}
+      </button>
+
+      <image-cropper
+        *ngIf="imageChangedEvent"
+        [imageChangedEvent]="imageChangedEvent"
+        [maintainAspectRatio]="true"
+        [aspectRatio]="1"
+        [roundCropper]="true"
+        [output]="'blob'"
+        format="jpeg"
+        (imageCropped)="onImageCropped($event)"
+      ></image-cropper>
+
+      <div mat-dialog-actions>
+        <button mat-raised-button color="primary" [disabled]="!imageChangedEvent" (click)="confirm()">
+          <mat-icon>save</mat-icon>{{ t['Save'] }}
+        </button>
+      </div>
+    </div>
+  </div>
+</ng-container>

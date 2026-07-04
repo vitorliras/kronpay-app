@@ -100,4 +100,8 @@ export abstract class Base {
   round(value: number): number {
     return Math.round(value * 100) / 100;
   }
+
+  goToProfile(): void {
+    this.router.navigate(['/config'], { queryParams: { tab: 'profile' } });
+  }
 }

@@ -3,10 +3,11 @@ import { Component, EventEmitter, inject, Input, Output } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { Base } from '../../../../core/bases/base/base';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { AvatarCircular } from '../../avatar-circular/avatar-circular';
 
 @Component({
   selector: 'app-header',
-  imports: [CommonModule, MatIconModule, MatTooltipModule],
+  imports: [CommonModule, MatIconModule, MatTooltipModule, AvatarCircular],
   standalone: true,
   templateUrl: './header.html',
   styleUrls: ['./header.scss', '../../../../../styles/main.scss'],
@@ -25,9 +26,10 @@ export class Header extends Base {
     this.confirmModal('Atention', 'EndSession', 'Yes', 'No', '380', 'help_outline').subscribe(
       (result) => {
         if (!result) return;
-        this.authService.logout();
-        this.userService.clearCache();
-        this.router.navigate(['/login']);
+        this.authService.logout().subscribe(() => {
+          this.userService.clearCache();
+          this.router.navigate(['/auth/login']);
+        });
       },
     );
   }

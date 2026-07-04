@@ -1,5 +1,6 @@
 import { ToastrService } from 'ngx-toastr';
 import { Component, inject, OnInit, viewChild } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { Base } from '../../core/bases/base/base';
 import { CategoryService } from '../../core/services/category.service';
 import { CategoryItemService } from '../../core/services/category-item.service';
@@ -38,6 +39,8 @@ import { ConfigPaymentMethodModal } from './config-payment-method-modal/config-p
 import { DeactivateCategoryItemSelectRequest } from '../../core/models/config/category-item/deactive-category-item-select-request.model';
 import { DeactivateCategoryItemRequest } from '../../core/models/config/category-item/deactive-category-item-request.model';
 import { DeactivateCategorySelectRequest } from '../../core/models/config/category/deactive-category-select-request.model';
+import { AvatarCircular } from '../../shared/components/avatar-circular/avatar-circular';
+import { ConfigProfilePhotoModal } from './config-profile-photo-modal/config-profile-photo-modal';
 
 @Component({
   selector: 'app-config',
@@ -54,6 +57,7 @@ import { DeactivateCategorySelectRequest } from '../../core/models/config/catego
     MatFormFieldModule,
     MatInputModule,
     FormsModule,
+    AvatarCircular,
   ],
   providers: [
     {
@@ -88,11 +92,23 @@ export class ConfigComponent extends Base implements OnInit {
   paymentMethodsFilterDataSource = new MatTableDataSource<PaymentMethodResponse>([]);
   selectionPaymentMethods = new SelectionModel<PaymentMethodResponse>(true, []);
 
+  private static readonly TAB_INDEX_BY_NAME: Record<string, number> = {
+    categories: 0,
+    subcategories: 1,
+    payments: 2,
+    profile: 3,
+  };
+
   private categoryService = inject(CategoryService);
   private categoryItemService = inject(CategoryItemService);
   private paymentMethodService = inject(PaymentMethodService);
   private dialog = inject(MatDialog);
   private toastr = inject(ToastrService);
+  private activatedRoute = inject(ActivatedRoute);
+
+  user$ = this.userService.getUser();
+
+  selectedTabIndex = 0;
 
   searchTerm = '';
   typeFilter: 'I' | 'E' | 'V' | null = null;
@@ -105,6 +121,11 @@ export class ConfigComponent extends Base implements OnInit {
 
   ngOnInit(): void {
     this.getDatas();
+
+    const tab = this.activatedRoute.snapshot.queryParamMap.get('tab');
+    if (tab && tab in ConfigComponent.TAB_INDEX_BY_NAME) {
+      this.selectedTabIndex = ConfigComponent.TAB_INDEX_BY_NAME[tab];
+    }
   }
 
   getDatas() {
@@ -647,5 +668,45 @@ export class ConfigComponent extends Base implements OnInit {
         this.selectionPaymentMethods.clear();
       }
     }
+  }
+
+  openChangePhotoModal() {
+    const dialogRef = this.dialog.open(ConfigProfilePhotoModal);
+
+    dialogRef.afterClosed().subscribe((file?: File) => {
+      if (!file) return;
+
+      this.userService.uploadPhoto(file).subscribe({
+        next: (res) => {
+          if (res.isSuccess) {
+            this.toastr.success(res.message);
+          } else {
+            this.toastr.warning(res.message);
+          }
+        },
+        error: (err) => {
+          this.toastr.error(err.error?.message);
+        },
+      });
+    });
+  }
+
+  removePhoto() {
+    this.confirmModal('Delete', 'AreYouSureRemoveData', 'Yes', 'No', '380', 'help_outline').subscribe((result) => {
+      if (!result) return;
+
+      this.userService.removePhoto().subscribe({
+        next: (res) => {
+          if (res.isSuccess) {
+            this.toastr.success(res.message);
+          } else {
+            this.toastr.warning(res.message);
+          }
+        },
+        error: (err) => {
+          this.toastr.error(err.error?.message);
+        },
+      });
+    });
   }
 }

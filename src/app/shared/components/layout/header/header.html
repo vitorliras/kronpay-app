@@ -9,7 +9,15 @@
 
   <div class="actions">
     <mat-icon>notifications</mat-icon>
-    <!-- <mat-icon>account_circle</mat-icon> -->
+    <button
+      *ngIf="user$ | async"
+      class="avatar-btn"
+      (click)="goToProfile()"
+      matTooltip="{{ t['Profile'] }}"
+      matTooltipPosition="below"
+    >
+      <app-avatar-circular [size]="32"></app-avatar-circular>
+    </button>
     <button (click)="logout()" class="logout-btn" matTooltip="{{ t['Logout'] }}" matTooltipPosition="below">
       <mat-icon>logout</mat-icon>
     </button>

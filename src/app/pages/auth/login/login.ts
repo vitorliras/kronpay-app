@@ -92,8 +92,9 @@ export class Login extends Base {
   }
 
   loginForm = this.fb.group({
-    email: ['', [Validators.required, Validators.email]],
+    email: [this.auth.getRememberedEmail() ?? '', [Validators.required, Validators.email]],
     password: ['', Validators.required],
+    rememberMe: [false],
   });
 
   registerForm = this.fb.group({
@@ -144,13 +145,12 @@ export class Login extends Base {
   submit() {
     if (this.loginForm.invalid) return;
 
-    const { email, password } = this.loginForm.value;
+    const { email, password, rememberMe } = this.loginForm.value;
 
-    this.auth.login(email!, password!).subscribe({
+    this.auth.login(email!, password!, rememberMe!).subscribe({
       next: (res) => {
         if (res.isSuccess && res.value) {
           this.toastr.success(res.message);
-          localStorage.setItem('access_token', res.value.accessToken);
           this.router.navigate(['/dashboard']);
           return;
         }
