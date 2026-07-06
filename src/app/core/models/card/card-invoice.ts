@@ -25,6 +25,8 @@ export interface CardInstallmentResponse {
   amount: number;
   status: string;
   categoryDescription?: string | null;
+  categoryId?: number | null;
+  categoryItemId?: number | null;
 }
 
 export interface PayCardInvoiceRequest {
