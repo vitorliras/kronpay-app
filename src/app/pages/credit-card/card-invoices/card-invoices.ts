@@ -37,7 +37,11 @@ import { CreateCardPurchaseRequest } from '../../../core/models/card/card-purcha
     MatSelectModule,
   ],
   templateUrl: './card-invoices.html',
-  styleUrls: ['./card-invoices.scss', '../../../../styles/card-invoices.scss'],
+  styleUrls: [
+    './card-invoices.scss',
+    '../../../../styles/card-invoices.scss',
+    '../../../../styles/buttons.scss',
+  ],
 })
 export class CardInvoicesComponent extends Base implements OnInit {
   private creditCardService = inject(CreditCardService);

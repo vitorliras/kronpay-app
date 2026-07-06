@@ -147,7 +147,7 @@
             <span class="muted">{{ it.categoryDescription || '—' }}</span>
             <span>{{ it.amount | currency: 'BRL' }}</span>
             <span class="ist" [ngClass]="it.status">{{ t[installmentStatusLabel(it.status)] }}</span>
-            <span class="item-actions">
+            <span class="action-buttons-1">
               <button
                 type="button"
                 class="icon-btn edit"
