@@ -13,6 +13,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { FormsModule } from '@angular/forms';
@@ -58,6 +59,7 @@ import { ConfigProfilePhotoModal } from './config-profile-photo-modal/config-pro
     MatInputModule,
     FormsModule,
     AvatarCircular,
+    MatTooltipModule,
   ],
   providers: [
     {
