@@ -3,4 +3,5 @@ export interface CategoryResponse {
   codTypeTransaction: string;
   description: string;
   isActive: boolean;
+  isCardInvoiceCategory: boolean;
 }

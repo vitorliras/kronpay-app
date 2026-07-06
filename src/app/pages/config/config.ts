@@ -177,6 +177,7 @@ export class ConfigComponent extends Base implements OnInit {
               id: result.id,
               description: result.description,
               codTypeTransaction: result.codTypeTransaction,
+              isCardInvoiceCategory: result.isCardInvoiceCategory,
             };
 
             this.categoryService.update(request).subscribe(
@@ -197,6 +198,7 @@ export class ConfigComponent extends Base implements OnInit {
             const request: CreateCategoryRequest = {
               description: result.description,
               codTypeTransaction: result.codTypeTransaction,
+              isCardInvoiceCategory: result.isCardInvoiceCategory,
             };
 
             this.categoryService.create(request).subscribe(

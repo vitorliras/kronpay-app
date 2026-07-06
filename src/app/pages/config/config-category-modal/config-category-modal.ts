@@ -16,6 +16,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { Base } from '../../../core/bases/base/base';
 import { MatSelectModule } from '@angular/material/select';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 
 @Component({
@@ -28,6 +29,7 @@ import { DragDropModule } from '@angular/cdk/drag-drop';
     MatFormFieldModule,
     MatInputModule,
     MatSelectModule,
+    MatCheckboxModule,
     FormsModule,
     ReactiveFormsModule,
     DragDropModule
@@ -60,6 +62,7 @@ export class ConfigCategoryModal extends Base {
       isActive: [true],
       description: ['', Validators.required],
       codTypeTransaction: ['', Validators.required],
+      isCardInvoiceCategory: [false],
     });
 
     if (category) {
@@ -69,6 +72,7 @@ export class ConfigCategoryModal extends Base {
         isActive: category.isActive,
         description: category.description,
         codTypeTransaction: category.codTypeTransaction,
+        isCardInvoiceCategory: category.isCardInvoiceCategory,
       });
     }
   }
