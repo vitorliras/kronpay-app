@@ -114,7 +114,6 @@ export class CreditCardComponent extends Base implements OnInit {
         if (res.isSuccess) {
           this.cards = res.value ?? [];
           this.isLoading = false;
-          console.log(this.cards);
           this.cdr.detectChanges();
         }
       },
