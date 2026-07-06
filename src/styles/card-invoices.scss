@@ -208,7 +208,7 @@
 
       .item-row {
         display: grid;
-        grid-template-columns: 90px 1.5fr 1fr 110px 110px;
+        grid-template-columns: 90px 1.5fr 1fr 110px 110px 70px;
         gap: 12px;
 
         .num {
@@ -242,6 +242,12 @@
       .no-items {
         color: #94a3c4;
         padding: 8px 4px;
+      }
+
+      .item-actions {
+        display: flex;
+        gap: 4px;
+        justify-content: flex-end;
       }
     }
   }

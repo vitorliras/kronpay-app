@@ -284,6 +284,78 @@ export class CardInvoicesComponent extends Base implements OnInit {
     });
   }
 
+  editPurchase(item: CardInstallmentResponse): void {
+    const dialogRef = this.dialog.open(CardPurchaseModal, {
+      data: {
+        cards: this.cards,
+        categories: this.categories,
+        purchase: {
+          id: item.cardPurchaseId,
+          description: item.purchaseDescription,
+          categoryId: item.categoryId ?? null,
+        },
+      },
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (!result) return;
+
+      this.isLoading = true;
+      this.purchaseService
+        .update({
+          id: item.cardPurchaseId,
+          description: result.description,
+          categoryId: result.categoryId ?? null,
+        })
+        .subscribe({
+          next: (res) => {
+            this.isLoading = false;
+            if (res.isSuccess) {
+              this.toastr.success(res.message);
+              if (this.selectedInvoiceId) this.reloadItems(this.selectedInvoiceId);
+            } else {
+              this.toastr.warning(res.message);
+            }
+          },
+          error: () => {
+            this.isLoading = false;
+          },
+        });
+    });
+  }
+
+  deletePurchase(item: CardInstallmentResponse): void {
+    this.confirmModal('Delete', 'AreYouSureRemoveData', 'Yes', 'No', '380', 'help_outline').subscribe(
+      (confirmed) => {
+        if (!confirmed) return;
+
+        this.isLoading = true;
+        this.purchaseService.deactivate({ id: item.cardPurchaseId }).subscribe({
+          next: (res) => {
+            this.isLoading = false;
+            if (res.isSuccess) {
+              this.toastr.success(res.message);
+              this.onCardChange();
+            } else {
+              this.toastr.warning(res.message);
+            }
+          },
+          error: () => {
+            this.isLoading = false;
+          },
+        });
+      },
+    );
+  }
+
+  private reloadItems(invoiceId: number): void {
+    this.items = [];
+    this.invoiceService.getItems(invoiceId).subscribe((res) => {
+      if (res.isSuccess) this.items = res.value ?? [];
+      this.cdr.detectChanges();
+    });
+  }
+
   startPay(invoice: CardInvoiceResponse): void {
     this.payingInvoice = invoice;
     this.selectedPaymentMethodId = null;

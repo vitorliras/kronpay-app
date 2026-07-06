@@ -139,6 +139,7 @@
             <span>{{ t['Category'] }}</span>
             <span>{{ t['Value'] }}</span>
             <span>{{ t['Status'] }}</span>
+            <span></span>
           </div>
           <div class="item-row" *ngFor="let it of items">
             <span class="num">{{ it.installmentNumber }}/{{ it.installmentsCount }}</span>
@@ -146,6 +147,24 @@
             <span class="muted">{{ it.categoryDescription || '—' }}</span>
             <span>{{ it.amount | currency: 'BRL' }}</span>
             <span class="ist" [ngClass]="it.status">{{ t[installmentStatusLabel(it.status)] }}</span>
+            <span class="item-actions">
+              <button
+                type="button"
+                class="icon-btn edit"
+                *ngIf="!isPaid(inv)"
+                (click)="editPurchase(it)"
+              >
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button
+                type="button"
+                class="icon-btn delete"
+                *ngIf="!isPaid(inv)"
+                (click)="deletePurchase(it)"
+              >
+                <mat-icon>delete</mat-icon>
+              </button>
+            </span>
           </div>
           <div class="no-items" *ngIf="!items.length">{{ t['NoItems'] }}</div>
         </div>
