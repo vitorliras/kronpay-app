@@ -28,6 +28,8 @@ import { BaseChartDirective } from 'ng2-charts';
 import { ChartConfiguration, ChartOptions } from 'chart.js';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { take } from 'rxjs';
+import { GoalService } from '../../core/services/goal.service';
+import { CategoryBudgetGoalResponse } from '../../core/models/goals/category-budget-goal-response.model';
 
 @Component({
   selector: 'app-dashboard',
@@ -53,9 +55,14 @@ export class DashboardComponente extends Base implements OnInit {
   private categoryService = inject(CategoryService);
   private paymentMethodService = inject(PaymentMethodService);
   private transactionService = inject(TransactionService);
+  private goalService = inject(GoalService);
   private dialog = inject(MatDialog);
   private toastr = inject(ToastrService);
   private cdr = inject(ChangeDetectorRef);
+
+  categoryBudgetGoals: CategoryBudgetGoalResponse[] = [];
+  private readonly realCurrentMonth = new Date().getMonth() + 1;
+  private readonly realCurrentYear = new Date().getFullYear();
 
   annualSummary: any[] = [];
 
@@ -183,6 +190,32 @@ export class DashboardComponente extends Base implements OnInit {
   getDatas() {
     this.getCategories();
     this.getPaymentMethod();
+    this.getCategoryBudgetGoals();
+  }
+
+  getCategoryBudgetGoals() {
+    this.goalService.getOverview().subscribe((res) => {
+      if (res.isSuccess && res.value) {
+        this.categoryBudgetGoals = res.value.categoryBudgetGoals;
+      }
+    });
+  }
+
+  get showCategoryGoals(): boolean {
+    return (
+      this.month === this.realCurrentMonth &&
+      this.year === this.realCurrentYear &&
+      this.categoryBudgetGoals.length > 0
+    );
+  }
+
+  categoryGoalName(categoryId: number): string {
+    return this.categories.find((c) => c.id === categoryId)?.description ?? '';
+  }
+
+  goalProgressWidth(goal: CategoryBudgetGoalResponse): number {
+    if (goal.monthlyLimit <= 0) return 0;
+    return Math.min(100, (goal.currentPeriodSpent / goal.monthlyLimit) * 100);
   }
 
   getCategories() {

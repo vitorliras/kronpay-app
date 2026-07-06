@@ -145,6 +145,22 @@
             </canvas>
           </div>
         </div>
+
+        <div class="goal-progress-row" *ngIf="showCategoryGoals">
+          <div class="goal-progress-card" *ngFor="let goal of categoryBudgetGoals">
+            <span class="goal-progress-name">{{ categoryGoalName(goal.categoryId) }}</span>
+            <div class="goal-progress-bar">
+              <div
+                class="goal-progress-fill"
+                [class.over]="goal.currentPeriodSpent > goal.monthlyLimit"
+                [style.width.%]="goalProgressWidth(goal)"
+              ></div>
+            </div>
+            <span class="goal-progress-value">
+              R$ {{ goal.currentPeriodSpent.toFixed(2) }} / R$ {{ goal.monthlyLimit.toFixed(2) }}
+            </span>
+          </div>
+        </div>
       </div>
 
 

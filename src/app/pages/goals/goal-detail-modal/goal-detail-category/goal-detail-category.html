@@ -1,0 +1,38 @@
+<ng-container *ngIf="translations$ | async as t">
+  <div class="loader-row" *ngIf="isLoading">
+    <mat-progress-spinner mode="indeterminate" diameter="30"></mat-progress-spinner>
+  </div>
+
+  <ng-container *ngIf="!isLoading && strategy">
+    <div class="trend-row">
+      <span class="trend-label">{{ t[trendKey(strategy.trend.direction)] }}</span>
+      <span class="trend-values">
+        R$ {{ strategy.trend.currentPeriodSpent.toFixed(2) }}
+        <small>({{ t['MonthlyAverage'] }}: R$ {{ strategy.trend.historicalAverage.toFixed(2) }})</small>
+      </span>
+    </div>
+
+    <div class="spending-groups">
+      <div class="spending-group" *ngFor="let group of strategy.groups">
+        <span class="group-label">
+          {{ group.label }}
+          <mat-icon *ngIf="group.isRepeated" class="repeat-icon" [matTooltip]="group.transactionCount + 'x'">
+            repeat
+          </mat-icon>
+        </span>
+        <span class="group-amount">R$ {{ group.amount.toFixed(2) }}</span>
+      </div>
+
+      <p *ngIf="strategy.groups.length === 0" class="empty-groups">{{ t['NoSpendingSuggestionAvailable'] }}</p>
+    </div>
+
+    <div class="suggestion" *ngIf="strategy.groups.length > 0">
+      {{ suggestionText(t) }}
+    </div>
+
+    <div class="acceleration" *ngIf="accelerationText">
+      <mat-icon>trending_up</mat-icon>
+      <span>{{ accelerationText }}</span>
+    </div>
+  </ng-container>
+</ng-container>

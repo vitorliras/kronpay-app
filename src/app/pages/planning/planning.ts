@@ -385,13 +385,8 @@ export class PlanningComponent extends Base implements OnInit {
   }
 
   deactivate(commitment: PlannedCommitmentResponse): void {
-    this.translations$.pipe(take(1)).subscribe((t) => {
-      this.confirmModal(
-        t['Deactivate'],
-        t['ConfirmDeactivateCommitment'],
-        t['Confirm'],
-        t['Cancel'],
-      ).subscribe((ok: boolean) => {
+    this.confirmModal('Deactivate', 'ConfirmDeactivateCommitment', 'Confirm', 'Cancel').subscribe(
+      (ok: boolean) => {
         if (!ok) return;
 
         this.planningService.deactivateCommitment(commitment.id).subscribe((res) => {
@@ -404,8 +399,8 @@ export class PlanningComponent extends Base implements OnInit {
             this.toastr.warning(res.message);
           }
         });
-      });
-    });
+      },
+    );
   }
 
   get fixedIncome(): number {

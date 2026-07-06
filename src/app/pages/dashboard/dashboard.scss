@@ -21,3 +21,51 @@
     font-size: 15px !important;
   }
 }
+
+.goal-progress-row {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.goal-progress-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 12px;
+  border: 1px solid #eef2f7;
+  border-radius: 8px;
+
+  .goal-progress-name {
+    flex: 0 0 140px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #0f2b5c;
+  }
+
+  .goal-progress-bar {
+    flex: 1;
+    height: 8px;
+    border-radius: 4px;
+    background: #eef2f7;
+    overflow: hidden;
+  }
+
+  .goal-progress-fill {
+    height: 100%;
+    background: #1b9c63;
+    border-radius: 4px;
+
+    &.over {
+      background: #ef4444;
+    }
+  }
+
+  .goal-progress-value {
+    flex: 0 0 auto;
+    font-size: 12px;
+    color: #6b6b6b;
+    white-space: nowrap;
+  }
+}

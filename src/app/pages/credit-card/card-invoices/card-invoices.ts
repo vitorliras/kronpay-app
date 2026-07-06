@@ -147,7 +147,6 @@ export class CardInvoicesComponent extends Base implements OnInit {
     });
   }
 
-  // ------- período / atraso / filtro -------
   applyView(): void {
     const now = new Date();
     const curYear = now.getFullYear();
@@ -165,7 +164,6 @@ export class CardInvoicesComponent extends Base implements OnInit {
       return;
     }
 
-    // padrão: atrasadas no topo + mês atual em diante (máx 12)
     this.overdueInvoices = this.invoices
       .filter((i) => this.isOverdue(i))
       .sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
@@ -232,7 +230,6 @@ export class CardInvoicesComponent extends Base implements OnInit {
     return this.filterYear !== null;
   }
 
-  // ------- ações -------
   openPurchaseModal(): void {
     const dialogRef = this.dialog.open(CardPurchaseModal, {
       data: {
@@ -401,7 +398,6 @@ export class CardInvoicesComponent extends Base implements OnInit {
     });
   }
 
-  // retornam chaves de tradução (usadas como t[...] no template)
   monthLabel(month: number): string {
     return this.monthKeys[(month - 1) % 12] ?? '';
   }

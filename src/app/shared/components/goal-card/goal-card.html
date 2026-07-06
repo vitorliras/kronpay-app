@@ -1,0 +1,47 @@
+<ng-container *ngIf="translations$ | async as t">
+  <div
+    class="goal-card"
+    [class.type-financial]="goal.type === 'financial'"
+    [class.type-category]="goal.type === 'category'"
+    [class.at-risk]="goal.isAtRiskOrOverLimit"
+  >
+    <div class="goal-card-header">
+      <mat-icon class="type-icon">{{ goal.type === 'financial' ? 'flag' : 'speed' }}</mat-icon>
+
+      <div class="goal-card-titles">
+        <span class="title">{{ goal.title }}</span>
+        <span class="subtitle">{{ goal.subtitle }}</span>
+      </div>
+
+      <div class="header-actions">
+        <button
+          mat-icon-button
+          *ngIf="goal.type === 'financial'"
+          [matTooltip]="t['AddContribution']"
+          (click)="addContribution.emit()"
+        >
+          <mat-icon>savings</mat-icon>
+        </button>
+        <button mat-icon-button [matTooltip]="t['Edit']" (click)="edit.emit()">
+          <mat-icon>edit</mat-icon>
+        </button>
+        <button mat-icon-button [matTooltip]="t['Cancel']" (click)="cancel.emit()">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+    </div>
+
+    <div class="progress-bar">
+      <div class="progress-fill" [style.width.%]="progressWidth"></div>
+    </div>
+
+    <div class="goal-card-footer">
+      <span class="badge priority">{{ t['Priority'] }}: {{ t[priorityKey] }}</span>
+      <span class="badge status">{{ t[statusKey] }}</span>
+    </div>
+
+    <button mat-stroked-button class="view-detail-btn" (click)="viewDetail.emit()">
+      {{ t['ViewDetail'] }}
+    </button>
+  </div>
+</ng-container>

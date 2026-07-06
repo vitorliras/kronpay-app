@@ -1,0 +1,40 @@
+<ng-container *ngIf="translations$ | async as t">
+  <div class="goals-history-page">
+    <div class="goals-history-head">
+      <h2 class="goals-history-title"><mat-icon>history</mat-icon> {{ t['GoalsHistory'] }}</h2>
+      <a mat-stroked-button routerLink="/goals">
+        <mat-icon>arrow_back</mat-icon> {{ t['Back'] }}
+      </a>
+    </div>
+
+    <div class="search-box-1">
+      <mat-icon style="margin-top: 7px;" class="search-icon">search</mat-icon>
+      <input type="text" [placeholder]="t['Search']" (input)="onSearch($event)" />
+    </div>
+
+    <div class="loader-container" *ngIf="isLoading">
+      <mat-progress-spinner mode="indeterminate" diameter="42"></mat-progress-spinner>
+    </div>
+
+    <div class="history-list" *ngIf="!isLoading && goals.length > 0">
+      <div class="history-row" *ngFor="let goal of goals">
+        <div class="history-info">
+          <span class="history-description">{{ goal.description }}</span>
+          <span class="history-amount">R$ {{ goal.currentAmount.toFixed(2) }} / R$ {{ goal.targetAmount.toFixed(2) }}</span>
+          <span class="history-date">{{ t['TargetDate'] }}: {{ goal.targetDate | date: 'dd/MM/yyyy' }}</span>
+        </div>
+
+        <span class="badge status" [class.expired]="isExpired(goal)">{{ t[statusKey(goal)] }}</span>
+
+        <button mat-stroked-button *ngIf="isExpired(goal)" (click)="retry(goal)">
+          <mat-icon>refresh</mat-icon> {{ t['TryAgain'] }}
+        </button>
+      </div>
+    </div>
+
+    <div class="empty-state" *ngIf="!isLoading && goals.length === 0">
+      <mat-icon>history</mat-icon>
+      <span>{{ t['NoGoalsInHistory'] }}</span>
+    </div>
+  </div>
+</ng-container>

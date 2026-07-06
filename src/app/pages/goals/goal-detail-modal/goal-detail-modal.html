@@ -1,0 +1,24 @@
+<ng-container *ngIf="translations$ | async as t">
+  <div class="modal-register" style="width: 480px;">
+    <div class="modal-register-title">
+      <h2 mat-dialog-title>
+        {{ data.type === 'financial' ? data.financialGoal?.description : data.categoryName }}
+      </h2>
+      <button class="close-btn" (click)="close()"><mat-icon>close</mat-icon></button>
+    </div>
+
+    <div class="modal-register-body">
+      <app-goal-detail-financial
+        *ngIf="data.type === 'financial' && data.financialGoal"
+        [goal]="data.financialGoal"
+      ></app-goal-detail-financial>
+
+      <app-goal-detail-category
+        *ngIf="data.type === 'category' && data.categoryGoal"
+        [goal]="data.categoryGoal"
+        [categoryName]="data.categoryName ?? ''"
+        [activeFinancialGoals]="data.activeFinancialGoals ?? []"
+      ></app-goal-detail-category>
+    </div>
+  </div>
+</ng-container>

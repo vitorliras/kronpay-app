@@ -1,0 +1,35 @@
+<ng-container *ngIf="translations$ | async as t">
+  <div class="loader-row" *ngIf="isLoading">
+    <mat-progress-spinner mode="indeterminate" diameter="30"></mat-progress-spinner>
+  </div>
+
+  <ng-container *ngIf="!isLoading && viability">
+    <div class="risk-banner" [class.at-risk]="viability.atRisk">
+      <mat-icon>{{ viability.atRisk ? 'warning' : 'check_circle' }}</mat-icon>
+      <span>{{ viability.atRisk ? t['GoalAtRisk'] : t['GoalOnTrack'] }}</span>
+    </div>
+
+    <div class="strategy-list">
+      <div class="strategy-card" *ngFor="let strategy of viability.strategies">
+        <div class="strategy-label">{{ t[strategyLabelKey(strategy.label)] }}</div>
+
+        <div class="strategy-row">
+          <span class="row-label">{{ t['ContributionAmount'] }}</span>
+          <span class="row-value">R$ {{ strategy.monthlyContribution.toFixed(2) }}</span>
+        </div>
+
+        <div class="strategy-row" *ngIf="strategy.projectedCompletionDate">
+          <span class="row-label">{{ t['ProjectedCompletion'] }}</span>
+          <span class="row-value">{{ strategy.projectedCompletionDate | date: 'MM/yyyy' }}</span>
+        </div>
+
+        <div class="strategy-row">
+          <span class="row-label">{{ t['SafetyReserveImpact'] }}</span>
+          <span class="row-value" [class.negative]="strategy.safetyReserveImpact < 0">
+            R$ {{ strategy.safetyReserveImpact.toFixed(2) }}
+          </span>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+</ng-container>

@@ -46,6 +46,16 @@ export const routes: Routes = [
           import('./pages/planning/planning').then((m) => m.PlanningComponent),
       },
       {
+        path: 'goals',
+        loadComponent: () =>
+          import('./pages/goals/goals').then((m) => m.Goals),
+      },
+      {
+        path: 'goals-history',
+        loadComponent: () =>
+          import('./pages/goals-history/goals-history').then((m) => m.GoalsHistory),
+      },
+      {
         path: 'connector',
         loadComponent: () =>
           import('./pages/connector/connector').then((m) => m.ConnectorComponent),

@@ -1,0 +1,35 @@
+<ng-container *ngIf="translations$ | async as t">
+  <div class="goals-page">
+    <div class="goals-head">
+      <h2 class="goals-title"><mat-icon>flag</mat-icon> {{ t['Objectives'] }}</h2>
+      <div class="goals-head-actions">
+        <a mat-stroked-button routerLink="/goals-history">
+          <mat-icon>history</mat-icon> {{ t['ViewHistory'] }}
+        </a>
+        <button mat-raised-button color="primary" (click)="openNewGoalModal()">
+          <mat-icon>add</mat-icon> {{ t['NewGoal'] }}
+        </button>
+      </div>
+    </div>
+
+    <div class="loader-container" *ngIf="isLoading">
+      <mat-progress-spinner mode="indeterminate" diameter="42"></mat-progress-spinner>
+    </div>
+
+    <div class="goals-grid" *ngIf="!isLoading && items.length > 0">
+      <app-goal-card
+        *ngFor="let item of items; trackBy: trackByItem"
+        [goal]="item"
+        (viewDetail)="openDetailModal(item)"
+        (edit)="openEditModal(item)"
+        (cancel)="cancelGoal(item)"
+        (addContribution)="addContribution(item)"
+      ></app-goal-card>
+    </div>
+
+    <div class="empty-state" *ngIf="!isLoading && items.length === 0">
+      <mat-icon>flag</mat-icon>
+      <span>{{ t['NoActiveGoals'] }}</span>
+    </div>
+  </div>
+</ng-container>

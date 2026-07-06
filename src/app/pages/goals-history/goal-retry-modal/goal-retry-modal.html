@@ -1,0 +1,23 @@
+<ng-container *ngIf="translations$ | async as t">
+  <div class="modal-register" style="width: 360px;">
+    <div class="modal-register-title">
+      <h2 mat-dialog-title>{{ t['TryAgain'] }}</h2>
+      <button class="close-btn" (click)="close()"><mat-icon>close</mat-icon></button>
+    </div>
+
+    <div class="modal-register-body">
+      <form [formGroup]="form">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>{{ t['TargetDate'] }}</mat-label>
+          <input matInput type="date" [min]="minDate" formControlName="newTargetDate" />
+        </mat-form-field>
+      </form>
+
+      <div mat-dialog-actions>
+        <button mat-raised-button color="primary" (click)="save()">
+          <mat-icon>save</mat-icon>{{ t['Save'] }}
+        </button>
+      </div>
+    </div>
+  </div>
+</ng-container>

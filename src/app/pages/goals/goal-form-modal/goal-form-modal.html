@@ -1,0 +1,71 @@
+<ng-container *ngIf="translations$ | async as t">
+  <div class="modal-register" style="width: 420px;">
+    <div class="modal-register-title">
+      <h2 mat-dialog-title>{{ editing ? t['Edit'] : t['NewGoal'] }}</h2>
+      <button class="close-btn" (click)="close()"><mat-icon>close</mat-icon></button>
+    </div>
+
+    <div class="modal-register-body">
+      <mat-button-toggle-group
+        *ngIf="!editing"
+        [value]="goalType"
+        (change)="selectType($event.value)"
+        class="full-width"
+      >
+        <mat-button-toggle value="financial">{{ t['GoalTypeAchievement'] }}</mat-button-toggle>
+        <mat-button-toggle value="category">{{ t['GoalTypeCategoryLimit'] }}</mat-button-toggle>
+      </mat-button-toggle-group>
+
+      <form *ngIf="goalType === 'financial'" [formGroup]="financialForm">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>{{ t['Description'] }}</mat-label>
+          <input matInput formControlName="description" maxlength="200" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>{{ t['TargetAmount'] }}</mat-label>
+          <input matInput type="number" step="0.01" formControlName="targetAmount" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>{{ t['TargetDate'] }}</mat-label>
+          <input matInput type="date" formControlName="targetDate" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>{{ t['Priority'] }}</mat-label>
+          <mat-select formControlName="priority">
+            <mat-option *ngFor="let p of priorities" [value]="p.value">{{ t[p.label] }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </form>
+
+      <form *ngIf="goalType === 'category'" [formGroup]="categoryForm">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>{{ t['SelectCategory'] }}</mat-label>
+          <mat-select formControlName="categoryId">
+            <mat-option *ngFor="let c of categories" [value]="c.id">{{ c.description }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>{{ t['MonthlyLimit'] }}</mat-label>
+          <input matInput type="number" step="0.01" formControlName="monthlyLimit" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>{{ t['Priority'] }}</mat-label>
+          <mat-select formControlName="priority">
+            <mat-option *ngFor="let p of priorities" [value]="p.value">{{ t[p.label] }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </form>
+
+      <div mat-dialog-actions>
+        <button mat-raised-button color="primary" (click)="save()">
+          <mat-icon>save</mat-icon>{{ t['Save'] }}
+        </button>
+      </div>
+    </div>
+  </div>
+</ng-container>

@@ -1,0 +1,54 @@
+.loader-row {
+  display: flex;
+  justify-content: center;
+  padding: 20px 0;
+}
+
+.risk-banner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: rgba(76, 175, 80, 0.12);
+  color: #2e7d32;
+  margin-bottom: 16px;
+
+  &.at-risk {
+    background: rgba(239, 68, 68, 0.12);
+    color: #b91c1c;
+  }
+}
+
+.strategy-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.strategy-card {
+  border: 1px solid #e5e5e5;
+  border-radius: 8px;
+  padding: 10px 12px;
+
+  .strategy-label {
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+
+  .strategy-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+    padding: 2px 0;
+
+    .row-label {
+      color: #6b6b6b;
+    }
+
+    .row-value.negative {
+      color: #b91c1c;
+      font-weight: 600;
+    }
+  }
+}
