@@ -37,7 +37,8 @@ import { CategoryResponse } from '../../../core/models/config/category/category-
 })
 export class CardPurchaseModal extends Base {
   form: FormGroup;
-  title = 'Add';
+  title = 'NewPurchase';
+  isEditMode = false;
 
   cards: CreditCardResponse[] = [];
   categories: CategoryResponse[] = [];
@@ -50,11 +51,13 @@ export class CardPurchaseModal extends Base {
       cards: CreditCardResponse[];
       categories: CategoryResponse[];
       creditCardId?: number | null;
+      purchase?: { id: number; description: string; categoryId: number | null } | null;
     },
   ) {
     super();
     this.cards = data.cards ?? [];
     this.categories = data.categories ?? [];
+    this.isEditMode = !!data.purchase;
 
     this.form = this.fb.group({
       creditCardId: [data.creditCardId ?? null, Validators.required],
@@ -64,6 +67,18 @@ export class CardPurchaseModal extends Base {
       installmentsCount: [1, [Validators.required, Validators.min(1)]],
       categoryId: [null],
     });
+
+    if (data.purchase) {
+      this.title = 'Edit';
+      this.form.patchValue({
+        description: data.purchase.description,
+        categoryId: data.purchase.categoryId,
+      });
+      this.form.get('creditCardId')?.disable();
+      this.form.get('totalAmount')?.disable();
+      this.form.get('purchaseDate')?.disable();
+      this.form.get('installmentsCount')?.disable();
+    }
   }
 
   private todayIso(): string {
@@ -72,6 +87,13 @@ export class CardPurchaseModal extends Base {
 
   save() {
     if (this.form.valid) {
+      if (this.isEditMode) {
+        this.dialogRef.close({
+          description: this.form.value.description,
+          categoryId: this.form.value.categoryId,
+        });
+        return;
+      }
       this.dialogRef.close(this.form.value);
     } else {
       this.form.markAllAsTouched();
