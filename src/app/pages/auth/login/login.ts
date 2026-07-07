@@ -104,6 +104,9 @@ export class Login extends Base {
     cpf: ['', [Validators.required, cpfValidator]],
     phone: ['', [Validators.required]],
     password: ['', passwordValidator],
+    emailOnCritical: [true],
+    emailOnImportant: [true],
+    emailOnInformative: [false],
   });
 
   confirmEmailForm = this.fb.group({
@@ -178,6 +181,9 @@ export class Login extends Base {
       cpf: formValue.cpf!.replace(/\D/g, ''),
       phone: formValue.phone!.replace(/\D/g, ''),
       password: formValue.password!,
+      emailOnCritical: formValue.emailOnCritical!,
+      emailOnImportant: formValue.emailOnImportant!,
+      emailOnInformative: formValue.emailOnInformative!,
     };
 
     this.userService.create(payload).subscribe({

@@ -1,0 +1,337 @@
+// Neutraliza o chrome padrão do MatDialog (padding/fundo do .mdc-dialog__surface) para o
+// header/gradiente ir de ponta a ponta — nenhum outro modal do projeto fazia isso, o que é
+// exatamente por que o botão de fechar de um modal com layout mais elaborado (header
+// colorido, não um formulário simples) ficava desalinhado: a posição absoluta calculava
+// contra a caixa externa do Material, não contra o header deste componente.
+::ng-deep .critical-modal-panel .mat-mdc-dialog-container .mdc-dialog__surface {
+  padding: 0;
+  background: transparent;
+  box-shadow: none;
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+.critical-modal {
+  width: 560px;
+  max-width: 92vw;
+  background: #f4f6fa;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 24px 60px rgba(15, 43, 92, 0.35);
+  font-family: 'Roboto', sans-serif;
+  display: flex;
+  flex-direction: column;
+}
+
+.critical-modal-header {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 28px 52px 24px 28px;
+  background: linear-gradient(135deg, #1b3c88 0%, #0f2b5c 55%, #7c2d3f 160%);
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: -70px;
+    right: -50px;
+    width: 190px;
+    height: 190px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.08);
+    pointer-events: none;
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: -90px;
+    left: -40px;
+    width: 160px;
+    height: 160px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.05);
+    pointer-events: none;
+  }
+
+  .close-btn {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(255, 255, 255, 0.16);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    z-index: 2;
+
+    mat-icon {
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
+      line-height: 18px;
+    }
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.3);
+      transform: rotate(90deg);
+    }
+  }
+
+  .header-icon {
+    position: relative;
+    z-index: 1;
+    flex-shrink: 0;
+    width: 56px;
+    height: 56px;
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.16);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+
+    mat-icon {
+      font-size: 28px;
+      width: 28px;
+      height: 28px;
+      color: #fff;
+    }
+  }
+
+  .header-text {
+    position: relative;
+    z-index: 1;
+    min-width: 0;
+
+    .header-title-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+
+      h2 {
+        margin: 0;
+        font-size: 20px;
+        font-weight: 700;
+        color: #fff;
+        letter-spacing: 0.2px;
+      }
+
+      .count-chip {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 22px;
+        height: 22px;
+        padding: 0 7px;
+        border-radius: 999px;
+        background: #fff;
+        color: #0f2b5c;
+        font-size: 12px;
+        font-weight: 700;
+      }
+    }
+
+    .header-subtitle {
+      margin: 4px 0 0;
+      font-size: 13px;
+      color: rgba(255, 255, 255, 0.78);
+    }
+  }
+}
+
+.critical-modal-body {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 22px 24px;
+  max-height: 55vh;
+  overflow-y: auto;
+
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: rgba(15, 43, 92, 0.2);
+    border-radius: 999px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+}
+
+.critical-notification-card {
+  display: flex;
+  gap: 14px;
+  padding: 16px;
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.06);
+  border: 1px solid rgba(15, 23, 42, 0.04);
+  animation: notification-card-in 0.35s ease both;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 24px rgba(15, 23, 42, 0.1);
+  }
+
+  .card-icon {
+    flex-shrink: 0;
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    mat-icon {
+      font-size: 20px;
+      width: 20px;
+      height: 20px;
+      color: #fff;
+    }
+  }
+
+  .card-content {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .card-top-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .badge.criticality {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .card-date {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 11px;
+    color: #94a3b8;
+
+    mat-icon {
+      font-size: 13px;
+      width: 13px;
+      height: 13px;
+    }
+  }
+
+  .card-text {
+    margin: 0;
+    font-size: 13.5px;
+    line-height: 1.55;
+    color: #1e293b;
+  }
+
+  .card-actions {
+    display: flex;
+    justify-content: flex-end;
+
+    button {
+      border-radius: 999px;
+      font-size: 12px;
+      padding: 0 16px;
+      line-height: 34px;
+
+      mat-icon {
+        font-size: 16px;
+        width: 16px;
+        height: 16px;
+        margin-left: 2px;
+        vertical-align: middle;
+      }
+    }
+  }
+
+  &.criticality-critical {
+    .card-icon {
+      background: linear-gradient(135deg, #f87171, #ef4444);
+    }
+
+    .badge.criticality {
+      background: rgba(239, 68, 68, 0.12);
+      color: #b91c1c;
+    }
+  }
+
+  &.criticality-important {
+    .card-icon {
+      background: linear-gradient(135deg, #fbbf24, #f59e0b);
+    }
+
+    .badge.criticality {
+      background: rgba(245, 158, 11, 0.14);
+      color: #b45309;
+    }
+  }
+
+  &.criticality-informative {
+    .card-icon {
+      background: linear-gradient(135deg, #60a5fa, #3b82f6);
+    }
+
+    .badge.criticality {
+      background: rgba(59, 130, 246, 0.12);
+      color: #1d4ed8;
+    }
+  }
+}
+
+@keyframes notification-card-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.critical-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  padding: 16px 24px 24px;
+
+  button {
+    border-radius: 999px;
+    padding: 0 24px;
+    height: 42px;
+    font-weight: 600;
+  }
+}
+
+@media (max-width: 500px) {
+  .critical-modal {
+    width: 100%;
+  }
+}

@@ -329,6 +329,25 @@
             {{ t['RemovePhoto'] }}
           </button>
         </div>
+
+        <div class="notification-preferences-section">
+          <h3>{{ t['NotificationEmailPreferencesTitle'] }}</h3>
+
+          <mat-checkbox [(ngModel)]="notificationPreferences.emailOnCritical">
+            {{ t['NotificationLevelCritical'] }}
+          </mat-checkbox>
+          <mat-checkbox [(ngModel)]="notificationPreferences.emailOnImportant">
+            {{ t['NotificationLevelImportant'] }}
+          </mat-checkbox>
+          <mat-checkbox [(ngModel)]="notificationPreferences.emailOnInformative">
+            {{ t['NotificationLevelInformative'] }}
+          </mat-checkbox>
+
+          <button mat-stroked-button type="button" (click)="saveNotificationPreferences()">
+            <mat-icon>save</mat-icon>
+            {{ t['Save'] }}
+          </button>
+        </div>
       </div>
     </mat-tab>
 

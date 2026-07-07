@@ -110,6 +110,15 @@
 
           </mat-form-field>
 
+          <div class="notification-preferences">
+            <p class="notification-preferences-title">{{ t['NotificationEmailPreferencesTitle'] }}</p>
+
+            <mat-checkbox formControlName="emailOnCritical">{{ t['NotificationLevelCritical'] }}</mat-checkbox>
+            <mat-checkbox formControlName="emailOnImportant">{{ t['NotificationLevelImportant'] }}</mat-checkbox>
+            <mat-checkbox formControlName="emailOnInformative">{{ t['NotificationLevelInformative'] }}</mat-checkbox>
+
+            <p class="notification-preferences-hint">{{ t['NotificationEmailPreferencesHint'] }}</p>
+          </div>
 
           <button mat-raised-button color="primary" class="login-button" [disabled]="registerForm.invalid"
             (click)="register()">

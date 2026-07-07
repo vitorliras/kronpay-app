@@ -1,5 +1,5 @@
 import { ToastrService } from 'ngx-toastr';
-import { Component, inject, OnInit, viewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, inject, OnInit, viewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Base } from '../../core/bases/base/base';
 import { CategoryService } from '../../core/services/category.service';
@@ -42,6 +42,8 @@ import { DeactivateCategoryItemRequest } from '../../core/models/config/category
 import { DeactivateCategorySelectRequest } from '../../core/models/config/category/deactive-category-select-request.model';
 import { AvatarCircular } from '../../shared/components/avatar-circular/avatar-circular';
 import { ConfigProfilePhotoModal } from './config-profile-photo-modal/config-profile-photo-modal';
+import { NotificationService } from '../../core/services/notification.service';
+import { NotificationPreferenceResponse } from '../../core/models/notifications/notification-preference-response.model';
 
 @Component({
   selector: 'app-config',
@@ -104,11 +106,19 @@ export class ConfigComponent extends Base implements OnInit {
   private categoryService = inject(CategoryService);
   private categoryItemService = inject(CategoryItemService);
   private paymentMethodService = inject(PaymentMethodService);
+  private notificationService = inject(NotificationService);
   private dialog = inject(MatDialog);
   private toastr = inject(ToastrService);
   private activatedRoute = inject(ActivatedRoute);
+  private cdr = inject(ChangeDetectorRef);
 
   user$ = this.userService.getUser();
+
+  notificationPreferences: NotificationPreferenceResponse = {
+    emailOnCritical: true,
+    emailOnImportant: true,
+    emailOnInformative: false,
+  };
 
   selectedTabIndex = 0;
 
@@ -123,11 +133,36 @@ export class ConfigComponent extends Base implements OnInit {
 
   ngOnInit(): void {
     this.getDatas();
+    this.getNotificationPreferences();
 
     const tab = this.activatedRoute.snapshot.queryParamMap.get('tab');
     if (tab && tab in ConfigComponent.TAB_INDEX_BY_NAME) {
       this.selectedTabIndex = ConfigComponent.TAB_INDEX_BY_NAME[tab];
     }
+  }
+
+  getNotificationPreferences(): void {
+    this.notificationService.getPreferences().subscribe((res) => {
+      if (res.isSuccess && res.value) {
+        this.notificationPreferences = { ...res.value };
+      }
+      this.cdr.detectChanges();
+    });
+  }
+
+  saveNotificationPreferences(): void {
+    this.notificationService.updatePreferences(this.notificationPreferences).subscribe({
+      next: (res) => {
+        if (res.isSuccess) {
+          this.toastr.success(res.message);
+        } else {
+          this.toastr.warning(res.message);
+        }
+      },
+      error: (err) => {
+        this.toastr.error(err.error?.message);
+      },
+    });
   }
 
   getDatas() {

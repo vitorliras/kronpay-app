@@ -1,0 +1,59 @@
+<ng-container *ngIf="translations$ | async as t">
+  <div class="critical-modal" *ngIf="notifications$ | async as notifications">
+    <header class="critical-modal-header">
+      <button class="close-btn" type="button" (click)="close()" aria-label="close">
+        <mat-icon>close</mat-icon>
+      </button>
+
+      <div class="header-icon">
+        <mat-icon>priority_high</mat-icon>
+      </div>
+
+      <div class="header-text">
+        <div class="header-title-row">
+          <h2>{{ t['CriticalNotifications'] }}</h2>
+          <span class="count-chip">{{ notifications.length }}</span>
+        </div>
+        <p class="header-subtitle">{{ t['CriticalNotificationsSubtitle'] }}</p>
+      </div>
+    </header>
+
+    <div class="critical-modal-body">
+      <div
+        *ngFor="let notification of notifications; let i = index"
+        class="critical-notification-card"
+        [class]="'criticality-' + notification.criticality.toLowerCase()"
+        [style.animation-delay.ms]="i * 60"
+      >
+        <div class="card-icon">
+          <mat-icon>{{ notificationIcon(notification) }}</mat-icon>
+        </div>
+
+        <div class="card-content">
+          <div class="card-top-row">
+            <span class="badge criticality">{{ t[criticalityLabelKey(notification)] }}</span>
+            <span class="card-date">
+              <mat-icon>schedule</mat-icon>
+              {{ notification.createdAt | date: 'dd/MM/yyyy HH:mm' }}
+            </span>
+          </div>
+
+          <p class="card-text">{{ notificationText(notification, t) }}</p>
+
+          <div class="card-actions" *ngIf="hasQuickAction(notification)">
+            <button mat-flat-button color="primary" (click)="runQuickAction(notification)">
+              {{ t[quickActionLabelKey(notification)] }}
+              <mat-icon>arrow_forward</mat-icon>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <footer class="critical-modal-footer">
+      <button mat-raised-button color="primary" (click)="close()">
+        {{ t['Close'] }}
+      </button>
+    </footer>
+  </div>
+</ng-container>

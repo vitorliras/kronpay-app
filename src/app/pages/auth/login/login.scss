@@ -67,6 +67,26 @@
     border-radius: 8px;
   }
 
+  .notification-preferences {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-bottom: 16px;
+
+    .notification-preferences-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: #374151;
+      margin: 0 0 4px;
+    }
+
+    .notification-preferences-hint {
+      font-size: 12px;
+      color: #6b7280;
+      margin: 4px 0 0;
+    }
+  }
+
   .register {
     margin-top: 16px;
     font-size: 14px;

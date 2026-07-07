@@ -5,4 +5,7 @@ export interface CreateUserRequest {
   cpf: string;
   phone: string;
   password: string;
+  emailOnCritical?: boolean;
+  emailOnImportant?: boolean;
+  emailOnInformative?: boolean;
 }

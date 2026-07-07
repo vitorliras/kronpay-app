@@ -13,6 +13,7 @@ import { LogoutResponse } from '../models/auth/logout-response.model';
 import { environment } from '../../../environments/environment';
 import { ConfigService } from './config.service';
 import { BaseService } from '../bases/base/base-service';
+import { NotificationService } from './notification.service';
 
 const ACCESS_TOKEN_KEY = 'access_token';
 const REFRESH_TOKEN_KEY = 'refresh_token';
@@ -20,7 +21,7 @@ const REMEMBERED_EMAIL_KEY = 'remembered_email';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService extends BaseService  {
-
+  private notificationService = inject(NotificationService);
 
   login(email: string, password: string, rememberMe = false): Observable<ResultEntity<LoginResponse>> {
     return this.http
@@ -141,5 +142,8 @@ export class AuthService extends BaseService  {
   private clearSession(): void {
     localStorage.removeItem(ACCESS_TOKEN_KEY);
     localStorage.removeItem(REFRESH_TOKEN_KEY);
+    // A flag do modal de críticas é "uma vez por sessão de login", não "uma vez por aba do
+    // navegador" — sem isso, logar de novo na mesma aba nunca mostraria o modal de novo.
+    this.notificationService.resetCriticalModalFlag();
   }
 }

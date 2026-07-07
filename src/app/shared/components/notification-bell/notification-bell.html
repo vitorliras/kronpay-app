@@ -1,0 +1,115 @@
+<ng-container *ngIf="translations$ | async as t">
+  <button
+    mat-icon-button
+    class="notification-trigger"
+    [matMenuTriggerFor]="notificationMenu"
+    [matTooltip]="t['Notifications']"
+    matTooltipPosition="below"
+  >
+    <mat-icon
+      [matBadge]="(unreadCount$ | async) ?? 0"
+      [matBadgeHidden]="!(unreadCount$ | async)"
+      matBadgeColor="warn"
+      matBadgeSize="small"
+      matBadgePosition="above after"
+    >notifications</mat-icon>
+  </button>
+
+  <mat-menu #notificationMenu="matMenu" class="notification-menu-panel" (opened)="onPanelOpened()">
+    <div class="notification-panel" (click)="$event.stopPropagation()">
+      <div class="notification-panel-header">
+        <div class="header-icon">
+          <mat-icon>notifications_active</mat-icon>
+        </div>
+        <div class="header-text">
+          <h3>{{ t['Notifications'] }}</h3>
+          <span class="header-subtitle" *ngIf="(unreadCount$ | async) as count; else allCaughtUp">
+            {{ unreadCountLabel(count, t) }}
+          </span>
+          <ng-template #allCaughtUp>
+            <span class="header-subtitle">{{ t['AllCaughtUp'] }}</span>
+          </ng-template>
+        </div>
+      </div>
+
+      <mat-tab-group animationDuration="180ms" (selectedIndexChange)="onTabChange($event)" class="notification-tabs">
+        <mat-tab [label]="t['ActiveNotifications']">
+          <div class="notification-list" *ngIf="active$ | async as activeList">
+            <div *ngIf="loadingActive$ | async" class="notification-loading">
+              <mat-spinner diameter="26"></mat-spinner>
+            </div>
+
+            <div *ngIf="!(loadingActive$ | async) && activeList.length === 0" class="notification-empty">
+              <mat-icon>done_all</mat-icon>
+              <span>{{ t['NoActiveNotifications'] }}</span>
+            </div>
+
+            <div
+              *ngFor="let notification of activeList; let i = index"
+              class="notification-row"
+              [class.unread]="!notification.isRead"
+              [class]="'criticality-' + notification.criticality.toLowerCase()"
+              [style.animation-delay.ms]="i * 35"
+              (click)="onRowClick(notification)"
+            >
+              <div class="row-icon">
+                <mat-icon>{{ notificationIcon(notification) }}</mat-icon>
+              </div>
+
+              <div class="row-content">
+                <span class="row-text">{{ notificationText(notification, t) }}</span>
+                <span class="row-date">
+                  <mat-icon>schedule</mat-icon>
+                  {{ notification.createdAt | date: 'dd/MM HH:mm' }}
+                </span>
+
+                <button
+                  *ngIf="hasQuickAction(notification)"
+                  mat-stroked-button
+                  class="notification-action"
+                  (click)="runQuickAction(notification, $event)"
+                >
+                  {{ t[quickActionLabelKey(notification)] }}
+                </button>
+              </div>
+
+              <span class="unread-dot" *ngIf="!notification.isRead"></span>
+            </div>
+          </div>
+        </mat-tab>
+
+        <mat-tab [label]="t['NotificationHistory']">
+          <div class="notification-list" *ngIf="archived$ | async as archivedList">
+            <div *ngIf="loadingArchived$ | async" class="notification-loading">
+              <mat-spinner diameter="26"></mat-spinner>
+            </div>
+
+            <div *ngIf="!(loadingArchived$ | async) && archivedList.length === 0" class="notification-empty">
+              <mat-icon>history</mat-icon>
+              <span>{{ t['NoNotificationsInHistory'] }}</span>
+            </div>
+
+            <div
+              *ngFor="let notification of archivedList; let i = index"
+              class="notification-row archived"
+              [class]="'criticality-' + notification.criticality.toLowerCase()"
+              [style.animation-delay.ms]="i * 35"
+            >
+              <div class="row-icon">
+                <mat-icon>{{ notificationIcon(notification) }}</mat-icon>
+              </div>
+
+              <div class="row-content">
+                <span class="row-text">{{ notificationText(notification, t) }}</span>
+                <span class="row-date">
+                  <mat-icon>schedule</mat-icon>
+                  {{ notification.createdAt | date: 'dd/MM HH:mm' }}
+                </span>
+              </div>
+            </div>
+          </div>
+        </mat-tab>
+      </mat-tab-group>
+    </div>
+  </mat-menu>
+</ng-container>
