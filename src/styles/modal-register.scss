@@ -89,11 +89,247 @@
   }
 }
 
+
+
 @media (max-width: 450px) {
   .modal-register {
     width: 90vw;
     padding: 16px;
     gap: 16px;
+
+    form {
+      gap: 12px;
+    }
+  }
+}
+
+
+// Neutraliza o chrome padrão do MatDialog (padding/fundo do .mdc-dialog__surface) só para
+// diálogos que usam .modal-register-2, para o cabeçalho ir de ponta a ponta sem a margem
+// branca que o Material aplicaria por cima do nosso próprio raio/sombra. Escopado via
+// :has() para não afetar .modal-register nem nenhum outro dialog do projeto.
+// ::ng-deep é obrigatório aqui: este arquivo é incluído via styleUrls de cada modal (não só
+// globalmente), então o Angular aplica view encapsulation nele — e .mat-mdc-dialog-container
+// é um ancestral renderizado pelo CDK, fora do template do componente, então a versão
+// escopada do seletor nunca casaria com o elemento real (mesma razão pela qual
+// notification-critical-modal.scss também usa ::ng-deep para a mesma finalidade).
+::ng-deep .mat-mdc-dialog-container:has(.modal-register-2) .mdc-dialog__surface {
+  padding: 0;
+  background: transparent;
+  box-shadow: none;
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.modal-register-2 {
+  max-width: 1200px;
+  background: #fff;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 16px 40px rgba(15, 43, 92, 0.22), 0 2px 6px rgba(15, 43, 92, 0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  font-family: 'Roboto', sans-serif;
+  animation: modal-register-2-in 0.18s ease-out both;
+
+  .modal-register-title {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 54px 14px 18px;
+    background: linear-gradient(135deg, #1b3c88 0%, #0f2b5c 100%);
+
+    &::before {
+      content: 'edit';
+      flex-shrink: 0;
+      width: 36px;
+      height: 36px;
+      border-radius: 11px;
+      background: rgba(255, 255, 255, 0.16);
+      color: #fff;
+      font-family: 'Material Icons';
+      font-size: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.18);
+      animation: modal-register-2-badge-in 0.3s 0.05s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+    }
+
+    h2 {
+      font-size: 1.15rem;
+      font-weight: 600;
+      letter-spacing: 0.1px;
+      margin: 0;
+      color: #fff;
+    }
+
+    .close-btn {
+      background: rgba(255, 255, 255, 0.14);
+      border: none;
+      cursor: pointer;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease-in-out;
+      position: absolute;
+      top: 50%;
+      right: 14px;
+      transform: translateY(-50%);
+      color: #fff;
+
+      mat-icon {
+        font-size: 18px;
+        width: 18px;
+        height: 18px;
+        line-height: 18px;
+      }
+
+      &:hover {
+        background: rgba(255, 255, 255, 0.28);
+        transform: translateY(-50%) rotate(90deg);
+      }
+
+      &:active {
+        transform: translateY(-50%) scale(0.9);
+      }
+    }
+  }
+
+  .modal-register-body {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 22px;
+
+    mat-form-field {
+      width: 100%;
+      transition: transform 0.15s ease;
+
+      .mat-form-field-outline {
+        border-radius: 10px;
+      }
+
+      &.mat-focused {
+        transform: translateY(-1px);
+      }
+    }
+
+    input,
+    mat-select {
+      font-size: 14px;
+    }
+
+    // Realce visual para textos de apoio (ex.: .hint-text do config-category-modal) —
+    // vira um card informativo em vez de uma legenda cinza solta, para cumprir o pedido de
+    // destaque visual para informações importantes sem exigir markup novo.
+    .hint-text {
+      position: relative;
+      margin: -4px 0 0;
+      padding: 8px 10px 8px 30px;
+      background: #eef3fc;
+      border-radius: 8px;
+      font-size: 12px;
+      line-height: 1.4;
+      color: #3c4d73;
+
+      &::before {
+        content: 'info';
+        position: absolute;
+        left: 9px;
+        top: 50%;
+        transform: translateY(-50%);
+        font-family: 'Material Icons';
+        font-size: 14px;
+        color: #3b62c9;
+      }
+    }
+
+    [mat-dialog-actions] {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      gap: 10px;
+      margin: 8px -22px -22px;
+      padding: 14px 22px;
+      background: #fafbfd;
+      border-top: 1px solid #eef1f6;
+
+      button {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        border-radius: 10px;
+        padding: 0 20px;
+        height: 40px;
+        font-weight: 600;
+        transition: transform 0.15s ease, box-shadow 0.15s ease;
+
+        &:hover {
+          transform: translateY(-1px);
+          box-shadow: 0 6px 16px rgba(15, 43, 92, 0.25);
+        }
+
+        &:active {
+          transform: translateY(0);
+        }
+
+        mat-icon {
+          font-size: 18px;
+          width: 18px;
+          height: 18px;
+        }
+      }
+    }
+  }
+}
+
+@keyframes modal-register-2-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes modal-register-2-badge-in {
+  from {
+    opacity: 0;
+    transform: scale(0.5);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@media (max-width: 450px) {
+  .modal-register-2 {
+    width: 90vw;
+
+    .modal-register-title {
+      padding: 12px 48px 12px 16px;
+    }
+
+    .modal-register-body {
+      gap: 12px;
+      padding: 18px;
+
+      [mat-dialog-actions] {
+        margin: 8px -18px -18px;
+        padding: 12px 18px;
+      }
+    }
 
     form {
       gap: 12px;
