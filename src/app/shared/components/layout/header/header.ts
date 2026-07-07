@@ -28,7 +28,7 @@ export class Header extends Base {
       (result) => {
         if (!result) return;
         this.authService.logout().subscribe(() => {
-          this.userService.clearCache();
+          this.messageSucess('LogoutSuccess');
           this.router.navigate(['/auth/login']);
         });
       },
