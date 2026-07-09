@@ -4,7 +4,7 @@
       <h2 class="planning-title"><mat-icon>savings</mat-icon> {{ t['FinancialPlanning'] }}</h2>
     </div>
 
-    <mat-tab-group class="planning-tabs" animationDuration="250ms">
+    <mat-tab-group class="planning-tabs" animationDuration="250ms" appTourAnchor="planning-tabs">
       <!-- Projeção -->
       <mat-tab label="{{ t['Projection'] }}">
         <div class="tab-body">
@@ -13,7 +13,7 @@
           </div>
 
           <ng-container *ngIf="!isLoadingProjection && projection">
-            <div class="proj-controls">
+            <div class="proj-controls" appTourAnchor="planning-controls">
               <mat-form-field appearance="outline" class="ctrl">
                 <mat-label>{{ t['Horizon'] }}</mat-label>
                 <mat-select [(ngModel)]="horizonMonths" (selectionChange)="onParamsChange()">
@@ -27,7 +27,7 @@
               </mat-form-field>
             </div>
 
-            <div class="kpi-grid">
+            <div class="kpi-grid" appTourAnchor="planning-kpis">
               <div class="kpi">
                 <span class="kpi-label">{{ t['CurrentBalance'] }}</span>
                 <span class="kpi-value">{{ currentBalance | currency: 'BRL' }}</span>

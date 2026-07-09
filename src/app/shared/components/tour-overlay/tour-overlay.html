@@ -1,0 +1,39 @@
+<div
+  class="tour-spotlight"
+  *ngIf="spotlight$ | async as rect"
+  [style.top.px]="rect.top"
+  [style.left.px]="rect.left"
+  [style.width.px]="rect.width"
+  [style.height.px]="rect.height"
+></div>
+
+<ng-template #stepTemplate>
+  <ng-container *ngIf="translations$ | async as t">
+    <ng-container *ngIf="currentStep$ | async as step">
+      <div class="tour-step-card">
+        <div class="tour-step-progress" *ngIf="stepProgress$ | async as progress">
+          {{ progress.current }} / {{ progress.total }}
+        </div>
+
+        <h4 class="tour-step-title">{{ t[step.titleKey] }}</h4>
+        <p class="tour-step-description">{{ t[step.descriptionKey] }}</p>
+
+        <div class="tour-step-actions">
+          <button class="tour-skip-btn" (click)="skip()">{{ t['TourSkip'] }}</button>
+
+          <div class="tour-nav-buttons">
+            <button class="tour-prev-btn" *ngIf="!(isFirstStep$ | async)" (click)="previous()">
+              <mat-icon>chevron_left</mat-icon>
+              {{ t['TourPrevious'] }}
+            </button>
+
+            <button class="tour-next-btn" (click)="next()">
+              {{ (isLastStep$ | async) ? t['TourFinish'] : t['TourNext'] }}
+              <mat-icon *ngIf="!(isLastStep$ | async)">chevron_right</mat-icon>
+            </button>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+  </ng-container>
+</ng-template>

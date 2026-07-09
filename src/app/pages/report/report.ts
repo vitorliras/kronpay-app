@@ -43,6 +43,10 @@ import { forkJoin, take } from 'rxjs';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 import { MatSelectModule } from '@angular/material/select';
+import { ActivatedRoute } from '@angular/router';
+import { TourAnchorDirective } from '../../shared/directives/tour-anchor.directive';
+import { TourService } from '../../core/services/tour/tour.service';
+import { REPORT_TOUR_STEPS } from '../../core/services/tour/tour-steps/report-tour-steps';
 
 @Component({
   selector: 'app-report',
@@ -63,6 +67,7 @@ import { MatSelectModule } from '@angular/material/select';
     MatProgressSpinnerModule,
     MatDatepickerModule,
     MatNativeDateModule,
+    TourAnchorDirective,
   ],
   providers: [
     { provide: MAT_DATE_LOCALE, useValue: 'pt-BR' },
@@ -83,6 +88,8 @@ export class ReportComponent extends Base implements OnInit {
   private dialog = inject(MatDialog);
   private toastr = inject(ToastrService);
   private cdr = inject(ChangeDetectorRef);
+  private activatedRoute = inject(ActivatedRoute);
+  private tourService = inject(TourService);
 
   polylineDesc1 = '0,20 20,15 40,18 60,10 80,12 100,5';
 
@@ -480,6 +487,12 @@ export class ReportComponent extends Base implements OnInit {
     this.getTransactionsByDates();
     this.getCategories();
     this.load();
+
+    this.activatedRoute.queryParamMap.subscribe((params) => {
+      if (params.get('tour') === 'true') {
+        this.tourService.start(REPORT_TOUR_STEPS);
+      }
+    });
   }
 
   getCategories() {

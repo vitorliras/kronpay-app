@@ -31,7 +31,7 @@
             <mat-icon>save</mat-icon>
             {{ t['Save'] }}
           </button>
-          <mat-form-field appearance="outline" class="w-50 mt-4">
+          <mat-form-field appearance="outline" class="w-50 mt-4" appTourAnchor="credit-card-bank-select">
             <mat-label>{{ t['Banks'] }}</mat-label>
 
             <mat-select [(ngModel)]="selectedBank">
@@ -98,7 +98,7 @@
 
         <div *ngIf="!selectedBank"></div>
 
-        <div [class.hidden]="!cards.length" class="table-wrapper-1" style="width: 50%; max-height: 360px;">
+        <div [class.hidden]="!cards.length" class="table-wrapper-1" style="width: 50%; max-height: 360px;" appTourAnchor="credit-card-table">
 
           <table mat-table [dataSource]="cards" class="table">
 

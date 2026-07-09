@@ -3,10 +3,10 @@
     <div class="goals-head">
       <h2 class="goals-title"><mat-icon>flag</mat-icon> {{ t['Objectives'] }}</h2>
       <div class="goals-head-actions">
-        <a mat-stroked-button routerLink="/goals-history">
+        <a mat-stroked-button routerLink="/goals-history" appTourAnchor="goals-history-link">
           <mat-icon>history</mat-icon> {{ t['ViewHistory'] }}
         </a>
-        <button mat-raised-button color="primary" (click)="openNewGoalModal()">
+        <button mat-raised-button color="primary" (click)="openNewGoalModal()" appTourAnchor="goals-new-button">
           <mat-icon>add</mat-icon> {{ t['NewGoal'] }}
         </button>
       </div>
@@ -16,7 +16,7 @@
       <mat-progress-spinner mode="indeterminate" diameter="42"></mat-progress-spinner>
     </div>
 
-    <div class="goals-grid" *ngIf="!isLoading && items.length > 0">
+    <div class="goals-grid" *ngIf="!isLoading && items.length > 0" appTourAnchor="goals-grid">
       <app-goal-card
         *ngFor="let item of items; trackBy: trackByItem"
         [goal]="item"

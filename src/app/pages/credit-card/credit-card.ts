@@ -1,4 +1,5 @@
 import { ChangeDetectorRef, Component, inject, OnInit, viewChild } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { ToastrService } from 'ngx-toastr';
 import { CommonModule } from '@angular/common';
@@ -28,6 +29,9 @@ import {
 } from '../../core/models/credit-card/credit-card';
 import { DeactivateCategoryItemRequest } from '../../core/models/config/category-item/deactive-category-item-request.model';
 import { DeactivateCategoryRequest } from '../../core/models/config/category/deactivate-category-request.model';
+import { TourAnchorDirective } from '../../shared/directives/tour-anchor.directive';
+import { TourService } from '../../core/services/tour/tour.service';
+import { CREDIT_CARD_TOUR_STEPS } from '../../core/services/tour/tour-steps/credit-card-tour-steps';
 
 @Component({
   selector: 'app-credit-card',
@@ -47,6 +51,7 @@ import { DeactivateCategoryRequest } from '../../core/models/config/category/dea
     OnlyNumbersDirective,
     MatProgressSpinnerModule,
     MatSortModule,
+    TourAnchorDirective,
   ],
   templateUrl: './credit-card.html',
   styleUrls: ['./credit-card.scss', '../../../styles/main.scss'],
@@ -75,6 +80,8 @@ export class CreditCardComponent extends Base implements OnInit {
   private toastr = inject(ToastrService);
   private cdr = inject(ChangeDetectorRef);
   private creditCardService = inject(CreditCardService);
+  private activatedRoute = inject(ActivatedRoute);
+  private tourService = inject(TourService);
 
   cardColumns = ['description', 'bank', 'closingDay', 'dueDay', 'limit', 'actions'];
 
@@ -85,6 +92,12 @@ export class CreditCardComponent extends Base implements OnInit {
   ngOnInit(): void {
     this.getBanks();
     this.getCards();
+
+    this.activatedRoute.queryParamMap.subscribe((params) => {
+      if (params.get('tour') === 'true') {
+        this.tourService.start(CREDIT_CARD_TOUR_STEPS);
+      }
+    });
   }
 
   getBanks() {
@@ -97,6 +110,7 @@ export class CreditCardComponent extends Base implements OnInit {
           this.isLoading = false;
           this.filteredBanks = [...this.banks];
           this.cdr.detectChanges();
+          this.selectCardFromQueryParam();
         }
       },
       (error) => {
@@ -115,6 +129,7 @@ export class CreditCardComponent extends Base implements OnInit {
           this.cards = res.value ?? [];
           this.isLoading = false;
           this.cdr.detectChanges();
+          this.selectCardFromQueryParam();
         }
       },
       (error) => {
@@ -122,6 +137,16 @@ export class CreditCardComponent extends Base implements OnInit {
         console.error(error);
       },
     );
+  }
+
+  private selectCardFromQueryParam(): void {
+    if (this.banks.length === 0 || this.cards.length === 0) return;
+
+    const cardId = Number(this.activatedRoute.snapshot.queryParamMap.get('cardId'));
+    if (!cardId) return;
+
+    const card = this.cards.find((c) => c.id === cardId);
+    if (card) this.edit(card);
   }
 
   nameBank(id: number): string {

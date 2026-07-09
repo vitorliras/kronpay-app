@@ -6,11 +6,13 @@ import { RouterOutlet } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { NotificationService } from '../../../core/services/notification.service';
 import { NotificationCriticalModalComponent } from '../notification-critical-modal/notification-critical-modal';
+import { AssistantWidgetComponent } from '../assistant-widget/assistant-widget';
+import { TourOverlayComponent } from '../tour-overlay/tour-overlay';
 
 @Component({
   selector: 'app-layout',
   standalone: true,
-  imports: [CommonModule, Sidebar, Header, RouterOutlet],
+  imports: [CommonModule, Sidebar, Header, RouterOutlet, AssistantWidgetComponent, TourOverlayComponent],
   templateUrl: './layout.html',
   styleUrl: './layout.scss',
 })

@@ -1,0 +1,105 @@
+<ng-container *ngIf="translations$ | async as t">
+
+<div class="assistant-widget">
+  <button
+    class="assistant-fab"
+    [class.open]="isOpen$ | async"
+    (click)="togglePanel()"
+    matTooltip="{{ t['AssistantOpenTooltip'] }}"
+    matTooltipPosition="left"
+  >
+    <mat-icon>{{ (isOpen$ | async) ? 'close' : 'smart_toy' }}</mat-icon>
+  </button>
+
+  <div class="assistant-panel" *ngIf="isOpen$ | async">
+    <div class="assistant-panel-header">
+      <div class="header-icon">
+        <mat-icon>smart_toy</mat-icon>
+      </div>
+
+      <div class="header-text">
+        <h3>{{ t['AssistantWidgetTitle'] }}</h3>
+        <span class="header-subtitle">{{ t['AssistantWidgetSubtitle'] }}</span>
+      </div>
+
+      <button
+        class="header-action"
+        (click)="restartConversation()"
+        matTooltip="{{ t['AssistantNewConversation'] }}"
+        matTooltipPosition="below"
+      >
+        <mat-icon>refresh</mat-icon>
+      </button>
+
+      <button
+        class="header-action"
+        (click)="togglePanel()"
+        matTooltip="{{ t['Close'] }}"
+        matTooltipPosition="below"
+      >
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+
+    <div class="assistant-messages" #scrollContainer>
+      <ng-container *ngIf="messages$ | async as messages">
+        <div class="assistant-initial-loading" *ngIf="messages.length === 0 && (isLoading$ | async)">
+          <mat-progress-spinner diameter="32" mode="indeterminate"></mat-progress-spinner>
+        </div>
+
+        <div class="message-row" *ngFor="let msg of messages" [class.user]="msg.role === 'user'">
+          <div class="bubble" [class.final]="msg.isFinal">{{ msg.text }}</div>
+
+          <div class="options-row" *ngIf="msg.options.length">
+            <button
+              *ngFor="let opt of msg.options"
+              class="option-chip"
+              [class.back]="isBackOption(opt)"
+              (click)="selectOption(opt)"
+            >
+              {{ opt.labelKey }}
+            </button>
+          </div>
+
+          <div class="navigate-row" *ngIf="manualNavigations(msg.navigateTo).length">
+            <button
+              *ngFor="let nav of manualNavigations(msg.navigateTo)"
+              class="navigate-btn"
+              (click)="openNavigateTo(nav)"
+            >
+              <mat-icon>open_in_new</mat-icon>
+              {{ nav.labelKey }}
+            </button>
+          </div>
+        </div>
+
+        <div class="message-row" *ngIf="messages.length > 0 && (isLoading$ | async)">
+          <div class="bubble typing-bubble">
+            <span class="dot"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+          </div>
+        </div>
+      </ng-container>
+    </div>
+
+    <div class="assistant-input-bar">
+      <input
+        type="text"
+        class="assistant-input"
+        [formControl]="freeTextControl"
+        (keydown.enter)="sendFreeText()"
+        placeholder="{{ t['AssistantInputPlaceholder'] }}"
+      />
+      <button
+        class="send-btn"
+        (click)="sendFreeText()"
+        [disabled]="!freeTextControl.value.trim() || (isLoading$ | async)"
+      >
+        <mat-icon>send</mat-icon>
+      </button>
+    </div>
+  </div>
+</div>
+
+</ng-container>

@@ -44,6 +44,9 @@ import { AvatarCircular } from '../../shared/components/avatar-circular/avatar-c
 import { ConfigProfilePhotoModal } from './config-profile-photo-modal/config-profile-photo-modal';
 import { NotificationService } from '../../core/services/notification.service';
 import { NotificationPreferenceResponse } from '../../core/models/notifications/notification-preference-response.model';
+import { TourAnchorDirective } from '../../shared/directives/tour-anchor.directive';
+import { TourService } from '../../core/services/tour/tour.service';
+import { CONFIG_TOUR_STEPS } from '../../core/services/tour/tour-steps/config-tour-steps';
 
 @Component({
   selector: 'app-config',
@@ -62,6 +65,7 @@ import { NotificationPreferenceResponse } from '../../core/models/notifications/
     FormsModule,
     AvatarCircular,
     MatTooltipModule,
+    TourAnchorDirective,
   ],
   providers: [
     {
@@ -111,6 +115,7 @@ export class ConfigComponent extends Base implements OnInit {
   private toastr = inject(ToastrService);
   private activatedRoute = inject(ActivatedRoute);
   private cdr = inject(ChangeDetectorRef);
+  private tourService = inject(TourService);
 
   user$ = this.userService.getUser();
 
@@ -139,6 +144,12 @@ export class ConfigComponent extends Base implements OnInit {
     if (tab && tab in ConfigComponent.TAB_INDEX_BY_NAME) {
       this.selectedTabIndex = ConfigComponent.TAB_INDEX_BY_NAME[tab];
     }
+
+    this.activatedRoute.queryParamMap.subscribe((params) => {
+      if (params.get('tour') === 'true') {
+        this.tourService.start(CONFIG_TOUR_STEPS);
+      }
+    });
   }
 
   getNotificationPreferences(): void {

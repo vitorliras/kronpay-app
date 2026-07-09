@@ -44,6 +44,10 @@ import {
   ImportedTransactionResponse,
 } from '../../core/models/transaction/transaction-response.model';
 import { MatSort, MatSortModule } from '@angular/material/sort';
+import { ActivatedRoute } from '@angular/router';
+import { TourAnchorDirective } from '../../shared/directives/tour-anchor.directive';
+import { TourService } from '../../core/services/tour/tour.service';
+import { TRANSACTIONS_TOUR_STEPS } from '../../core/services/tour/tour-steps/transactions-tour-steps';
 
 @Component({
   selector: 'app-transaction',
@@ -62,7 +66,8 @@ import { MatSort, MatSortModule } from '@angular/material/sort';
     OnlyNumbersDirective,
     MatTooltip,
     MatProgressSpinnerModule,
-    MatSortModule
+    MatSortModule,
+    TourAnchorDirective,
   ],
   providers: [
     {
@@ -183,9 +188,18 @@ export class TransactionComponente extends Base implements OnInit {
   this.transactionsFilterDataSource.sort = this.sort;
 }
 
+  private activatedRoute = inject(ActivatedRoute);
+  private tourService = inject(TourService);
+
   ngOnInit(): void {
     this.getDatas();
     this.applyFilters();
+
+    this.activatedRoute.queryParamMap.subscribe((params) => {
+      if (params.get('tour') === 'true') {
+        this.tourService.start(TRANSACTIONS_TOUR_STEPS);
+      }
+    });
   }
 
   getDatas() {

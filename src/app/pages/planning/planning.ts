@@ -28,6 +28,10 @@ import { MonthViabilityResponse } from '../../core/models/planning/month-viabili
 import { ViabilityFindingResponse } from '../../core/models/planning/viability-finding-response.model';
 import { ProjectionMonthResponse } from '../../core/models/planning/projection-month-response.model';
 import { PlanningCommitmentModal } from './planning-commitment-modal/planning-commitment-modal';
+import { ActivatedRoute } from '@angular/router';
+import { TourAnchorDirective } from '../../shared/directives/tour-anchor.directive';
+import { TourService } from '../../core/services/tour/tour.service';
+import { PLANNING_TOUR_STEPS } from '../../core/services/tour/tour-steps/planning-tour-steps';
 
 @Component({
   selector: 'app-planning',
@@ -43,6 +47,7 @@ import { PlanningCommitmentModal } from './planning-commitment-modal/planning-co
     MatInputModule,
     MatProgressSpinnerModule,
     BaseChartDirective,
+    TourAnchorDirective,
   ],
   templateUrl: './planning.html',
   styleUrls: ['./planning.scss', '../../../styles/planning.scss'],
@@ -54,6 +59,8 @@ export class PlanningComponent extends Base implements OnInit {
   private dialog = inject(MatDialog);
   private toastr = inject(ToastrService);
   private cdr = inject(ChangeDetectorRef);
+  private activatedRoute = inject(ActivatedRoute);
+  private tourService = inject(TourService);
 
   commitments: PlannedCommitmentResponse[] = [];
   categories: CategoryResponse[] = [];
@@ -101,6 +108,12 @@ export class PlanningComponent extends Base implements OnInit {
     this.loadCards();
     this.loadCommitments();
     this.loadProjection();
+
+    this.activatedRoute.queryParamMap.subscribe((params) => {
+      if (params.get('tour') === 'true') {
+        this.tourService.start(PLANNING_TOUR_STEPS);
+      }
+    });
   }
 
   loadCategories(): void {

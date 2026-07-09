@@ -3,7 +3,7 @@
     <mat-progress-spinner mode="indeterminate" diameter="50"></mat-progress-spinner>
   </div>
 
-  <mat-tab-group class="card-1 table" animationDuration="200ms">
+  <mat-tab-group class="card-1 table" animationDuration="200ms" appTourAnchor="dashboard-tabs">
 
     <mat-tab label="{{ t['MonthlySummary'] }}">
 
@@ -28,7 +28,7 @@
           <div style="display: flex;  align-items: center; justify-content: space-between;">
             <input onlyNumbers class="year-input" [(ngModel)]="year" matInput maxlength="4" (change)="setYear(year)" />
 
-            <div class="Segmented-1" style="height: 20px; margin-left: 20px;">
+            <div class="Segmented-1" style="height: 20px; margin-left: 20px;" appTourAnchor="dashboard-month-filter">
               <button type="button" [class.active]="month === 1" (click)="setMonth(1)">
                 <span class="label default">{{ t['JAN'] }}</span>
               </button>
@@ -121,7 +121,7 @@
 
         </div>
 
-        <div class="summary-cards-3 charts">
+        <div class="summary-cards-3 charts" appTourAnchor="dashboard-charts">
           <div class="summary-card  result">
             <div class="title">{{ t['Result'] }}</div>
 

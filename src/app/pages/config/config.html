@@ -6,7 +6,7 @@
       <div class="card-wrapper">
 
         <div class="card-filter">
-          <div class="Segmented-1">
+          <div class="Segmented-1" appTourAnchor="config-type-filter">
             <button type="button" class="all" [class.active]="typeFilter === null" (click)="setType(null)">
               <span class="label default">{{ t['All'] }} </span>
             </button>
@@ -27,13 +27,13 @@
 
           <div class="actions">
 
-            <div class="search-box-1">
+            <div class="search-box-1" appTourAnchor="config-search">
               <mat-icon style="margin-top: 7px;" class="search-icon">search</mat-icon>
               <input type="text" [placeholder]="t['Search']" (input)="onSearchCategories($event)" />
             </div>
 
 
-            <button mat-flat-button color="primary" (click)="OpenModalCategory()">
+            <button mat-flat-button color="primary" (click)="OpenModalCategory()" appTourAnchor="config-add-button">
               <mat-icon>add</mat-icon>
               {{ t['Add'] }}
             </button>
@@ -127,7 +127,7 @@
 
         <div class="card-filter">
 
-          <div class="Segmented-1">
+          <div class="Segmented-1" appTourAnchor="config-type-filter">
             <button type="button" class="all" [class.active]="typeFilter === null" (click)="setType(null)">
               <span class="label default">{{ t['All'] }} </span>
             </button>

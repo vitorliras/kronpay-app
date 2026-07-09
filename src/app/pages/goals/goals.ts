@@ -1,6 +1,6 @@
 import { ChangeDetectorRef, Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -18,6 +18,9 @@ import { GoalCardViewModel } from '../../shared/components/goal-card/goal-card.m
 import { GoalFormModal, GoalFormResult } from './goal-form-modal/goal-form-modal';
 import { GoalDetailModal } from './goal-detail-modal/goal-detail-modal';
 import { GoalContributionModal } from './goal-contribution-modal/goal-contribution-modal';
+import { TourAnchorDirective } from '../../shared/directives/tour-anchor.directive';
+import { TourService } from '../../core/services/tour/tour.service';
+import { GOALS_TOUR_STEPS } from '../../core/services/tour/tour-steps/goals-tour-steps';
 
 type GoalListItem = GoalCardViewModel & {
   raw: FinancialGoalResponse | CategoryBudgetGoalResponse;
@@ -26,7 +29,7 @@ type GoalListItem = GoalCardViewModel & {
 @Component({
   selector: 'app-goals',
   standalone: true,
-  imports: [CommonModule, RouterLink, MatIconModule, MatButtonModule, MatProgressSpinnerModule, GoalCard],
+  imports: [CommonModule, RouterLink, MatIconModule, MatButtonModule, MatProgressSpinnerModule, GoalCard, TourAnchorDirective],
   templateUrl: './goals.html',
   styleUrl: './goals.scss',
 })
@@ -36,6 +39,8 @@ export class Goals extends Base implements OnInit {
   private dialog = inject(MatDialog);
   private toastr = inject(ToastrService);
   private cdr = inject(ChangeDetectorRef);
+  private activatedRoute = inject(ActivatedRoute);
+  private tourService = inject(TourService);
 
   categories: CategoryResponse[] = [];
   financialGoals: FinancialGoalResponse[] = [];
@@ -46,6 +51,12 @@ export class Goals extends Base implements OnInit {
   ngOnInit(): void {
     this.loadCategories();
     this.loadOverview();
+
+    this.activatedRoute.queryParamMap.subscribe((params) => {
+      if (params.get('tour') === 'true') {
+        this.tourService.start(GOALS_TOUR_STEPS);
+      }
+    });
   }
 
   loadCategories(): void {
@@ -64,11 +75,20 @@ export class Goals extends Base implements OnInit {
         this.categoryBudgetGoals = res.isSuccess ? (res.value?.categoryBudgetGoals ?? []) : [];
         this.rebuildItems();
         this.cdr.detectChanges();
+        this.openGoalFromQueryParam();
       },
       error: () => {
         this.isLoading = false;
       },
     });
+  }
+
+  private openGoalFromQueryParam(): void {
+    const goalId = Number(this.activatedRoute.snapshot.queryParamMap.get('goalId'));
+    if (!goalId) return;
+
+    const item = this.items.find((i) => i.type === 'financial' && i.id === goalId);
+    if (item) this.openDetailModal(item);
   }
 
   private rebuildItems(): void {

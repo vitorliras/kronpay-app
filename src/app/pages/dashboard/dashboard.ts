@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectorRef, Component, inject, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
@@ -30,6 +31,9 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { take } from 'rxjs';
 import { GoalService } from '../../core/services/goal.service';
 import { CategoryBudgetGoalResponse } from '../../core/models/goals/category-budget-goal-response.model';
+import { TourAnchorDirective } from '../../shared/directives/tour-anchor.directive';
+import { TourService } from '../../core/services/tour/tour.service';
+import { DASHBOARD_TOUR_STEPS } from '../../core/services/tour/tour-steps/dashboard-tour-steps';
 
 @Component({
   selector: 'app-dashboard',
@@ -47,6 +51,7 @@ import { CategoryBudgetGoalResponse } from '../../core/models/goals/category-bud
     FormsModule,
     BaseChartDirective,
     MatProgressSpinnerModule,
+    TourAnchorDirective,
   ],
   templateUrl: './dashboard.html',
   styleUrls: ['./dashboard.scss', '../../../styles/main.scss'],
@@ -59,6 +64,8 @@ export class DashboardComponente extends Base implements OnInit {
   private dialog = inject(MatDialog);
   private toastr = inject(ToastrService);
   private cdr = inject(ChangeDetectorRef);
+  private activatedRoute = inject(ActivatedRoute);
+  private tourService = inject(TourService);
 
   categoryBudgetGoals: CategoryBudgetGoalResponse[] = [];
   private readonly realCurrentMonth = new Date().getMonth() + 1;
@@ -124,6 +131,12 @@ export class DashboardComponente extends Base implements OnInit {
     this.getDatas();
     this.applyFiltersMonth();
     this.applyFiltersYear();
+
+    this.activatedRoute.queryParamMap.subscribe((params) => {
+      if (params.get('tour') === 'true') {
+        this.tourService.start(DASHBOARD_TOUR_STEPS);
+      }
+    });
   }
 
   public pieChartData: ChartConfiguration<'doughnut'>['data'] = {

@@ -1,4 +1,5 @@
 import { ChangeDetectorRef, Component, inject, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
@@ -52,6 +53,7 @@ export class CardInvoicesComponent extends Base implements OnInit {
   private dialog = inject(MatDialog);
   private toastr = inject(ToastrService);
   private cdr = inject(ChangeDetectorRef);
+  private activatedRoute = inject(ActivatedRoute);
 
   cards: CreditCardResponse[] = [];
   categories: CategoryResponse[] = [];
@@ -85,6 +87,12 @@ export class CardInvoicesComponent extends Base implements OnInit {
     this.loadCards();
     this.loadCategories();
     this.loadPaymentMethods();
+
+    const cardId = Number(this.activatedRoute.snapshot.queryParamMap.get('cardId'));
+    if (cardId) {
+      this.creditCardId = cardId;
+      this.onCardChange();
+    }
   }
 
   loadCards(): void {

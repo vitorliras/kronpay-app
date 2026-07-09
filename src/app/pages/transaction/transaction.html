@@ -1,5 +1,5 @@
 <ng-container *ngIf="translations$ | async as t">
-  <div class="summary-cards">
+  <div class="summary-cards" appTourAnchor="transactions-summary">
 
     <div class="summary-card expense">
       <div class="title">{{ t['Expense'] }}</div>
@@ -164,7 +164,7 @@
             {{ t['Save'] }}
           </button>
 
-          <button mat-flat-button *ngIf="!isAttaching" color="primary" (click)="OpenModalTransaction()">
+          <button mat-flat-button *ngIf="!isAttaching" color="primary" (click)="OpenModalTransaction()" appTourAnchor="transactions-add-button">
             <mat-icon>add</mat-icon>
             {{ t['Add'] }}
           </button>
@@ -177,7 +177,7 @@
       </div>
       <!-- [class.hidden]="transactionsFilterDataSource.data.length === 0" -->
       <div [class.hidden]="transactionsFilterDataSource.data.length == 0 || isAttaching" class="table-wrapper-1"
-        style="max-height: 480px !important">
+        style="max-height: 480px !important" appTourAnchor="transactions-table">
 
         <table matSort mat-table [dataSource]="transactionsFilterDataSource" class="table">
 
