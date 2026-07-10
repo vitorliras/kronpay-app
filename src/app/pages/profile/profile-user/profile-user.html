@@ -1,0 +1,47 @@
+<ng-container *ngIf="translations$ | async as t">
+  <div class="profile-user-page">
+    <div class="profile-user-head">
+      <h2 class="profile-user-title"><mat-icon>person</mat-icon> {{ t['ProfileUser'] }}</h2>
+    </div>
+
+    <div class="card-wrapper profile-tab" *ngIf="user$ | async as user">
+      <app-avatar-circular [size]="120" [rankTier]="rankTier$ | async"></app-avatar-circular>
+
+      <div class="profile-info">
+        <span class="name">{{ user.name }}</span>
+        <span class="email">{{ user.email }}</span>
+      </div>
+
+      <div class="profile-actions">
+        <button mat-stroked-button type="button" (click)="openChangePhotoModal()">
+          <mat-icon>photo_camera</mat-icon>
+          {{ user.hasProfilePhoto ? t['ChangePhoto'] : t['SelectImage'] }}
+        </button>
+
+        <button *ngIf="user.hasProfilePhoto" mat-stroked-button color="warn" type="button" (click)="removePhoto()">
+          <mat-icon>delete</mat-icon>
+          {{ t['RemovePhoto'] }}
+        </button>
+      </div>
+
+      <div class="notification-preferences-section">
+        <h3>{{ t['NotificationEmailPreferencesTitle'] }}</h3>
+
+        <mat-checkbox [(ngModel)]="notificationPreferences.emailOnCritical">
+          {{ t['NotificationLevelCritical'] }}
+        </mat-checkbox>
+        <mat-checkbox [(ngModel)]="notificationPreferences.emailOnImportant">
+          {{ t['NotificationLevelImportant'] }}
+        </mat-checkbox>
+        <mat-checkbox [(ngModel)]="notificationPreferences.emailOnInformative">
+          {{ t['NotificationLevelInformative'] }}
+        </mat-checkbox>
+
+        <button mat-stroked-button type="button" (click)="saveNotificationPreferences()">
+          <mat-icon>save</mat-icon>
+          {{ t['Save'] }}
+        </button>
+      </div>
+    </div>
+  </div>
+</ng-container>

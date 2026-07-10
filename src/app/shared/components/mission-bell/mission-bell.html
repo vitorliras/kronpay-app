@@ -1,0 +1,61 @@
+<ng-container *ngIf="translations$ | async as t">
+  <button
+    mat-icon-button
+    class="mission-trigger"
+    [matMenuTriggerFor]="missionMenu"
+    [matTooltip]="t['Missions']"
+    matTooltipPosition="below"
+  >
+    <mat-icon
+      *ngIf="missions$ | async as missionsForBadge"
+      [matBadge]="atRiskCount(missionsForBadge) || null"
+      [matBadgeHidden]="atRiskCount(missionsForBadge) === 0"
+      matBadgeColor="warn"
+      matBadgeSize="small"
+      matBadgePosition="above after"
+    >track_changes</mat-icon>
+  </button>
+
+  <mat-menu #missionMenu="matMenu" class="mission-menu-panel" (opened)="onPanelOpened()">
+    <div class="mission-panel" (click)="$event.stopPropagation()">
+      <div class="mission-panel-header">
+        <div class="header-icon">
+          <mat-icon>track_changes</mat-icon>
+        </div>
+        <div class="header-text">
+          <h3>{{ t['Missions'] }}</h3>
+          <span class="header-subtitle" *ngIf="missions$ | async as missionsForHeader">
+            {{ atRiskCount(missionsForHeader) > 0 ? atRiskCountLabel(atRiskCount(missionsForHeader), t) : t['AllMissionsOnTrack'] }}
+          </span>
+        </div>
+      </div>
+
+      <div class="mission-list" *ngIf="missions$ | async as missionsList">
+        <div *ngIf="loading$ | async" class="mission-loading">
+          <mat-spinner diameter="26"></mat-spinner>
+        </div>
+
+        <div *ngIf="!(loading$ | async) && missionsList.length === 0" class="mission-empty">
+          <mat-icon>hourglass_empty</mat-icon>
+          <span>{{ t['NoMissionsYet'] }}</span>
+        </div>
+
+        <div
+          *ngFor="let mission of missionsList; let i = index"
+          class="mission-row"
+          [class]="missionStatusClass(mission)"
+          [style.animation-delay.ms]="i * 35"
+        >
+          <div class="row-icon">
+            <mat-icon>{{ missionIcon(mission) }}</mat-icon>
+          </div>
+
+          <div class="row-content">
+            <span class="row-text">{{ t[mission.messageKey] }}</span>
+            <span class="row-status">{{ t[missionStatusKey(mission)] }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </mat-menu>
+</ng-container>

@@ -102,6 +102,6 @@ export abstract class Base {
   }
 
   goToProfile(): void {
-    this.router.navigate(['/config'], { queryParams: { tab: 'profile' } });
+    this.router.navigate(['/profile/user']);
   }
 }

@@ -1,7 +1,15 @@
-<div class="avatar-circular" [style.width.px]="size" [style.height.px]="size">
-  <img *ngIf="photoUrl$ | async as url; else initialsTpl" [src]="url" alt="Avatar" />
+<div class="rank-ring" [class]="rankTierClass" [style.padding.px]="rankTier ? 3 : 0">
+  <div class="avatar-circular" [style.width.px]="size" [style.height.px]="size">
+    <img *ngIf="photoUrl$ | async as url; else initialsTpl" [src]="url" alt="Avatar" />
 
-  <ng-template #initialsTpl>
-    <span class="initials" [style.font-size.px]="size / 2.5">{{ initials$ | async }}</span>
-  </ng-template>
+    <ng-template #initialsTpl>
+      <span class="initials" [style.font-size.px]="size / 2.5">{{ initials$ | async }}</span>
+    </ng-template>
+  </div>
+
+  <div class="rank-badge" *ngIf="rankTier" [class]="rankTierClass" [style.width.px]="badgeSize"
+    [style.height.px]="badgeSize">
+    <mat-icon [style.font-size.px]="badgeSize * 0.65" [style.width.px]="badgeSize * 0.65"
+      [style.height.px]="badgeSize * 0.65">military_tech</mat-icon>
+  </div>
 </div>

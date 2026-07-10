@@ -1,0 +1,40 @@
+<ng-container *ngIf="translations$ | async as t">
+  <div class="profile-achievements-page">
+    <div class="profile-achievements-head">
+      <h2 class="profile-achievements-title"><mat-icon>military_tech</mat-icon> {{ t['Achievements'] }}</h2>
+    </div>
+
+    <div class="card-wrapper rank-block" *ngIf="rank">
+      <app-rank-badge [tier]="rank.tier" [size]="140"></app-rank-badge>
+      <span class="rank-tier-name">{{ rank.tier }}</span>
+      <span class="rank-proximity">{{ t[rank.proximityMessageKey] }}</span>
+    </div>
+
+    <div class="card-wrapper badges-tier-section" *ngFor="let tier of tiers">
+      <div class="badges-tier-head">
+        <h3>{{ tier }}</h3>
+        <span class="badges-tier-count">{{ unlockedCount(tier) }} / {{ badgesByTier(tier).length }}</span>
+      </div>
+
+      <div class="badges-grid">
+        <div class="badge-card" *ngFor="let badge of badgesByTier(tier)" tabindex="0">
+          <div class="badge-visual" [class.locked]="!badge.isUnlocked">
+            <div class="badge-icon-wrap" [class]="'rank-' + badge.tier.toLowerCase()">
+              <mat-icon>{{ badge.isUnlocked ? 'military_tech' : 'lock' }}</mat-icon>
+            </div>
+            <span class="badge-name">{{ t[badge.messageKey] }}</span>
+          </div>
+
+          <div class="badge-tooltip" [class]="'rank-' + badge.tier.toLowerCase() + '-accent'">
+            <span class="badge-tooltip-name">{{ t[badge.messageKey] }}</span>
+            <span class="badge-tooltip-status" [class.unlocked]="badge.isUnlocked">
+              {{ badge.isUnlocked ? t['BadgeTooltipUnlockedOn'] + ' ' + formatUnlockedAt(badge.unlockedAt) : t['BadgeTooltipHowToUnlock'] }}
+            </span>
+            <span class="badge-tooltip-description">{{ t[badge.descriptionMessageKey] }}</span>
+            <span class="badge-tooltip-arrow"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-container>

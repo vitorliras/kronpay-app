@@ -9,6 +9,7 @@
 
   <div class="actions">
     <app-notification-bell></app-notification-bell>
+    <app-mission-bell></app-mission-bell>
     <button
       *ngIf="user$ | async"
       class="avatar-btn"
@@ -16,7 +17,7 @@
       matTooltip="{{ t['Profile'] }}"
       matTooltipPosition="below"
     >
-      <app-avatar-circular [size]="32"></app-avatar-circular>
+      <app-avatar-circular [size]="32" [rankTier]="rankTier$ | async"></app-avatar-circular>
     </button>
     <button (click)="logout()" class="logout-btn" matTooltip="{{ t['Logout'] }}" matTooltipPosition="below">
       <mat-icon>logout</mat-icon>

@@ -56,6 +56,23 @@ export const routes: Routes = [
           import('./pages/goals-history/goals-history').then((m) => m.GoalsHistory),
       },
       {
+        path: 'profile',
+        redirectTo: 'profile/user',
+        pathMatch: 'full',
+      },
+      {
+        path: 'profile/user',
+        loadComponent: () =>
+          import('./pages/profile/profile-user/profile-user').then((m) => m.ProfileUser),
+      },
+      {
+        path: 'profile/achievements',
+        loadComponent: () =>
+          import('./pages/profile/profile-achievements/profile-achievements').then(
+            (m) => m.ProfileAchievements,
+          ),
+      },
+      {
         path: 'connector',
         loadComponent: () =>
           import('./pages/connector/connector').then((m) => m.ConnectorComponent),

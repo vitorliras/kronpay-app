@@ -1,17 +1,19 @@
 import { CommonModule } from '@angular/common';
 import { Component, Input, OnDestroy } from '@angular/core';
+import { MatIconModule } from '@angular/material/icon';
 import { catchError, map, Observable, of, switchMap } from 'rxjs';
 import { Base } from '../../../core/bases/base/base';
 
 @Component({
   selector: 'app-avatar-circular',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, MatIconModule],
   templateUrl: './avatar-circular.html',
   styleUrl: './avatar-circular.scss',
 })
 export class AvatarCircular extends Base implements OnDestroy {
   @Input() size = 44;
+  @Input() rankTier?: string | null;
 
   private objectUrl: string | null = null;
 
@@ -50,6 +52,14 @@ export class AvatarCircular extends Base implements OnDestroy {
       URL.revokeObjectURL(this.objectUrl);
       this.objectUrl = null;
     }
+  }
+
+  get rankTierClass(): string {
+    return this.rankTier ? `rank-${this.rankTier.toLowerCase()}` : '';
+  }
+
+  get badgeSize(): number {
+    return Math.max(14, Math.round(this.size / 2.6));
   }
 
   private computeInitials(name?: string): string {

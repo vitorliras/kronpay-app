@@ -1,5 +1,5 @@
 import { ToastrService } from 'ngx-toastr';
-import { ChangeDetectorRef, Component, inject, OnInit, viewChild } from '@angular/core';
+import { Component, inject, OnInit, viewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Base } from '../../core/bases/base/base';
 import { CategoryService } from '../../core/services/category.service';
@@ -40,10 +40,6 @@ import { ConfigPaymentMethodModal } from './config-payment-method-modal/config-p
 import { DeactivateCategoryItemSelectRequest } from '../../core/models/config/category-item/deactive-category-item-select-request.model';
 import { DeactivateCategoryItemRequest } from '../../core/models/config/category-item/deactive-category-item-request.model';
 import { DeactivateCategorySelectRequest } from '../../core/models/config/category/deactive-category-select-request.model';
-import { AvatarCircular } from '../../shared/components/avatar-circular/avatar-circular';
-import { ConfigProfilePhotoModal } from './config-profile-photo-modal/config-profile-photo-modal';
-import { NotificationService } from '../../core/services/notification.service';
-import { NotificationPreferenceResponse } from '../../core/models/notifications/notification-preference-response.model';
 import { TourAnchorDirective } from '../../shared/directives/tour-anchor.directive';
 import { TourService } from '../../core/services/tour/tour.service';
 import { CONFIG_TOUR_STEPS } from '../../core/services/tour/tour-steps/config-tour-steps';
@@ -63,7 +59,6 @@ import { CONFIG_TOUR_STEPS } from '../../core/services/tour/tour-steps/config-to
     MatFormFieldModule,
     MatInputModule,
     FormsModule,
-    AvatarCircular,
     MatTooltipModule,
     TourAnchorDirective,
   ],
@@ -104,26 +99,15 @@ export class ConfigComponent extends Base implements OnInit {
     categories: 0,
     subcategories: 1,
     payments: 2,
-    profile: 3,
   };
 
   private categoryService = inject(CategoryService);
   private categoryItemService = inject(CategoryItemService);
   private paymentMethodService = inject(PaymentMethodService);
-  private notificationService = inject(NotificationService);
   private dialog = inject(MatDialog);
   private toastr = inject(ToastrService);
   private activatedRoute = inject(ActivatedRoute);
-  private cdr = inject(ChangeDetectorRef);
   private tourService = inject(TourService);
-
-  user$ = this.userService.getUser();
-
-  notificationPreferences: NotificationPreferenceResponse = {
-    emailOnCritical: true,
-    emailOnImportant: true,
-    emailOnInformative: false,
-  };
 
   selectedTabIndex = 0;
 
@@ -138,7 +122,6 @@ export class ConfigComponent extends Base implements OnInit {
 
   ngOnInit(): void {
     this.getDatas();
-    this.getNotificationPreferences();
 
     const tab = this.activatedRoute.snapshot.queryParamMap.get('tab');
     if (tab && tab in ConfigComponent.TAB_INDEX_BY_NAME) {
@@ -149,30 +132,6 @@ export class ConfigComponent extends Base implements OnInit {
       if (params.get('tour') === 'true') {
         this.tourService.start(CONFIG_TOUR_STEPS);
       }
-    });
-  }
-
-  getNotificationPreferences(): void {
-    this.notificationService.getPreferences().subscribe((res) => {
-      if (res.isSuccess && res.value) {
-        this.notificationPreferences = { ...res.value };
-      }
-      this.cdr.detectChanges();
-    });
-  }
-
-  saveNotificationPreferences(): void {
-    this.notificationService.updatePreferences(this.notificationPreferences).subscribe({
-      next: (res) => {
-        if (res.isSuccess) {
-          this.toastr.success(res.message);
-        } else {
-          this.toastr.warning(res.message);
-        }
-      },
-      error: (err) => {
-        this.toastr.error(err.error?.message);
-      },
     });
   }
 
@@ -720,43 +679,4 @@ export class ConfigComponent extends Base implements OnInit {
     }
   }
 
-  openChangePhotoModal() {
-    const dialogRef = this.dialog.open(ConfigProfilePhotoModal);
-
-    dialogRef.afterClosed().subscribe((file?: File) => {
-      if (!file) return;
-
-      this.userService.uploadPhoto(file).subscribe({
-        next: (res) => {
-          if (res.isSuccess) {
-            this.toastr.success(res.message);
-          } else {
-            this.toastr.warning(res.message);
-          }
-        },
-        error: (err) => {
-          this.toastr.error(err.error?.message);
-        },
-      });
-    });
-  }
-
-  removePhoto() {
-    this.confirmModal('Delete', 'AreYouSureRemoveData', 'Yes', 'No', '380', 'help_outline').subscribe((result) => {
-      if (!result) return;
-
-      this.userService.removePhoto().subscribe({
-        next: (res) => {
-          if (res.isSuccess) {
-            this.toastr.success(res.message);
-          } else {
-            this.toastr.warning(res.message);
-          }
-        },
-        error: (err) => {
-          this.toastr.error(err.error?.message);
-        },
-      });
-    });
-  }
 }

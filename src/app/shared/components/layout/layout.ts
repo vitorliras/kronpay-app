@@ -8,11 +8,20 @@ import { NotificationService } from '../../../core/services/notification.service
 import { NotificationCriticalModalComponent } from '../notification-critical-modal/notification-critical-modal';
 import { AssistantWidgetComponent } from '../assistant-widget/assistant-widget';
 import { TourOverlayComponent } from '../tour-overlay/tour-overlay';
+import { AchievementToastComponent } from '../achievement-toast/achievement-toast';
 
 @Component({
   selector: 'app-layout',
   standalone: true,
-  imports: [CommonModule, Sidebar, Header, RouterOutlet, AssistantWidgetComponent, TourOverlayComponent],
+  imports: [
+    CommonModule,
+    Sidebar,
+    Header,
+    RouterOutlet,
+    AssistantWidgetComponent,
+    TourOverlayComponent,
+    AchievementToastComponent,
+  ],
   templateUrl: './layout.html',
   styleUrl: './layout.scss',
 })

@@ -1,0 +1,31 @@
+<ng-container *ngIf="translations$ | async as t">
+  <div class="achievement-toast-host" *ngIf="current$ | async as current">
+    <div class="achievement-toast" [class.leaving]="leaving$ | async" (click)="dismissCurrent()">
+      <div class="achievement-toast-glow" [class]="badgeTierClass(current)"></div>
+
+      <div class="achievement-toast-medal" [class]="badgeTierClass(current)">
+        <div class="achievement-toast-shine"></div>
+        <mat-icon>military_tech</mat-icon>
+      </div>
+
+      <div class="achievement-toast-body">
+        <span class="achievement-toast-title">{{ t['AchievementUnlockedTitle'] }}</span>
+        <span class="achievement-toast-subtitle">{{ t['AchievementUnlockedSubtitle'] }}</span>
+        <span class="achievement-toast-name">{{ t[current.messageKey] }}</span>
+      </div>
+
+      <button type="button" class="achievement-toast-close" (click)="dismissCurrent(); $event.stopPropagation()">
+        <mat-icon>close</mat-icon>
+      </button>
+
+      <div class="achievement-toast-progress"></div>
+
+      <span class="achievement-toast-particle p1"></span>
+      <span class="achievement-toast-particle p2"></span>
+      <span class="achievement-toast-particle p3"></span>
+      <span class="achievement-toast-particle p4"></span>
+      <span class="achievement-toast-particle p5"></span>
+      <span class="achievement-toast-particle p6"></span>
+    </div>
+  </div>
+</ng-container>

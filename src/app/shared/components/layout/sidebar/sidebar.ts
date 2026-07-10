@@ -6,6 +6,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { UserService } from '../../../../core/services/user.service';
 import { AvatarCircular } from '../../avatar-circular/avatar-circular';
+import { GamificationService } from '../../../../core/services/gamification/gamification.service';
+import { catchError, map, Observable, of } from 'rxjs';
 
 @Component({
   selector: 'app-sidebar',
@@ -15,19 +17,32 @@ import { AvatarCircular } from '../../avatar-circular/avatar-circular';
   styleUrl: './sidebar.scss',
 })
 export class Sidebar extends Base {
+  private gamificationService = inject(GamificationService);
+
   isCollapsed = false;
   user$ = this.userService.getUser();
 
+  rankTier$: Observable<string | null> = this.gamificationService.getRank().pipe(
+    map((res) => (res.isSuccess && res.value ? res.value.tier : null)),
+    catchError(() => of(null)),
+  );
+
   creditCardOpen = false;
+  profileOpen = false;
 
   constructor() {
     super();
-    // Abre o submenu automaticamente quando já se está numa rota de cartão.
+    // Abre o submenu automaticamente quando já se está numa rota de cartão/perfil.
     this.creditCardOpen = this.router.url.startsWith('/credit-card');
+    this.profileOpen = this.router.url.startsWith('/profile');
   }
 
   get isCreditCardActive(): boolean {
     return this.router.url.startsWith('/credit-card');
+  }
+
+  get isProfileActive(): boolean {
+    return this.router.url.startsWith('/profile');
   }
 
   toggle() {
@@ -36,5 +51,9 @@ export class Sidebar extends Base {
 
   toggleCreditCard() {
     this.creditCardOpen = !this.creditCardOpen;
+  }
+
+  toggleProfile() {
+    this.profileOpen = !this.profileOpen;
   }
 }

@@ -1,3 +1,16 @@
+@use '../../../../styles/rank-tiers' as rank;
+
+.rank-ring {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  flex-shrink: 0;
+
+  @include rank.rank-tier-backgrounds;
+}
+
 .avatar-circular {
   border-radius: 50%;
   overflow: hidden;
@@ -19,4 +32,22 @@
     color: #6b6b6b;
     text-transform: uppercase;
   }
+}
+
+.rank-badge {
+  position: absolute;
+  bottom: -2px;
+  right: -2px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid #fff;
+  color: #fff;
+
+  mat-icon {
+    line-height: 1;
+  }
+
+  @include rank.rank-tier-backgrounds;
 }

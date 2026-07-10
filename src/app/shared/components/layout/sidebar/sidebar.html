@@ -8,7 +8,7 @@
 
     <div class="user-box" *ngIf="user$ | async as user">
       <button class="avatar-btn" (click)="goToProfile()" [matTooltip]="t['Profile']" matTooltipPosition="right">
-        <app-avatar-circular [size]="isCollapsed ? 32 : 44"></app-avatar-circular>
+        <app-avatar-circular [size]="isCollapsed ? 32 : 44" [rankTier]="rankTier$ | async"></app-avatar-circular>
       </button>
 
       <div class="user-info" *ngIf="!isCollapsed">
@@ -79,6 +79,28 @@
         [matTooltip]="t['Objectives']" [matTooltipDisabled]="!isCollapsed" matTooltipPosition="right">
         <mat-icon>flag</mat-icon>
         <span *ngIf="!isCollapsed">{{ t['Objectives'] }}</span>
+      </div>
+
+      <div class="menu-group">
+        <div class="group-header" (click)="toggleProfile()" [class.active-parent]="isProfileActive"
+          [matTooltip]="t['Profile']" [matTooltipDisabled]="!isCollapsed" matTooltipPosition="right">
+          <mat-icon>badge</mat-icon>
+          <span class="label" *ngIf="!isCollapsed">{{ t['Profile'] }}</span>
+          <mat-icon class="chevron" [class.open]="profileOpen">expand_more</mat-icon>
+        </div>
+
+        <div class="submenu" *ngIf="profileOpen">
+          <div [routerLink]="'/profile/user'" routerLinkActive="active" class="submenu-item"
+            [matTooltip]="t['ProfileUser']" [matTooltipDisabled]="!isCollapsed" matTooltipPosition="right">
+            <mat-icon>person</mat-icon>
+            <span class="label" *ngIf="!isCollapsed">{{ t['ProfileUser'] }}</span>
+          </div>
+          <div [routerLink]="'/profile/achievements'" routerLinkActive="active" class="submenu-item"
+            [matTooltip]="t['Achievements']" [matTooltipDisabled]="!isCollapsed" matTooltipPosition="right">
+            <mat-icon>military_tech</mat-icon>
+            <span class="label" *ngIf="!isCollapsed">{{ t['Achievements'] }}</span>
+          </div>
+        </div>
       </div>
 
       <div [routerLink]="'/config'" routerLinkActive="active" class="menu-item"

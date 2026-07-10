@@ -1,0 +1,15 @@
+@use '../../../../styles/rank-tiers' as rank;
+
+.rank-badge-circle {
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  box-shadow:
+    0 10px 28px rgba(0, 0, 0, 0.12),
+    0 2px 4px rgba(0, 0, 0, 0.08);
+  flex-shrink: 0;
+
+  @include rank.rank-tier-backgrounds;
+}

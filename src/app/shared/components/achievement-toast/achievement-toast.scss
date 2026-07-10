@@ -1,0 +1,270 @@
+@use '../../../../styles/rank-tiers' as rank;
+
+.achievement-toast-host {
+  position: fixed;
+  top: 88px;
+  right: 24px;
+  z-index: 4000;
+  pointer-events: none;
+}
+
+.achievement-toast {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  width: 360px;
+  max-width: calc(100vw - 48px);
+  padding: 18px 40px 18px 18px;
+  border-radius: 20px;
+  overflow: hidden;
+  background: linear-gradient(145deg, #14172a 0%, #1f2440 100%);
+  box-shadow:
+    0 18px 40px rgba(0, 0, 0, 0.35),
+    0 0 0 1px rgba(255, 255, 255, 0.06) inset;
+  cursor: pointer;
+  pointer-events: auto;
+  animation: achievement-in 0.55s cubic-bezier(0.22, 1.4, 0.36, 1) both;
+
+  &.leaving {
+    animation: achievement-out 0.32s ease forwards;
+  }
+}
+
+.achievement-toast-glow {
+  position: absolute;
+  inset: -40% -10% auto auto;
+  width: 160px;
+  height: 160px;
+  border-radius: 50%;
+  filter: blur(38px);
+  opacity: 0.55;
+
+  @include rank.rank-tier-backgrounds;
+}
+
+.achievement-toast-medal {
+  position: relative;
+  flex-shrink: 0;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1;
+  box-shadow:
+    0 6px 16px rgba(0, 0, 0, 0.4),
+    0 0 0 3px rgba(255, 255, 255, 0.12);
+  animation: medal-pop 0.6s cubic-bezier(0.22, 1.4, 0.36, 1) 0.05s both;
+
+  @include rank.rank-tier-backgrounds;
+
+  mat-icon {
+    color: #fff;
+    font-size: 26px;
+    width: 26px;
+    height: 26px;
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.4));
+  }
+}
+
+.achievement-toast-shine {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: -60%;
+    left: -60%;
+    width: 60%;
+    height: 220%;
+    background: linear-gradient(
+      100deg,
+      transparent 20%,
+      rgba(255, 255, 255, 0.65) 50%,
+      transparent 80%
+    );
+    animation: shine-sweep 2.4s ease-in-out 0.5s infinite;
+  }
+}
+
+.achievement-toast-body {
+  position: relative;
+  z-index: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.achievement-toast-title {
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.3px;
+  background: linear-gradient(90deg, #ffd76a, #ffb347);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.achievement-toast-subtitle {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.achievement-toast-name {
+  margin-top: 4px;
+  font-size: 14.5px;
+  font-weight: 700;
+  color: #fff;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.achievement-toast-close {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 2;
+  width: 22px;
+  height: 22px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.18);
+    color: #fff;
+  }
+
+  mat-icon {
+    font-size: 14px;
+    width: 14px;
+    height: 14px;
+  }
+}
+
+.achievement-toast-progress {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 3px;
+  width: 100%;
+  background: linear-gradient(90deg, #ffd76a, #ffb347);
+  transform-origin: left;
+  animation: progress-countdown 6s linear forwards;
+}
+
+.achievement-toast-particle {
+  position: absolute;
+  top: 34px;
+  left: 46px;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #ffd76a;
+  opacity: 0;
+  animation: particle-burst 0.9s ease-out both;
+
+  &.p1 {
+    animation-delay: 0.05s;
+    transform: rotate(0deg) translateY(-30px);
+  }
+  &.p2 {
+    background: #ff8fa3;
+    animation-delay: 0.1s;
+    transform: rotate(60deg) translateY(-30px);
+  }
+  &.p3 {
+    background: #7dd3fc;
+    animation-delay: 0.02s;
+    transform: rotate(120deg) translateY(-30px);
+  }
+  &.p4 {
+    animation-delay: 0.15s;
+    transform: rotate(180deg) translateY(-30px);
+  }
+  &.p5 {
+    background: #a78bfa;
+    animation-delay: 0.08s;
+    transform: rotate(240deg) translateY(-30px);
+  }
+  &.p6 {
+    background: #7dd3fc;
+    animation-delay: 0.12s;
+    transform: rotate(300deg) translateY(-30px);
+  }
+}
+
+@keyframes achievement-in {
+  from {
+    opacity: 0;
+    transform: translateX(60px) scale(0.85);
+  }
+  60% {
+    opacity: 1;
+    transform: translateX(-6px) scale(1.02);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
+@keyframes achievement-out {
+  to {
+    opacity: 0;
+    transform: translateX(40px) scale(0.9);
+  }
+}
+
+@keyframes medal-pop {
+  from {
+    transform: scale(0.3) rotate(-25deg);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1) rotate(0deg);
+    opacity: 1;
+  }
+}
+
+@keyframes shine-sweep {
+  0% {
+    transform: translateX(-20%) rotate(0deg);
+  }
+  100% {
+    transform: translateX(220%) rotate(0deg);
+  }
+}
+
+@keyframes progress-countdown {
+  from {
+    transform: scaleX(1);
+  }
+  to {
+    transform: scaleX(0);
+  }
+}
+
+@keyframes particle-burst {
+  0% {
+    opacity: 1;
+    transform: rotate(var(--angle, 0deg)) translateY(0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: rotate(var(--angle, 0deg)) translateY(-38px) scale(0.4);
+  }
+}
