@@ -51,7 +51,6 @@
 
             <div>
               <h2 class="title">{{ t['Transactions'] }}</h2>
-              <!-- <p class="subtitle">{{ t[subTitle] }}</p> -->
             </div>
 
           </div>
@@ -175,7 +174,6 @@
           </button>
         </div>
       </div>
-      <!-- [class.hidden]="transactionsFilterDataSource.data.length === 0" -->
       <div [class.hidden]="transactionsFilterDataSource.data.length == 0 || isAttaching" class="table-wrapper-1"
         style="max-height: 480px !important" appTourAnchor="transactions-table">
 
@@ -217,7 +215,35 @@
           </ng-container>
 
           <ng-container matColumnDef="category">
-            <th mat-sort-header mat-header-cell *matHeaderCellDef>{{ t['Category'] }}</th>
+            <th mat-sort-header mat-header-cell *matHeaderCellDef>
+              <span class="category-header-label">{{ t['Category'] }}</span>
+
+              <button type="button" class="category-filter-trigger" [class.active]="categoryFilter.length > 0"
+                [matMenuTriggerFor]="categoryFilterMenu" (click)="$event.stopPropagation()">
+                <mat-icon>filter_list</mat-icon>
+                <span class="category-filter-count" *ngIf="categoryFilter.length > 0">{{ categoryFilter.length }}</span>
+              </button>
+
+              <mat-menu #categoryFilterMenu="matMenu" class="category-filter-menu">
+                <div class="category-filter-panel" (click)="$event.stopPropagation()">
+                  <div class="category-filter-actions">
+                    <button type="button" (click)="selectAllCategoryFilter()">{{ t['SelectAll'] }}</button>
+                    <button type="button" (click)="clearCategoryFilter()">{{ t['ClearFilters'] }}</button>
+                  </div>
+
+                  <div class="category-filter-list">
+                    <mat-checkbox *ngFor="let c of filterableCategories" [checked]="isCategoryChecked(c.id)"
+                      (change)="toggleCategoryFilter(c.id)">
+                      {{ c.description }}
+                    </mat-checkbox>
+
+                    <div class="category-filter-empty" *ngIf="filterableCategories.length === 0">
+                      {{ t['NoCategoriesToFilter'] }}
+                    </div>
+                  </div>
+                </div>
+              </mat-menu>
+            </th>
             <td mat-cell *matCellDef="let row">
               {{ getCategoryDescription(row) }}
             </td>
@@ -409,15 +435,6 @@
               <input type="text" class="table-input" moneyInput [(ngModel)]="row.amount" />
             </td>
           </ng-container>
-
-          <!-- INSTALLMENTS -->
-          <!-- <ng-container matColumnDef="installment">
-            <th mat-header-cell *matHeaderCellDef>{{ t['Installments'] }}</th>
-
-            <td mat-cell *matCellDef="let row">
-              <input type="number" class="table-input" [(ngModel)]="row.installments" />
-            </td>
-          </ng-container> -->
 
           <ng-container matColumnDef="status">
             <th mat-header-cell *matHeaderCellDef>Status</th>

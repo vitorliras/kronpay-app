@@ -142,8 +142,6 @@ export class AuthService extends BaseService  {
   private clearSession(): void {
     localStorage.removeItem(ACCESS_TOKEN_KEY);
     localStorage.removeItem(REFRESH_TOKEN_KEY);
-    // A flag do modal de críticas é "uma vez por sessão de login", não "uma vez por aba do
-    // navegador" — sem isso, logar de novo na mesma aba nunca mostraria o modal de novo.
     this.notificationService.resetCriticalModalFlag();
   }
 }

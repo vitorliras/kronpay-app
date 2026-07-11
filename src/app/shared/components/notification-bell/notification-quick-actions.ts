@@ -45,8 +45,6 @@ const markTransactionAsPaidAction: NotificationQuickAction = {
   },
 };
 
-// Só os tipos com ação rápida definida no planejamento (SPEC 0026) — os demais (inteligência
-// financeira, higiene de dados etc.) não têm ação, só marcam como lida ao clicar na linha.
 const QUICK_ACTIONS_BY_TYPE: Record<string, NotificationQuickAction> = {
   TransactionOverdue: markTransactionAsPaidAction,
   TransactionDueToday: markTransactionAsPaidAction,

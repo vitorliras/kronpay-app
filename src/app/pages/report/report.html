@@ -17,7 +17,6 @@
           <mat-tab label="{{ t['Investment'] }}"></mat-tab>
           <mat-tab label="{{ t['Comparison'] }}"></mat-tab>
           <mat-tab label="{{ t['CreditCard'] }}"></mat-tab>
-          <!-- <mat-tab label="{{ t['CashFlow'] }}"></mat-tab> -->
         </div>
 
       </mat-tab-group>
@@ -104,8 +103,6 @@
             <div class="value">{{transactionTotal}}</div>
 
             <div class="details">
-              <!-- <div>{{ t['NotReceived'] }} <span>R$ {{IncomeRecieve}}</span></div>
-              <div>{{ t['Received'] }} <span>R$ {{IncomeNotRecieve}}</span></div> -->
             </div>
           </div>
 
@@ -283,11 +280,6 @@
                     (ngModelChange)="validateYear('year2')">
                 </div>
               </div>
-
-              <!-- <button class="compare-btn" (click)="compare()">
-                <mat-icon>insights</mat-icon>
-                {{t['Compare']}}
-              </button> -->
 
             </div>
 
@@ -487,10 +479,6 @@
 
               <div class="chart-header">
                 <div>
-                  <!-- <div class="chart-title">
-                    {{ t['Comparison'] }}
-                  </div> -->
-
                   <div class="chart-subtitle">
                     {{descMonth1}}/{{year1}} x {{descMonth2}}/{{year2}}
                   </div>
@@ -766,7 +754,6 @@
       </div>
     </div>
 
-    <!-- ==================== CARTÃO DE CRÉDITO ==================== -->
     <div class="tab-content cc-tab" *ngIf="selectedTabIndex == 4">
       <div #exportArea class="export-container" style="padding: 30px;">
 
@@ -818,7 +805,6 @@
 
         <ng-container *ngIf="ccCards.length">
 
-          <!-- KPIs -->
           <div class="summary-cards cc-kpis">
             <div class="summary-card cc-kpi total">
               <div class="title">{{ t['TotalInvoices'] }}</div>
@@ -855,7 +841,6 @@
             </div>
           </div>
 
-          <!-- Evolução + Gastos por cartão -->
           <div class="row cc-row">
             <div class="col-6">
               <div class="chart-card">
@@ -896,7 +881,6 @@
             </div>
           </div>
 
-          <!-- Categoria + Status + Utilização por cartão -->
           <div class="row cc-row">
             <div class="col-4">
               <div class="chart-card">
@@ -946,7 +930,6 @@
             </div>
           </div>
 
-          <!-- Ranking -->
           <div class="row cc-row">
             <div class="chart-card cc-full">
               <div class="chart-header"><div><div class="chart-title">{{ t['CardRanking'] }}</div><div class="chart-subtitle">{{ ccYear }}</div></div></div>

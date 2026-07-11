@@ -32,7 +32,6 @@
     margin-bottom: 16px;
   }
 
-  /* resumo / limite */
   .summary {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -94,7 +93,6 @@
     }
   }
 
-  /* lista de faturas (cards expansíveis) */
   .invoice-list {
     display: flex;
     flex-direction: column;
@@ -296,7 +294,6 @@
     }
   }
 
-  /* ---- filtro (ano + meses) ---- */
   .filter-card {
     background: #ffffff;
     border-radius: 16px;
@@ -429,7 +426,6 @@
     }
   }
 
-  /* ---- faturas em atraso ---- */
   .overdue-section {
     margin-bottom: 18px;
 
@@ -450,7 +446,6 @@
     }
   }
 
-  /* card de fatura vencida */
   .invoice-card.overdue {
     border: 1.5px solid #e07070;
     box-shadow: 0 6px 20px rgba(214, 69, 69, 0.14);

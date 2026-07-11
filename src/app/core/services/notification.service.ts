@@ -15,9 +15,6 @@ export class NotificationService extends BaseService {
   private unreadCountSubject = new BehaviorSubject<number>(0);
   unreadCount$ = this.unreadCountSubject.asObservable();
 
-  // Controla o modal de críticas ao logar (LayoutComponent) — "uma vez por sessão de
-  // login", não "uma vez por aba de navegador". A flag precisa ser resetada no logout
-  // (ver AuthService.clearSession) para não ficar presa entre login/logout na mesma aba.
   hasCriticalModalBeenShown(): boolean {
     return !!sessionStorage.getItem(CRITICAL_MODAL_SHOWN_KEY);
   }

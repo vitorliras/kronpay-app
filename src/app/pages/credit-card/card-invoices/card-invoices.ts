@@ -59,13 +59,12 @@ export class CardInvoicesComponent extends Base implements OnInit {
   categories: CategoryResponse[] = [];
   paymentMethods: PaymentMethodResponse[] = [];
 
-  invoices: CardInvoiceResponse[] = []; // lista completa vinda do backend
+  invoices: CardInvoiceResponse[] = [];
   overdueInvoices: CardInvoiceResponse[] = [];
   displayedInvoices: CardInvoiceResponse[] = [];
   items: CardInstallmentResponse[] = [];
   summary: CreditCardSummaryResponse | null = null;
 
-  // filtros
   availableYears: number[] = [];
   monthsOfYear: number[] = [];
   filterYear: number | null = null;

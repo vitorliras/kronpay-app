@@ -2,8 +2,6 @@
   color: inherit;
 }
 
-// Zera o chrome padrão do mat-menu (painel + padding interno do conteúdo) para o header
-// com gradiente ir de ponta a ponta — mesma técnica já usada no modal de críticas.
 ::ng-deep .notification-menu-panel {
   max-width: none !important;
   border-radius: 20px !important;
@@ -86,9 +84,6 @@
   }
 }
 
-// Abas em formato pílula, reaproveitando a mesma linguagem visual já usada em cards.scss
-// (.card-1 ::ng-deep .mat-mdc-tab / .mdc-tab--active) para as abas "importantes/ativas" do
-// resto do app — não é um padrão novo, só aplicado aqui pela primeira vez num menu.
 .notification-tabs {
   ::ng-deep .mat-mdc-tab-header {
     padding: 10px 16px 0;

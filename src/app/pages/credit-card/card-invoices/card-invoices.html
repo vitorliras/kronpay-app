@@ -31,7 +31,6 @@
       </div>
     </div>
 
-    <!-- filtro -->
     <div class="filter-card" *ngIf="creditCardId && availableYears.length">
       <div class="filter-head">
         <span class="filter-title"><mat-icon>filter_list</mat-icon> {{ t['Filters'] }}</span>
@@ -73,7 +72,6 @@
       </div>
     </div>
 
-    <!-- faturas em atraso -->
     <div class="overdue-section" *ngIf="overdueInvoices.length">
       <div class="overdue-title"><mat-icon>warning_amber</mat-icon> {{ t['OverdueInvoices'] }}</div>
       <div class="invoice-list">
@@ -83,7 +81,6 @@
       </div>
     </div>
 
-    <!-- padrão / filtrada -->
     <div class="invoice-list" *ngIf="displayedInvoices.length">
       <ng-container *ngFor="let inv of displayedInvoices">
         <ng-container *ngTemplateOutlet="invoiceCardTpl; context: { inv: inv }"></ng-container>
@@ -95,7 +92,6 @@
       <p>{{ t['NoInvoices'] }}</p>
     </div>
 
-    <!-- template do card de fatura (reutilizado nas duas listas) -->
     <ng-template #invoiceCardTpl let-inv="inv">
       <div
         class="invoice-card"
@@ -171,7 +167,6 @@
       </div>
     </ng-template>
 
-    <!-- pagamento -->
     <div class="pay-overlay" *ngIf="payingInvoice">
       <div class="pay-box">
         <h3>{{ t['PayInvoice'] }} {{ t[monthLabel(payingInvoice.referenceMonth)] }}/{{ payingInvoice.referenceYear }}</h3>

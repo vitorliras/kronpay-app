@@ -1,227 +1,270 @@
-<div class="login-page">
+<div class="auth-page">
+  <ng-container *ngIf="translations$ | async as t">
 
-  <div  class="loader-container pos-load" *ngIf="isLoading">
-  <mat-progress-spinner mode="indeterminate" diameter="50"></mat-progress-spinner>
-</div>
-  <div class="login-card">
-    <ng-container *ngIf="translations$ | async as t">
-      <!-- ================= LOGIN ================= -->
-      <ng-container *ngIf="currentView === 'login'">
+    <aside class="auth-brand">
+      <div class="auth-brand__glow auth-brand__glow--one"></div>
+      <div class="auth-brand__glow auth-brand__glow--two"></div>
+      <div class="auth-brand__grid"></div>
 
-        <div class="logo">
-          <mat-icon class="logo-icon">bar_chart</mat-icon>
-          <span>KronPay</span>
+      <div class="auth-brand__content">
+        <div class="auth-brand__logo">
+          <svg class="auth-brand__mark" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect width="40" height="40" rx="12" fill="url(#markGradient)" />
+            <path d="M11 26L17 18L22 22L29 12" stroke="white" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M23 12H29V18" stroke="white" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+            <defs>
+              <linearGradient id="markGradient" x1="0" y1="0" x2="40" y2="40" gradientUnits="userSpaceOnUse">
+                <stop stop-color="#5C7CFF"/>
+                <stop offset="1" stop-color="#2A52FF"/>
+              </linearGradient>
+            </defs>
+          </svg>
+          <span class="auth-brand__wordmark">KronPay</span>
         </div>
 
-        <h2>{{ t['WelcomeBack'] }}</h2>
-        <p>{{ t['MakeLoginForAccessYourAccount'] }}</p>
+        <app-auth-showcase></app-auth-showcase>
+      </div>
+    </aside>
 
-        <form [formGroup]="loginForm" (ngSubmit)="submit()" autocomplete="off">
+    <main class="auth-panel">
+      <div class="auth-panel__topbar">
+        <div class="auth-brand__logo auth-brand__logo--compact">
+          <svg class="auth-brand__mark" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect width="40" height="40" rx="12" fill="url(#markGradientSmall)" />
+            <path d="M11 26L17 18L22 22L29 12" stroke="white" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M23 12H29V18" stroke="white" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+            <defs>
+              <linearGradient id="markGradientSmall" x1="0" y1="0" x2="40" y2="40" gradientUnits="userSpaceOnUse">
+                <stop stop-color="#5C7CFF"/>
+                <stop offset="1" stop-color="#2A52FF"/>
+              </linearGradient>
+            </defs>
+          </svg>
+          <span class="auth-brand__wordmark">KronPay</span>
+        </div>
 
-          <mat-form-field appearance="outline" class="full-width">
-            <mat-label>E-mail</mat-label>
-            <mat-icon matPrefix>mail</mat-icon>
-            <input matInput formControlName="email" type="email">
-          </mat-form-field>
-
-          <mat-form-field appearance="outline" class="full-width">
-            <mat-label>{{ t['Password'] }}</mat-label>
-            <mat-icon matPrefix>lock</mat-icon>
-
-            <input matInput formControlName="password" [maskedPassword]="hidePassword" autocomplete="new-password" />
-
-            <button mat-icon-button matSuffix type="button" (click)="togglePasswordVisibility()">
-              <mat-icon>
-                {{ hidePassword ? 'visibility_off' : 'visibility' }}
-              </mat-icon>
-            </button>
-          </mat-form-field>
-
-          <div class="options">
-            <mat-checkbox formControlName="rememberMe">{{ t['RemindMe']}}</mat-checkbox>
-            <a class="link" (click)="goToForgotPassword()">
-              {{ t['ForgotYourPassword'] }}
-            </a>
-          </div>
-
-          <button mat-raised-button color="primary" class="login-button" type="submit">
-            {{ t['Enter'] }}
-          </button>
-        </form>
-
-        <mat-divider></mat-divider>
-
-        <p class="register">
-          {{ t['DoNotHaveAccount'] }}
-          <a class="link" (click)="goToRegister()">
-            {{ t['Register'] }}
-          </a>
-        </p>
-
-      </ng-container>
-
-      <!-- ================= REGISTER ================= -->
-      <ng-container *ngIf="currentView === 'register'">
-
-        <button class="btn-arrow" (click)="goToLogin()">
-          <mat-icon class="arrow"> chevron_left </mat-icon>
-        </button>
-
-        <h2 style="margin-bottom: 10px;">{{ t['Register'] }}</h2>
-
-        <mat-divider></mat-divider>
-
-
-        <form [formGroup]="registerForm" autocomplete="off">
-
-          <mat-form-field appearance="outline" class="full-width">
-            <mat-label>{{ t['Name'] }}</mat-label>
-            <input matInput formControlName="name">
-          </mat-form-field>
-
-          <mat-form-field appearance="outline" class="full-width">
-            <mat-label>{{ t['Username'] }}</mat-label>
-            <input matInput formControlName="username">
-          </mat-form-field>
-
-          <mat-form-field appearance="outline" class="full-width">
-            <mat-label>Email</mat-label>
-            <input matInput formControlName="email" type="email">
-          </mat-form-field>
-
-          <mat-form-field appearance="outline" class="full-width">
-            <mat-label>CPF</mat-label>
-            <input matInput formControlName="cpf" mask="000.000.000-00">
-          </mat-form-field>
-
-          <mat-form-field appearance="outline" class="full-width">
-            <mat-label>{{ t['Phone'] }}</mat-label>
-            <input matInput formControlName="phone" mask="(00) 00000-0000">
-          </mat-form-field>
-
-          <mat-form-field appearance="outline" class="full-width">
-            <mat-label>{{ t['Password'] }}</mat-label>
-
-            <input matInput maskedPassword formControlName="password" autocomplete="new-password">
-
-            <button mat-icon-button matSuffix type="button" matTooltip="{{ passwordRules$ | async }}">
-              <mat-icon>info</mat-icon>
-            </button>
-
-          </mat-form-field>
-
-          <div class="notification-preferences">
-            <p class="notification-preferences-title">{{ t['NotificationEmailPreferencesTitle'] }}</p>
-
-            <mat-checkbox formControlName="emailOnCritical">{{ t['NotificationLevelCritical'] }}</mat-checkbox>
-            <mat-checkbox formControlName="emailOnImportant">{{ t['NotificationLevelImportant'] }}</mat-checkbox>
-            <mat-checkbox formControlName="emailOnInformative">{{ t['NotificationLevelInformative'] }}</mat-checkbox>
-
-            <p class="notification-preferences-hint">{{ t['NotificationEmailPreferencesHint'] }}</p>
-          </div>
-
-          <button mat-raised-button color="primary" class="login-button" [disabled]="registerForm.invalid"
-            (click)="register()">
-            {{ t['Register'] }}
-          </button>
-
-        </form>
-
-
-      </ng-container>
-
-      <!-- ================= FORGOT PASSWORD ================= -->
-      <ng-container *ngIf="currentView === 'forgot'">
-
-        <button class="btn-arrow" (click)="goToLogin()">
-          <mat-icon class="arrow"> chevron_left </mat-icon>
-        </button>
-
-        <h2>{{ t['ForgotYourPassword'] }}</h2>
-        <p class="subtitle">{{ t['ForgotPasswordInstructions'] }}</p>
-
-        <form [formGroup]="forgotForm" (ngSubmit)="requestPasswordReset()">
-
-          <mat-form-field appearance="outline" class="full-width">
-            <mat-label>E-mail</mat-label>
-            <mat-icon matPrefix>mail</mat-icon>
-            <input matInput formControlName="email" type="email">
-          </mat-form-field>
-
-          <button mat-raised-button color="primary" class="login-button" type="submit">
-            {{ t['Send'] }}
-          </button>
-        </form>
-
-      </ng-container>
-
-      <!-- ================= CONFIRM EMAIL ================= -->
-      <ng-container *ngIf="currentView === 'confirm-email'">
-
-        <h2>{{ t['ConfirmEmailTitle'] }}</h2>
-        <p class="subtitle">{{ t['ConfirmEmailInstructions'] }}</p>
-
-        <form [formGroup]="confirmEmailForm" (ngSubmit)="confirmEmail()">
-
-          <app-code-input [control]="confirmEmailForm.controls.code" [expiresAt]="codeExpiresAt"
-            (resend)="resendConfirmationCode()"></app-code-input>
-
-          <button mat-raised-button color="primary" class="login-button" type="submit">
-            {{ t['Confirm'] }}
-          </button>
-        </form>
-
-      </ng-container>
-
-      <!-- ================= RESET PASSWORD ================= -->
-      <ng-container *ngIf="currentView === 'reset-password'">
-
-        <button class="btn-arrow" (click)="goToLogin()">
-          <mat-icon class="arrow"> chevron_left </mat-icon>
-        </button>
-
-        <h2>{{ t['ForgotYourPassword'] }}</h2>
-
-        <form [formGroup]="resetPasswordForm" (ngSubmit)="onResetPasswordFormSubmit()" autocomplete="off">
-
-          <app-code-input *ngIf="!resetCodeValidated" [control]="resetPasswordForm.controls.code"
-            [expiresAt]="codeExpiresAt" (resend)="resendPasswordResetCode()"></app-code-input>
-
-          <ng-container *ngIf="resetCodeValidated">
-            <mat-form-field appearance="outline" class="full-width">
-              <mat-label>{{ t['NewPassword'] }}</mat-label>
-
-              <input matInput maskedPassword formControlName="newPassword" autocomplete="new-password">
-
-              <button mat-icon-button matSuffix type="button" matTooltip="{{ passwordRules$ | async }}">
-                <mat-icon>info</mat-icon>
-              </button>
-            </mat-form-field>
-
-            <mat-form-field appearance="outline" class="full-width">
-              <mat-label>{{ t['ConfirmNewPassword'] }}</mat-label>
-              <input matInput maskedPassword formControlName="confirmPassword" autocomplete="new-password">
-            </mat-form-field>
-          </ng-container>
-
-          <button mat-raised-button color="primary" class="login-button" type="submit">
-            {{ t['Confirm'] }}
-          </button>
-        </form>
-
-      </ng-container>
-
-      <!-- ================= LANGUAGES ================= -->
-
-      <div class="languages">
-        <mat-button-toggle-group [value]="currentLang" (change)="changeLang($event.value)" appearance="legacy">
-
-          <mat-button-toggle value="pt-BR">🇧🇷 Português</mat-button-toggle>
-          <mat-button-toggle value="en-US">🇺🇸 English</mat-button-toggle>
-
-        </mat-button-toggle-group>
+        <div class="auth-lang">
+          <button type="button" [class.active]="currentLang === 'pt-BR'" (click)="changeLang('pt-BR')">🇧🇷 PT</button>
+          <button type="button" [class.active]="currentLang === 'en-US'" (click)="changeLang('en-US')">🇺🇸 EN</button>
+        </div>
       </div>
 
-    </ng-container>
-  </div>
+      <div class="auth-panel__body">
+        <div class="auth-card" [class.auth-card--wide]="currentView === 'register'">
+
+          <div class="auth-card__loader" *ngIf="isLoading">
+            <mat-progress-spinner mode="indeterminate" diameter="36" strokeWidth="3"></mat-progress-spinner>
+          </div>
+
+          <div class="auth-view" *ngIf="currentView === 'login'" @fadeSlide>
+            <header class="auth-view__header">
+              <h2>{{ t['WelcomeBack'] }}</h2>
+              <p>{{ t['MakeLoginForAccessYourAccount'] }}</p>
+            </header>
+
+            <form [formGroup]="loginForm" (ngSubmit)="submit()" autocomplete="off">
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>E-mail</mat-label>
+                <mat-icon matPrefix>mail_outline</mat-icon>
+                <input matInput formControlName="email" type="email">
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>{{ t['Password'] }}</mat-label>
+                <mat-icon matPrefix>lock_outline</mat-icon>
+
+                <input matInput formControlName="password" [maskedPassword]="hidePassword" autocomplete="new-password" />
+
+                <button mat-icon-button matSuffix type="button" (click)="togglePasswordVisibility()">
+                  <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+                </button>
+              </mat-form-field>
+
+              <div class="options">
+                <mat-checkbox formControlName="rememberMe">{{ t['RemindMe']}}</mat-checkbox>
+                <a class="link" (click)="goToForgotPassword()">{{ t['ForgotYourPassword'] }}</a>
+              </div>
+
+              <button mat-raised-button color="primary" class="auth-button" type="submit" [disabled]="isLoading">
+                <span>{{ t['Enter'] }}</span>
+                <mat-icon>arrow_forward</mat-icon>
+              </button>
+            </form>
+
+            <mat-divider></mat-divider>
+
+            <p class="register">
+              {{ t['DoNotHaveAccount'] }}
+              <a class="link" (click)="goToRegister()">{{ t['Register'] }}</a>
+            </p>
+          </div>
+
+          <div class="auth-view" *ngIf="currentView === 'register'" @fadeSlide>
+            <header class="auth-view__header auth-view__header--with-back">
+              <button class="auth-back" type="button" (click)="goToLogin()">
+                <mat-icon>chevron_left</mat-icon>
+              </button>
+              <div>
+                <h2>{{ t['Register'] }}</h2>
+              </div>
+            </header>
+
+            <form [formGroup]="registerForm" autocomplete="off" class="auth-form-grid">
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>{{ t['Name'] }}</mat-label>
+                <mat-icon matPrefix>person_outline</mat-icon>
+                <input matInput formControlName="name">
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>{{ t['Username'] }}</mat-label>
+                <mat-icon matPrefix>alternate_email</mat-icon>
+                <input matInput formControlName="username">
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Email</mat-label>
+                <mat-icon matPrefix>mail_outline</mat-icon>
+                <input matInput formControlName="email" type="email">
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>CPF</mat-label>
+                <mat-icon matPrefix>badge</mat-icon>
+                <input matInput formControlName="cpf" mask="000.000.000-00">
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>{{ t['Phone'] }}</mat-label>
+                <mat-icon matPrefix>call</mat-icon>
+                <input matInput formControlName="phone" mask="(00) 00000-0000">
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>{{ t['Password'] }}</mat-label>
+                <mat-icon matPrefix>lock_outline</mat-icon>
+
+                <input matInput maskedPassword formControlName="password" autocomplete="new-password">
+
+                <button mat-icon-button matSuffix type="button" matTooltip="{{ passwordRules$ | async }}">
+                  <mat-icon>info_outline</mat-icon>
+                </button>
+              </mat-form-field>
+
+              <div class="notification-preferences">
+                <p class="notification-preferences-title">{{ t['NotificationEmailPreferencesTitle'] }}</p>
+
+                <div class="notification-preferences-options">
+                  <mat-checkbox formControlName="emailOnCritical">{{ t['NotificationLevelCritical'] }}</mat-checkbox>
+                  <mat-checkbox formControlName="emailOnImportant">{{ t['NotificationLevelImportant'] }}</mat-checkbox>
+                  <mat-checkbox formControlName="emailOnInformative">{{ t['NotificationLevelInformative'] }}</mat-checkbox>
+                </div>
+
+                <p class="notification-preferences-hint">{{ t['NotificationEmailPreferencesHint'] }}</p>
+              </div>
+
+              <button mat-raised-button color="primary" class="auth-button" [disabled]="registerForm.invalid || isLoading"
+                (click)="register()">
+                <span>{{ t['Register'] }}</span>
+                <mat-icon>arrow_forward</mat-icon>
+              </button>
+            </form>
+          </div>
+
+          <div class="auth-view" *ngIf="currentView === 'forgot'" @fadeSlide>
+            <header class="auth-view__header auth-view__header--with-back">
+              <button class="auth-back" type="button" (click)="goToLogin()">
+                <mat-icon>chevron_left</mat-icon>
+              </button>
+              <div>
+                <h2>{{ t['ForgotYourPassword'] }}</h2>
+                <p>{{ t['ForgotPasswordInstructions'] }}</p>
+              </div>
+            </header>
+
+            <form [formGroup]="forgotForm" (ngSubmit)="requestPasswordReset()" autocomplete="off">
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>E-mail</mat-label>
+                <mat-icon matPrefix>mail_outline</mat-icon>
+                <input matInput formControlName="email" type="email">
+              </mat-form-field>
+
+              <button mat-raised-button color="primary" class="auth-button" type="submit" [disabled]="isLoading">
+                <span>{{ t['Send'] }}</span>
+                <mat-icon>arrow_forward</mat-icon>
+              </button>
+            </form>
+          </div>
+
+          <div class="auth-view auth-view--centered" *ngIf="currentView === 'confirm-email'" @fadeSlide>
+            <header class="auth-view__header auth-view__header--centered">
+              <span class="auth-view__icon"><mat-icon>mark_email_read</mat-icon></span>
+              <h2>{{ t['ConfirmEmailTitle'] }}</h2>
+              <p>{{ t['ConfirmEmailInstructions'] }}</p>
+            </header>
+
+            <form [formGroup]="confirmEmailForm" (ngSubmit)="confirmEmail()">
+              <app-code-input
+                [control]="confirmEmailForm.controls.code"
+                [expiresAt]="codeExpiresAt"
+                (resend)="resendConfirmationCode()"
+                (codeComplete)="confirmEmail()">
+              </app-code-input>
+
+              <button mat-raised-button color="primary" class="auth-button" type="submit" [disabled]="isLoading">
+                <span>{{ t['Confirm'] }}</span>
+                <mat-icon>arrow_forward</mat-icon>
+              </button>
+            </form>
+          </div>
+
+          <div class="auth-view auth-view--centered" *ngIf="currentView === 'reset-password'" @fadeSlide>
+            <header class="auth-view__header auth-view__header--with-back auth-view__header--centered">
+              <button class="auth-back" type="button" (click)="goToLogin()">
+                <mat-icon>chevron_left</mat-icon>
+              </button>
+              <span class="auth-view__icon" *ngIf="!resetCodeValidated"><mat-icon>password</mat-icon></span>
+              <h2>{{ t['ForgotYourPassword'] }}</h2>
+            </header>
+
+            <form [formGroup]="resetPasswordForm" (ngSubmit)="onResetPasswordFormSubmit()" autocomplete="off">
+
+              <app-code-input *ngIf="!resetCodeValidated"
+                [control]="resetPasswordForm.controls.code"
+                [expiresAt]="codeExpiresAt"
+                (resend)="resendPasswordResetCode()"
+                (codeComplete)="onResetPasswordFormSubmit()">
+              </app-code-input>
+
+              <ng-container *ngIf="resetCodeValidated">
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>{{ t['NewPassword'] }}</mat-label>
+                  <mat-icon matPrefix>lock_outline</mat-icon>
+
+                  <input matInput maskedPassword formControlName="newPassword" autocomplete="new-password">
+
+                  <button mat-icon-button matSuffix type="button" matTooltip="{{ passwordRules$ | async }}">
+                    <mat-icon>info_outline</mat-icon>
+                  </button>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>{{ t['ConfirmNewPassword'] }}</mat-label>
+                  <mat-icon matPrefix>lock_outline</mat-icon>
+                  <input matInput maskedPassword formControlName="confirmPassword" autocomplete="new-password">
+                </mat-form-field>
+              </ng-container>
+
+              <button mat-raised-button color="primary" class="auth-button" type="submit" [disabled]="isLoading">
+                <span>{{ t['Confirm'] }}</span>
+                <mat-icon>arrow_forward</mat-icon>
+              </button>
+            </form>
+          </div>
+
+        </div>
+      </div>
+    </main>
+
+  </ng-container>
 </div>

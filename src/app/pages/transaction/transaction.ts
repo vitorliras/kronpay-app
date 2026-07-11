@@ -104,7 +104,6 @@ export class TransactionComponente extends Base implements OnInit {
     'subcategory',
     'paymentMethod',
     'amount',
-    // 'installment',
     'status',
     'actions',
   ];
@@ -151,6 +150,7 @@ export class TransactionComponente extends Base implements OnInit {
 
   searchTerm = '';
   typeFilter: 'I' | 'E' | 'V' | null = null;
+  categoryFilter: number[] = [];
   month: number = new Date().getMonth() + 1;
   year: number = new Date().getFullYear();
 
@@ -253,7 +253,7 @@ export class TransactionComponente extends Base implements OnInit {
             this.transactionsFilterDataSource.data = [...this.transactions];
             this.transactionsFilterDataSource.paginator = this.paginatorTransaction();
             this.calculateSummary(this.transactions);
-            if (this.typeFilter) this.setType(this.typeFilter);
+            this.applyCombinedFilters();
             return;
           }
         }
@@ -347,10 +347,10 @@ export class TransactionComponente extends Base implements OnInit {
     if (this.isAttaching) {
       this.applyFiltersAttachTypes();
     }
-    this.applyFiltersTypes();
+    this.applyCombinedFilters();
   }
 
-  applyFiltersTypes() {
+  applyCombinedFilters() {
     let filtered = [...this.transactions];
 
     if (this.typeFilter) {
@@ -361,8 +361,51 @@ export class TransactionComponente extends Base implements OnInit {
       else filtered = filtered.filter((c) => c.codTypeTransaction === this.typeFilter);
     }
 
+    if (this.categoryFilter.length > 0) {
+      filtered = filtered.filter(
+        (c) => c.categoryId != null && this.categoryFilter.includes(c.categoryId),
+      );
+    }
+
+    if (this.searchTerm) {
+      filtered = filtered.filter((c) => c.description.toLowerCase().includes(this.searchTerm));
+    }
+
     this.transactionsFilterDataSource.data = filtered;
     this.transactionsFilterDataSource.paginator = this.paginatorTransaction();
+  }
+
+  get filterableCategories(): CategoryResponse[] {
+    const idsInUse = new Set(
+      this.transactions.map((t) => t.categoryId).filter((id): id is number => id != null),
+    );
+
+    return this.categories
+      .filter((c) => idsInUse.has(c.id))
+      .sort((a, b) => a.description.localeCompare(b.description));
+  }
+
+  isCategoryChecked(categoryId: number): boolean {
+    return this.categoryFilter.includes(categoryId);
+  }
+
+  toggleCategoryFilter(categoryId: number) {
+    const index = this.categoryFilter.indexOf(categoryId);
+
+    if (index === -1) this.categoryFilter.push(categoryId);
+    else this.categoryFilter.splice(index, 1);
+
+    this.applyCombinedFilters();
+  }
+
+  selectAllCategoryFilter() {
+    this.categoryFilter = this.filterableCategories.map((c) => c.id);
+    this.applyCombinedFilters();
+  }
+
+  clearCategoryFilter() {
+    this.categoryFilter = [];
+    this.applyCombinedFilters();
   }
 
   applyFiltersAttachTypes() {
@@ -448,7 +491,6 @@ export class TransactionComponente extends Base implements OnInit {
             this.transactionService.create(request).subscribe(
               (res) => {
                 if (res.isSuccess) {
-                  // this.toastr.success(res.message);
                   const date = new Date(request.transactionDate);
                   this.year = date.getFullYear();
                   this.month = date.getMonth() + 1;
@@ -555,16 +597,8 @@ export class TransactionComponente extends Base implements OnInit {
 
   onSearchTransactions(event: Event): void {
     const input = event.target as HTMLInputElement;
-    const searchText = input.value.trim().toLowerCase();
-    let filtered = [...this.transactions];
-    if (this.typeFilter) {
-      filtered = filtered.filter((c) => c.codTypeTransaction === this.typeFilter);
-    }
-    if (searchText) {
-      filtered = filtered.filter((c) => c.description.toLowerCase().includes(searchText));
-    }
-    this.transactionsFilterDataSource.data = filtered;
-    this.transactionsFilterDataSource.paginator = this.paginatorTransaction();
+    this.searchTerm = input.value.trim().toLowerCase();
+    this.applyCombinedFilters();
 
     if (this.isAttaching) {
       const input = event.target as HTMLInputElement;
@@ -826,8 +860,6 @@ export class TransactionComponente extends Base implements OnInit {
 
   onCategoryChange(row: any) {
     row.categoryItemId = null;
-    // if (!row.categoryId) return;
-    // this.subcategories.filter((s) => s.categoryId === row.categoryId);
   }
 
   saveAttach() {

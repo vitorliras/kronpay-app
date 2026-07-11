@@ -7,7 +7,7 @@ $primary: mat.m2-define-palette((
   200: #91a1c6,
   300: #667cb0,
   400: #465f9f,
-  500: #0f2b5c, // 👈 sua cor principal
+  500: #0f2b5c,
   600: #0d2654,
   700: #0b204a,
   800: #081a41,
@@ -22,7 +22,7 @@ $primary: mat.m2-define-palette((
     200: #000,
     300: #fff,
     400: #fff,
-    500: #fff, // texto branco
+    500: #fff,
     600: #fff,
     700: #fff,
     800: #fff,
@@ -50,6 +50,26 @@ $theme: mat.m2-define-light-theme((
 
 @include mat.all-component-themes($theme);
 
+:root {
+  --brand-navy-950: #05102f;
+  --brand-navy-900: #081a41;
+  --brand-navy-800: #0f2b5c;
+  --brand-navy-700: #17356e;
+  --brand-accent-500: #2a52ff;
+  --brand-accent-400: #5c7cff;
+  --brand-accent-300: #8fa7ff;
+  --brand-ink-900: #0b1220;
+  --brand-ink-600: #4b5567;
+  --brand-ink-400: #8891a3;
+  --brand-surface-0: #ffffff;
+  --brand-surface-50: #f7f8fb;
+  --brand-surface-100: #eef1f7;
+  --brand-border: #e2e6ef;
+  --brand-success: #16a34a;
+  --brand-warning: #d97706;
+  --brand-danger: #dc2626;
+}
+
 html {
   height: 100%;
 }
@@ -68,10 +88,6 @@ font-family: Roboto, Arial, sans-serif;
   border-radius: 40px !important;
 }
 
-
-/*====================================
-              CHECKBOX
-======================================*/
 
  ::ng-deep .mat-mdc-checkbox .mdc-checkbox__background {
     background-color: #ffffff !important;

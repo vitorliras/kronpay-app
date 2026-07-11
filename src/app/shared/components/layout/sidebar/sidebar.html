@@ -42,11 +42,6 @@
         <span *ngIf="!isCollapsed">{{ t['Planning'] }}</span>
       </div>
 
-      <!-- <a routerLink="/connector" routerLinkActive="active" class="menu-item">
-        <mat-icon>account_balance</mat-icon>
-        <span *ngIf="!isCollapsed">CONEXAO</span>
-      </a> -->
-
       <div class="menu-group">
         <div class="group-header" (click)="toggleCreditCard()" [class.active-parent]="isCreditCardActive"
           [matTooltip]="t['CreditCard']" [matTooltipDisabled]="!isCollapsed" matTooltipPosition="right">
@@ -68,12 +63,6 @@
           </div>
         </div>
       </div>
-
-      <!-- <div [routerLink]="'/investments'" routerLinkActive="active" class="menu-item"
-        [matTooltip]="t['Investments']" [matTooltipDisabled]="!isCollapsed" matTooltipPosition="right">
-        <mat-icon>trending_up</mat-icon>
-        <span *ngIf="!isCollapsed">{{ t['Investments'] }}</span>
-      </div> -->
 
       <div [routerLink]="'/goals'" routerLinkActive="active" class="menu-item"
         [matTooltip]="t['Objectives']" [matTooltipDisabled]="!isCollapsed" matTooltipPosition="right">

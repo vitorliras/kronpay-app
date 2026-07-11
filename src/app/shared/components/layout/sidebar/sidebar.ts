@@ -32,7 +32,6 @@ export class Sidebar extends Base {
 
   constructor() {
     super();
-    // Abre o submenu automaticamente quando já se está numa rota de cartão/perfil.
     this.creditCardOpen = this.router.url.startsWith('/credit-card');
     this.profileOpen = this.router.url.startsWith('/profile');
   }

@@ -1,0 +1,172 @@
+<div class="showcase" *ngIf="translations$ | async as t">
+ 
+
+  <div class="showcase__stage">
+
+    <section class="scene scene--1">
+      <div class="scene__body">
+        <div class="glass-row" style="--i: 0">
+          <span class="glass-row__icon"><mat-icon>payments</mat-icon></span>
+          <span class="glass-row__label">{{ t['AuthShowcaseScene1Income'] }}</span>
+          <span class="glass-row__value glass-row__value--pos">+R$ 4.200</span>
+        </div>
+        <div class="glass-row" style="--i: 1">
+          <span class="glass-row__icon"><mat-icon>restaurant</mat-icon></span>
+          <span class="glass-row__label">{{ t['AuthShowcaseScene1Expense1'] }}</span>
+          <span class="glass-row__value glass-row__value--neg">−R$ 86</span>
+        </div>
+        <div class="glass-row" style="--i: 2">
+          <span class="glass-row__icon"><mat-icon>shopping_cart</mat-icon></span>
+          <span class="glass-row__label">{{ t['AuthShowcaseScene1Expense2'] }}</span>
+          <span class="glass-row__value glass-row__value--neg">−R$ 210</span>
+        </div>
+        <div class="mini-bars" style="--i: 3">
+          <span style="--h: 40%; --i: 0"></span>
+          <span style="--h: 65%; --i: 1"></span>
+          <span style="--h: 50%; --i: 2"></span>
+          <span style="--h: 90%; --i: 3"></span>
+          <span style="--h: 70%; --i: 4"></span>
+        </div>
+      </div>
+      <div class="scene__caption" style="--i: 4">
+        <h3>{{ t['AuthShowcaseScene1Title'] }}</h3>
+        <p>{{ t['AuthShowcaseScene1Subtitle'] }}</p>
+      </div>
+    </section>
+
+    <div class="anchor anchor--1-2"></div>
+
+    <section class="scene scene--2">
+      <div class="scene__body">
+        <div class="import-file" style="--i: 0">
+          <mat-icon>description</mat-icon>
+          <span>{{ t['AuthShowcaseScene2SourceLabel'] }}</span>
+        </div>
+        <div class="import-arrow" style="--i: 1"><mat-icon>arrow_downward</mat-icon></div>
+        <div class="chip-row">
+          <span class="chip" style="--i: 2"><mat-icon>bolt</mat-icon>PIX</span>
+        </div>
+        <div class="import-arrow" style="--i: 3"><mat-icon>arrow_downward</mat-icon></div>
+        <div class="chip-row">
+          <span class="chip chip--ai" style="--i: 4">{{ t['AuthShowcaseScene2Category1'] }}</span>
+          <span class="chip chip--ai" style="--i: 5">{{ t['AuthShowcaseScene2Category2'] }}</span>
+          <span class="chip chip--ai" style="--i: 6">{{ t['AuthShowcaseScene2Category3'] }}</span>
+        </div>
+      </div>
+      <div class="scene__caption" style="--i: 7">
+        <h3>{{ t['AuthShowcaseScene2Title'] }}</h3>
+        <p>{{ t['AuthShowcaseScene2Subtitle'] }}</p>
+      </div>
+    </section>
+
+    <div class="anchor anchor--2-3"></div>
+
+    <section class="scene scene--3">
+      <div class="scene__body">
+        <div class="goal-row" style="--i: 0">
+          <mat-icon>flight_takeoff</mat-icon>
+          <span>{{ t['AuthShowcaseScene3GoalLabel'] }}</span>
+          <strong>R$ 12.000</strong>
+        </div>
+        <div class="timeline" style="--i: 1">
+          <span class="timeline__fill"></span>
+          <span class="timeline__dot" style="--i: 2"></span>
+          <span class="timeline__dot" style="--i: 3"></span>
+          <span class="timeline__dot timeline__dot--accent" style="--i: 4"></span>
+        </div>
+        <div class="score-badge" style="--i: 5">
+          <span class="score-badge__value">91<small>/100</small></span>
+          <span class="score-badge__label">{{ t['AuthShowcaseScene3ScoreLabel'] }}</span>
+        </div>
+      </div>
+      <div class="scene__caption" style="--i: 6">
+        <h3>{{ t['AuthShowcaseScene3Title'] }}</h3>
+        <p>{{ t['AuthShowcaseScene3Subtitle'] }}</p>
+      </div>
+    </section>
+
+    <div class="anchor anchor--3-4"></div>
+
+    <section class="scene scene--4">
+      <div class="scene__body">
+        <div class="chat">
+          <div class="chat__bubble chat__bubble--user" style="--i: 0">{{ t['AuthShowcaseScene4Question1'] }}</div>
+          <div class="chat__bubble chat__bubble--bot" style="--i: 1">{{ t['AuthShowcaseScene4Answer1'] }}</div>
+          <div class="chat__bubble chat__bubble--user" style="--i: 2">{{ t['AuthShowcaseScene4Question2'] }}</div>
+          <div class="chat__nav" style="--i: 3">
+            <mat-icon>credit_card</mat-icon>
+            <span>{{ t['AuthShowcaseScene4NavTarget'] }}</span>
+            <mat-icon class="chat__nav-arrow">arrow_forward</mat-icon>
+          </div>
+        </div>
+      </div>
+      <div class="scene__caption" style="--i: 4">
+        <h3>{{ t['AuthShowcaseScene4Title'] }}</h3>
+        <p>{{ t['AuthShowcaseScene4Subtitle'] }}</p>
+      </div>
+    </section>
+
+    <div class="anchor anchor--4-5"></div>
+
+    <section class="scene scene--5">
+      <div class="scene__body">
+        <div class="goal-card" style="--i: 0">
+          <div class="goal-card__head">
+            <mat-icon>home</mat-icon>
+            <span>{{ t['AuthShowcaseScene5GoalLabel'] }}</span>
+          </div>
+          <div class="goal-card__bar"><span></span></div>
+        </div>
+        <div class="badge-unlock" style="--i: 1">
+          <mat-icon>military_tech</mat-icon>
+          <span>{{ t['AuthShowcaseScene5BadgeLabel'] }}</span>
+        </div>
+        <div class="rank-pill" style="--i: 2">
+          <mat-icon>workspace_premium</mat-icon>
+          <span>{{ t['AuthShowcaseScene5RankLabel'] }}</span>
+        </div>
+      </div>
+      <div class="scene__caption" style="--i: 3">
+        <h3>{{ t['AuthShowcaseScene5Title'] }}</h3>
+        <p>{{ t['AuthShowcaseScene5Subtitle'] }}</p>
+      </div>
+    </section>
+
+    <div class="anchor anchor--5-6"></div>
+
+    <section class="scene scene--6">
+      <div class="scene__body">
+        <div class="notif-row" style="--i: 0">
+          <mat-icon>notifications</mat-icon>
+          <span>{{ t['AuthShowcaseScene6ReminderInvoice'] }}</span>
+        </div>
+        <div class="notif-row" style="--i: 1">
+          <mat-icon>flag</mat-icon>
+          <span>{{ t['AuthShowcaseScene6ReminderGoal'] }}</span>
+        </div>
+        <div class="notif-row notif-row--sent" style="--i: 2">
+          <mat-icon>mark_email_read</mat-icon>
+          <span>{{ t['AuthShowcaseScene6EmailSent'] }}</span>
+        </div>
+        <div class="lang-swap" style="--i: 3">
+          <span>PT</span>
+          <mat-icon>sync_alt</mat-icon>
+          <span>EN</span>
+        </div>
+        <div class="tagline" style="--i: 4">
+          <span class="tagline__word tagline__word--1">{{ t['AuthShowcaseScene6Tagline1'] }}</span>
+          <span class="tagline__word tagline__word--2">{{ t['AuthShowcaseScene6Tagline2'] }}</span>
+          <span class="tagline__word tagline__word--3">{{ t['AuthShowcaseScene6Tagline3'] }}</span>
+          <span class="tagline__word tagline__word--4">{{ t['AuthShowcaseScene6Tagline4'] }}</span>
+        </div>
+      </div>
+      <div class="scene__caption" style="--i: 5">
+        <h3>{{ t['AuthShowcaseScene6Title'] }}</h3>
+        <p>{{ t['AuthShowcaseScene6Subtitle'] }}</p>
+      </div>
+    </section>
+
+    <div class="anchor anchor--6-1"></div>
+
+  </div>
+</div>

@@ -1,8 +1,3 @@
-// Neutraliza o chrome padrão do MatDialog (padding/fundo do .mdc-dialog__surface) para o
-// header/gradiente ir de ponta a ponta — nenhum outro modal do projeto fazia isso, o que é
-// exatamente por que o botão de fechar de um modal com layout mais elaborado (header
-// colorido, não um formulário simples) ficava desalinhado: a posição absoluta calculava
-// contra a caixa externa do Material, não contra o header deste componente.
 ::ng-deep .critical-modal-panel .mat-mdc-dialog-container .mdc-dialog__surface {
   padding: 0;
   background: transparent;

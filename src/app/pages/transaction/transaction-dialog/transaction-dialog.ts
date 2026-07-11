@@ -106,8 +106,8 @@ export class TransactionDialogComponente extends Base {
       amount: [null, Validators.required],
       description: ['', Validators.required],
       transactionDate: [new Date(), Validators.required],
-      typeTransaction: ['', Validators.required], // I= Income, V = Investment, E =E Expense
-      recurrenceType: [''], //F = FIXED I = INFINITE
+      typeTransaction: ['', Validators.required],
+      recurrenceType: [''],
       installments: [null],
       categoryId: [null],
       subCategoryId: [null],

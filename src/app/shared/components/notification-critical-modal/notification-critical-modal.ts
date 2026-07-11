@@ -23,8 +23,6 @@ export class NotificationCriticalModalComponent extends Base {
   private notificationService = inject(NotificationService);
   private transactionService = inject(TransactionService);
 
-  // Observable (não campo mutado dentro de subscribe) — app roda sem Zone.js, mesmo padrão
-  // já usado em NotificationBellComponent.
   private notificationsSubject: BehaviorSubject<NotificationResponse[]>;
   notifications$;
 
@@ -37,8 +35,6 @@ export class NotificationCriticalModalComponent extends Base {
     this.notificationsSubject = new BehaviorSubject<NotificationResponse[]>(data.notifications);
     this.notifications$ = this.notificationsSubject.asObservable();
 
-    // "Lida" (destaque no sino) não é o mesmo que "resolvida" — continuam ativas até a
-    // condição de origem ser resolvida, só perdem o destaque de não lida.
     data.notifications
       .filter((notification) => !notification.isRead)
       .forEach((notification) => {

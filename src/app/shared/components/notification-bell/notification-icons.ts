@@ -1,5 +1,3 @@
-// Ícone Material representativo por tipo de notificação — agrupado por prefixo/área do
-// catálogo definido no planejamento da Epic (SPEC 0023 §4), não um mapa 1:1 exaustivo.
 const ICON_BY_TYPE_PREFIX: ReadonlyArray<[string, string]> = [
   ['Transaction', 'receipt_long'],
   ['CardInvoice', 'credit_card'],

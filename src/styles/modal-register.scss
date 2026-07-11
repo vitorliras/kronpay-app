@@ -103,16 +103,6 @@
   }
 }
 
-
-// Neutraliza o chrome padrão do MatDialog (padding/fundo do .mdc-dialog__surface) só para
-// diálogos que usam .modal-register-2, para o cabeçalho ir de ponta a ponta sem a margem
-// branca que o Material aplicaria por cima do nosso próprio raio/sombra. Escopado via
-// :has() para não afetar .modal-register nem nenhum outro dialog do projeto.
-// ::ng-deep é obrigatório aqui: este arquivo é incluído via styleUrls de cada modal (não só
-// globalmente), então o Angular aplica view encapsulation nele — e .mat-mdc-dialog-container
-// é um ancestral renderizado pelo CDK, fora do template do componente, então a versão
-// escopada do seletor nunca casaria com o elemento real (mesma razão pela qual
-// notification-critical-modal.scss também usa ::ng-deep para a mesma finalidade).
 ::ng-deep .mat-mdc-dialog-container:has(.modal-register-2) .mdc-dialog__surface {
   padding: 0;
   background: transparent;
@@ -225,9 +215,6 @@
       font-size: 14px;
     }
 
-    // Realce visual para textos de apoio (ex.: .hint-text do config-category-modal) —
-    // vira um card informativo em vez de uma legenda cinza solta, para cumprir o pedido de
-    // destaque visual para informações importantes sem exigir markup novo.
     .hint-text {
       position: relative;
       margin: -4px 0 0;

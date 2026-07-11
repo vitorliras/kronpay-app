@@ -166,9 +166,6 @@ export class ConnectorComponent extends Base implements OnInit {
         onSuccess: (itemData: any) => {
           console.log('Conta conectada', itemData);
 
-          // itemData.item.id
-          // itemData.connector.id
-
           this.toastr.success('Banco conectado com sucesso');
         },
 

@@ -1,19 +1,59 @@
 <ng-container *ngIf="translations$ | async as t">
-  <mat-form-field appearance="outline" class="full-width">
-    <mat-label>{{ t['ConfirmationCode'] }}</mat-label>
-    <input
-      matInput
-      [formControl]="control"
-      maxlength="6"
-      inputmode="numeric"
-      autocomplete="one-time-code"
-    />
-  </mat-form-field>
+  <div class="otp" [class.otp--expired]="isExpired">
+    <div class="otp__ring" [class]="'otp__ring--' + ringUrgency" *ngIf="expiresAt">
+      <svg viewBox="0 0 44 44">
+        <circle class="otp__ring-track" cx="22" cy="22" r="19"></circle>
+        <circle
+          class="otp__ring-progress"
+          cx="22"
+          cy="22"
+          r="19"
+          [style.stroke-dashoffset.px]="119.4 * (1 - ringProgress)"
+        ></circle>
+      </svg>
+      <div class="otp__ring-label">
+        <ng-container *ngIf="!isExpired; else expiredIcon">{{ formattedTime }}</ng-container>
+        <ng-template #expiredIcon>&#8635;</ng-template>
+      </div>
+    </div>
 
-  <div class="code-actions">
-    <span class="expires" *ngIf="remainingSeconds > 0">{{ t['CodeExpiresIn'] }} {{ formattedTime }}</span>
-    <a class="link" [class.disabled]="!canResend" (click)="onResendClick()">
-      {{ t['ResendCode'] }}
-    </a>
+    <div class="otp__boxes" (paste)="onPaste($event)">
+      <input
+        *ngFor="let digit of digits; let i = index; trackBy: trackByIndex"
+        #digitInput
+        class="otp__box"
+        [class.otp__box--filled]="digit"
+        [class.otp__box--invalid]="isExpired"
+        type="text"
+        inputmode="numeric"
+        autocomplete="one-time-code"
+        maxlength="1"
+        [value]="digit"
+        [disabled]="isExpired"
+        (input)="onDigitInput(i, $any($event.target).value)"
+        (keydown)="onDigitKeydown(i, $event)"
+      />
+    </div>
+
+    <div class="otp__status">
+      <span class="otp__expires" *ngIf="!isExpired && remainingSeconds > 0">
+        {{ t['CodeExpiresIn'] }} <strong>{{ formattedTime }}</strong>
+      </span>
+      <span class="otp__expired-label" *ngIf="isExpired">
+        {{ t['CodeExpiredLabel'] }}
+      </span>
+
+      <button
+        type="button"
+        class="otp__resend"
+        [class.otp__resend--ready]="canResend"
+        [disabled]="!canResend"
+        (click)="onResendClick()"
+      >
+        <span class="otp__resend-icon">&#8635;</span>
+        <ng-container *ngIf="canResend; else cooldown">{{ t['ResendCode'] }}</ng-container>
+        <ng-template #cooldown>{{ t['ResendIn'] }} {{ resendCooldownRemaining }}s</ng-template>
+      </button>
+    </div>
   </div>
 </ng-container>

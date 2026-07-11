@@ -170,7 +170,6 @@
     }
   }
 
-  /* Grupo com submenu (Cartão de Crédito) — alinhado com os demais menus */
   .menu-group {
     .group-header {
       display: flex;
@@ -248,7 +247,6 @@
           }
         }
 
-        /* destaque do submenu selecionado (cores invertidas) */
         &.active {
           background: #ffffff;
           color: #0f2b5c;
@@ -263,7 +261,6 @@
     }
   }
 
-  /* Colapsado: ícone + setinha; submenu vertical só com ícones */
   &.collapsed {
     .menu-group {
       .group-header {

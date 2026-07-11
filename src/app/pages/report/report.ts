@@ -161,10 +161,8 @@ export class ReportComponent extends Base implements OnInit {
     variation: number;
   }[] = [];
 
-  // Expense
   icon = 'attach_money';
 
-  //expense chart
   pieChartLabels: string[] = [];
   pieChartType: 'doughnut' = 'doughnut';
   pieChartColorsExpense: string[] = [
@@ -378,13 +376,12 @@ export class ReportComponent extends Base implements OnInit {
     ],
   };
 
-  // ===================== Credit Card report =====================
   ccCards: CreditCardResponse[] = [];
   ccSummaries = new Map<number, CreditCardSummaryResponse>();
   ccInvoicesByCard = new Map<number, CardInvoiceResponse[]>();
   ccAvailableYears: number[] = [];
   ccYear: number = new Date().getFullYear();
-  ccCardId: number | null = null; // null = todos os cartões
+  ccCardId: number | null = null;
   ccLoaded = false;
 
   ccTotalInvoices = 0;
@@ -479,7 +476,6 @@ export class ReportComponent extends Base implements OnInit {
   };
 
   ccRankingColumns = ['name', 'total', 'limit', 'available', 'utilization', 'overdue'];
-  // ==============================================================
 
   ngOnInit(): void {
     this.startDate.setDate(this.endDate.getDate() - 90);
@@ -784,7 +780,6 @@ export class ReportComponent extends Base implements OnInit {
         data: months.map((month) => {
           const monthData = monthCategoryMap[month];
 
-          // 🔹 OUTROS
           if (category.categoryId === 'others') {
             let total = 0;
 
@@ -842,14 +837,12 @@ export class ReportComponent extends Base implements OnInit {
     this.subTitle = 'SubtitleComparison';
     this.tab = 'Comparison';
     this.setLastMonthComparison();
-    // swap_horiz
   }
 
   loadCashFlow() {
     this.icon = 'show_chart';
   }
 
-  // ===================== Credit Card report =====================
   loadCreditCard() {
     this.title = 'CreditCardReport';
     this.subTitle = 'SubtitleCreditCardReport';
@@ -939,7 +932,6 @@ export class ReportComponent extends Base implements OnInit {
           .forEach((inv) => rows.push({ card: c, inv }));
       });
 
-      // ---- KPIs ----
       this.ccTotalInvoices = this.round(rows.reduce((s, r) => s + r.inv.totalAmount, 0));
 
       const monthsWith = new Set(
@@ -966,7 +958,6 @@ export class ReportComponent extends Base implements OnInit {
       this.ccUtilizationPct =
         this.ccLimitTotal > 0 ? this.round((this.ccUsedTotal / this.ccLimitTotal) * 100) : 0;
 
-      // ---- status ----
       this.ccOverdueCount = 0;
       this.ccOverdueValue = 0;
       this.ccPaidCount = 0;
@@ -998,7 +989,6 @@ export class ReportComponent extends Base implements OnInit {
         ],
       };
 
-      // ---- evolução por mês ----
       const monthTotals: number[] = new Array(12).fill(0);
       rows.forEach((r) => {
         monthTotals[r.inv.referenceMonth - 1] += r.inv.totalAmount;
@@ -1016,7 +1006,6 @@ export class ReportComponent extends Base implements OnInit {
         ],
       };
 
-      // ---- tendência (últimos dois meses com movimento) ----
       const monthsPresent = monthTotals
         .map((v, i) => ({ m: i + 1, v }))
         .filter((x) => x.v > 0);
@@ -1028,7 +1017,6 @@ export class ReportComponent extends Base implements OnInit {
         this.ccTrendPct = 0;
       }
 
-      // ---- gastos por cartão ----
       const byCard = cards
         .map((c, idx) => {
           const total = rows
@@ -1055,7 +1043,6 @@ export class ReportComponent extends Base implements OnInit {
         datasets: [{ data: byCard.map((c) => c.value), backgroundColor: byCard.map((c) => c.color) }],
       };
 
-      // ---- utilização do limite por cartão ----
       this.ccLimitRows = cards
         .map((c) => {
           const s = this.ccSummaries.get(c.id);
@@ -1070,7 +1057,6 @@ export class ReportComponent extends Base implements OnInit {
         })
         .sort((a, b) => b.percent - a.percent);
 
-      // ---- ranking ----
       this.ccRanking = cards
         .map((c) => {
           const s = this.ccSummaries.get(c.id);
@@ -1115,7 +1101,7 @@ export class ReportComponent extends Base implements OnInit {
         results.forEach((res) => {
           if (res.isSuccess && res.value) {
             res.value.forEach((it) => {
-              if (it.status === 'C') return; // ignora parcelas canceladas
+              if (it.status === 'C') return;
               const key = it.categoryDescription || t['NoCategory'];
               map[key] = (map[key] ?? 0) + it.amount;
             });
@@ -1201,7 +1187,6 @@ export class ReportComponent extends Base implements OnInit {
     this.ccCategoryChartData = { labels: [], datasets: [{ data: [], backgroundColor: [] }] };
     this.ccStatusChartData = { labels: [], datasets: [{ data: [], backgroundColor: [], borderWidth: 0 }] };
   }
-  // ==============================================================
 
   getCurrentPieColors(): string[] {
     switch (this.selectedTabIndex) {

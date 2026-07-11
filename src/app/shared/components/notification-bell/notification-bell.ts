@@ -38,9 +38,6 @@ export class NotificationBellComponent extends Base implements OnInit {
 
   unreadCount$ = this.notificationService.unreadCount$;
 
-  // Estado exposto como Observable (não como campo mutado dentro de subscribe) —
-  // o app roda sem Zone.js, então só async pipe/signals/eventos de template disparam
-  // re-render automático; esse é o mesmo padrão já comprovado por unreadCount$.
   private activeSubject = new BehaviorSubject<NotificationResponse[]>([]);
   active$ = this.activeSubject.asObservable();
 
@@ -61,9 +58,6 @@ export class NotificationBellComponent extends Base implements OnInit {
 
   ngOnInit(): void {
     this.notificationService.getUnreadCount().subscribe();
-    // Carrega a lista já no carregamento inicial (não só ao abrir o painel), para que as
-    // notificações estejam disponíveis assim que o header renderiza — mesmo conjunto de
-    // dados que já aparece no modal de críticas ao logar.
     this.loadActive();
   }
 
