@@ -40,9 +40,7 @@ import { Paginator } from '../../shared/ui/paginator';
 import { TransactionDialogComponente } from './transaction-dialog/transaction-dialog';
 import { MatTooltip } from '@angular/material/tooltip';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import {
-  ImportedTransactionResponse,
-} from '../../core/models/transaction/transaction-response.model';
+import { ImportedTransactionResponse } from '../../core/models/transaction/transaction-response.model';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { ActivatedRoute } from '@angular/router';
 import { TourAnchorDirective } from '../../shared/directives/tour-anchor.directive';
@@ -161,32 +159,30 @@ export class TransactionComponente extends Base implements OnInit {
   }
 
   ngAfterViewInit(): void {
+    this.transactionsFilterDataSource.sortingDataAccessor = (item, property) => {
+      switch (property) {
+        case 'date':
+          return new Date(item.transactionDate).getTime();
 
-  this.transactionsFilterDataSource.sortingDataAccessor = (item, property) => {
+        case 'category':
+          return this.getCategoryDescription(item);
 
-    switch (property) {
-      case 'date':
-      return new Date(item.transactionDate).getTime();
+        case 'subcategory':
+          return this.getSubCategoryDescription(item);
 
-      case 'category':
-        return this.getCategoryDescription(item);
+        case 'paymentMethod':
+          return this.getPaymentMethodDescription(item);
 
-      case 'subcategory':
-        return this.getSubCategoryDescription(item);
+        case 'type':
+          return this.getTypeLabel(item.codTypeTransaction);
 
-      case 'paymentMethod':
-        return this.getPaymentMethodDescription(item);
+        default:
+          return (item as any)[property];
+      }
+    };
 
-      case 'type':
-        return this.getTypeLabel(item.codTypeTransaction);
-
-      default:
-        return (item as any)[property];
-    }
-  };
-
-  this.transactionsFilterDataSource.sort = this.sort;
-}
+    this.transactionsFilterDataSource.sort = this.sort;
+  }
 
   private activatedRoute = inject(ActivatedRoute);
   private tourService = inject(TourService);
@@ -430,7 +426,7 @@ export class TransactionComponente extends Base implements OnInit {
     if (year > 1900 || year <= this.currentYear) this.applyFilters();
   }
 
-  OpenModalTransaction(transaction?: Transaction, message: string = "") {
+  OpenModalTransaction(transaction?: Transaction, message: string = '') {
     const dialogRef = this.dialog.open(TransactionDialogComponente, {
       disableClose: true,
       data: {
@@ -439,7 +435,7 @@ export class TransactionComponente extends Base implements OnInit {
         subCategories: this.subcategories,
         paymentMethods: this.paymentMethods,
         width: '650',
-        message: message
+        message: message,
       },
     });
     dialogRef.afterClosed().subscribe(
@@ -584,6 +580,7 @@ export class TransactionComponente extends Base implements OnInit {
             this.toastr.success(res.message);
             this.applyFilters();
             this.typeFilter = null;
+            this.selectionTransactions.clear();
           } else {
             this.toastr.warning(res.message);
           }
@@ -712,7 +709,7 @@ export class TransactionComponente extends Base implements OnInit {
 
   getTypeLabel(type: string) {
     if (type === 'I') return 'Income';
-    if (type === 'E') return'Expense';
+    if (type === 'E') return 'Expense';
     return 'Investment';
   }
 
