@@ -176,10 +176,12 @@ export class Login extends Base {
 
         this.isLoading = false;
         this.toastr.warning(res.message);
+        this.cdr.detectChanges();
       },
       error: (err) => {
         this.isLoading = false;
         this.toastr.error(err.message);
+        this.cdr.detectChanges();
       },
     });
   }
