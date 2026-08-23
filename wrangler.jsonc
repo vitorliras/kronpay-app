@@ -1,0 +1,8 @@
+{
+  "name": "kronpay-app",
+  "compatibility_date": "2026-08-23",
+  "assets": {
+    "directory": "dist/kronpay-app/browser",
+    "not_found_handling": "single-page-application"
+  }
+}

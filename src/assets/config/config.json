@@ -1,5 +1,5 @@
 {
-  "apiUrl": "https://localhost:7281",
+  "apiUrl": "https://kronpay.onrender.com",
   "headers": {
     "X-Access-Key": "FSDF4523GKIOP13Y642F526109A"
   },
