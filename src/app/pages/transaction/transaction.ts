@@ -2,6 +2,7 @@ import { ToastrService } from 'ngx-toastr';
 import { Component, inject, OnInit, ViewChild, viewChild } from '@angular/core';
 import { Base } from '../../core/bases/base/base';
 import { CategoryService } from '../../core/services/category.service';
+import { ConfigService } from '../../core/services/config.service';
 import { CategoryItemService } from '../../core/services/category-item.service';
 import { PaymentMethodService } from '../../core/services/payment-method.service';
 import { CommonModule } from '@angular/common';
@@ -143,6 +144,7 @@ export class TransactionComponente extends Base implements OnInit {
   private categoryItemService = inject(CategoryItemService);
   private paymentMethodService = inject(PaymentMethodService);
   private transactionService = inject(TransactionService);
+  private configService = inject(ConfigService);
   private dialog = inject(MatDialog);
   private toastr = inject(ToastrService);
 
@@ -746,6 +748,11 @@ export class TransactionComponente extends Base implements OnInit {
       (resultPreview) => {
         this.preview = resultPreview;
 
+        if (!this.configService.config.features.enableAiImport) {
+          this.importTransactions(file, false);
+          return;
+        }
+
         this.confirmModal(
           'Atentition',
           'DoYouWantToUseAi',
@@ -753,40 +760,42 @@ export class TransactionComponente extends Base implements OnInit {
           'No',
           '380',
           'help_outline',
-        ).subscribe((resultAi) => {
-          const request: ImportTransactionsFormRequest = {
-            file: file,
-            preview: this.preview,
-            useAi: resultAi,
-          };
+        ).subscribe((resultAi) => this.importTransactions(file, resultAi));
+      },
+    );
+  }
 
-          this.transactionService.import(request).subscribe(
-            (res) => {
-              if (res.isSuccess) {
-                this.isAttaching = true;
-                this.typeFilter = null;
+  private importTransactions(file: File, useAi: boolean) {
+    const request: ImportTransactionsFormRequest = {
+      file: file,
+      preview: this.preview,
+      useAi: useAi,
+    };
 
-                const transactions: ImportedTransactionResponse[] = (
-                  res.value?.transactions ?? []
-                ).map((t) => ({
-                  ...t,
-                  transactionDate: t.transactionDate ? new Date(t.transactionDate) : new Date(),
-                }));
+    this.transactionService.import(request).subscribe(
+      (res) => {
+        if (res.isSuccess) {
+          this.isAttaching = true;
+          this.typeFilter = null;
 
-                this.transactionsAttach = transactions;
-                this.transactionsAttachFilterDataSource.data = [...transactions];
-                this.isLoading = false;
-              } else {
-                this.toastr.warning(res.message);
-                this.isLoading = false;
-              }
-            },
-            (error) => {
-              this.isLoading = false;
-              this.toastr.error(error);
-            },
-          );
-        });
+          const transactions: ImportedTransactionResponse[] = (
+            res.value?.transactions ?? []
+          ).map((t) => ({
+            ...t,
+            transactionDate: t.transactionDate ? new Date(t.transactionDate) : new Date(),
+          }));
+
+          this.transactionsAttach = transactions;
+          this.transactionsAttachFilterDataSource.data = [...transactions];
+          this.isLoading = false;
+        } else {
+          this.toastr.warning(res.message);
+          this.isLoading = false;
+        }
+      },
+      (error) => {
+        this.isLoading = false;
+        this.toastr.error(error);
       },
     );
   }
