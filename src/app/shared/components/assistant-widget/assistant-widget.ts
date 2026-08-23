@@ -123,21 +123,27 @@ export class AssistantWidgetComponent extends Base implements AfterViewChecked {
     this.isLoadingSubject.next(true);
     this.shouldScroll = true;
 
-    this.assistantService.ask(request).subscribe((result) => {
-      this.isLoadingSubject.next(false);
+    this.assistantService.ask(request).subscribe({
+      next: (result) => {
+        this.isLoadingSubject.next(false);
 
-      if (!result.isSuccess || !result.value) {
-        this.messageError(result.message ?? 'OperationFailed');
-        return;
-      }
+        if (!result.isSuccess || !result.value) {
+          this.messageError(result.message ?? 'OperationFailed');
+          return;
+        }
 
-      this.currentNode = result.value;
-      this.pushAssistantMessage(result.value);
+        this.currentNode = result.value;
+        this.pushAssistantMessage(result.value);
 
-      const autoNavigate = result.value.navigateTo?.find((nav) => nav.autoNavigate);
-      if (autoNavigate) {
-        this.openNavigateTo(autoNavigate);
-      }
+        const autoNavigate = result.value.navigateTo?.find((nav) => nav.autoNavigate);
+        if (autoNavigate) {
+          this.openNavigateTo(autoNavigate);
+        }
+      },
+      error: () => {
+        this.isLoadingSubject.next(false);
+        this.messageError('OperationFailed');
+      },
     });
   }
 

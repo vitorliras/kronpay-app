@@ -88,7 +88,7 @@ export class ProfileUser extends Base implements OnInit {
           }
         },
         error: (err) => {
-          this.toastr.error(err.error?.message);
+          this.toastr.error(err.error?.message ?? 'Ocorreu um erro. Tente novamente.');
         },
       });
     });
@@ -107,7 +107,7 @@ export class ProfileUser extends Base implements OnInit {
           }
         },
         error: (err) => {
-          this.toastr.error(err.error?.message);
+          this.toastr.error(err.error?.message ?? 'Ocorreu um erro. Tente novamente.');
         },
       });
     });
