@@ -7,12 +7,14 @@ import { ResultEntity } from '../models/result-entity.model';
 import { AuthService } from '../services/auth.service';
 import { inject } from '@angular/core';
 import { TranslationService } from '../services/translation.service';
+import { ConfigService } from '../services/config.service';
 
 export const errorInterceptor: HttpInterceptorFn = (req, next) => {
   const router = inject(Router);
   const toastr = inject(ToastrService);
   const authService = inject(AuthService);
   const translate = inject(TranslationService);
+  const settings = inject(ConfigService);
 
   return next(req).pipe(
     catchError((error: HttpErrorResponse) => {
@@ -54,7 +56,7 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
         );
       }
 
-      if (error.status === 401 || error.status === 403) {
+      if ((error.status === 401 || error.status === 403) && settings.isApiUrl(req.url)) {
         const expireSession = () =>
           authService.logout().pipe(
             switchMap(() => {

@@ -24,4 +24,10 @@ export class ConfigService {
   get config(): Config {
     return this.settings;
   }
+
+  isApiUrl(url: string): boolean {
+    const apiUrl = this.settings?.apiUrl?.replace(/\/+$/, '');
+    if (!apiUrl) return false;
+    return url === apiUrl || url.startsWith(`${apiUrl}/`);
+  }
 }
