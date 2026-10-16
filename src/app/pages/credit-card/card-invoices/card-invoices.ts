@@ -301,6 +301,7 @@ export class CardInvoicesComponent extends Base implements OnInit {
           id: item.cardPurchaseId,
           description: item.purchaseDescription,
           categoryId: item.categoryId ?? null,
+          installmentAmount: item.amount,
         },
       },
     });
@@ -308,27 +309,53 @@ export class CardInvoicesComponent extends Base implements OnInit {
     dialogRef.afterClosed().subscribe((result) => {
       if (!result) return;
 
+      const applyDetails = () =>
+        this.purchaseService
+          .update({
+            id: item.cardPurchaseId,
+            description: result.description,
+            categoryId: result.categoryId ?? null,
+          })
+          .subscribe({
+            next: (res) => {
+              this.isLoading = false;
+              if (res.isSuccess) {
+                this.toastr.success(res.message);
+                if (this.selectedInvoiceId) this.reloadItems(this.selectedInvoiceId);
+              } else {
+                this.toastr.warning(res.message);
+              }
+            },
+            error: () => {
+              this.isLoading = false;
+            },
+          });
+
       this.isLoading = true;
-      this.purchaseService
-        .update({
-          id: item.cardPurchaseId,
-          description: result.description,
-          categoryId: result.categoryId ?? null,
-        })
-        .subscribe({
-          next: (res) => {
-            this.isLoading = false;
-            if (res.isSuccess) {
-              this.toastr.success(res.message);
-              if (this.selectedInvoiceId) this.reloadItems(this.selectedInvoiceId);
-            } else {
-              this.toastr.warning(res.message);
-            }
-          },
-          error: () => {
-            this.isLoading = false;
-          },
-        });
+
+      if (result.installmentAmount !== item.amount) {
+        this.purchaseService
+          .changeAmount({
+            id: item.cardPurchaseId,
+            installmentAmount: result.installmentAmount,
+          })
+          .subscribe({
+            next: (res) => {
+              if (res.isSuccess) {
+                applyDetails();
+              } else {
+                this.isLoading = false;
+                this.toastr.warning(res.message);
+              }
+            },
+            error: () => {
+              this.isLoading = false;
+            },
+          });
+        return;
+      }
+
+      applyDetails();
     });
   }
 

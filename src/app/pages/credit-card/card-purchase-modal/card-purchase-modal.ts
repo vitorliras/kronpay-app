@@ -51,7 +51,12 @@ export class CardPurchaseModal extends Base {
       cards: CreditCardResponse[];
       categories: CategoryResponse[];
       creditCardId?: number | null;
-      purchase?: { id: number; description: string; categoryId: number | null } | null;
+      purchase?: {
+        id: number;
+        description: string;
+        categoryId: number | null;
+        installmentAmount: number;
+      } | null;
     },
   ) {
     super();
@@ -66,6 +71,7 @@ export class CardPurchaseModal extends Base {
       purchaseDate: [this.todayIso(), Validators.required],
       installmentsCount: [1, [Validators.required, Validators.min(1)]],
       categoryId: [null],
+      installmentAmount: [null],
     });
 
     if (data.purchase) {
@@ -73,7 +79,10 @@ export class CardPurchaseModal extends Base {
       this.form.patchValue({
         description: data.purchase.description,
         categoryId: data.purchase.categoryId,
+        installmentAmount: data.purchase.installmentAmount,
       });
+      this.form.get('installmentAmount')?.setValidators([Validators.required, Validators.min(0.01)]);
+      this.form.get('installmentAmount')?.updateValueAndValidity();
       this.form.get('creditCardId')?.disable();
       this.form.get('totalAmount')?.disable();
       this.form.get('purchaseDate')?.disable();
@@ -91,6 +100,7 @@ export class CardPurchaseModal extends Base {
         this.dialogRef.close({
           description: this.form.value.description,
           categoryId: this.form.value.categoryId,
+          installmentAmount: this.form.value.installmentAmount,
         });
         return;
       }

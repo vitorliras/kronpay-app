@@ -19,6 +19,11 @@ export interface DeactivateCardPurchaseRequest {
   id: number;
 }
 
+export interface ChangeCardPurchaseAmountRequest {
+  id: number;
+  installmentAmount: number;
+}
+
 export interface CardPurchaseResponse {
   id: number;
   description: string;

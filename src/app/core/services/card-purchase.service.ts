@@ -4,6 +4,7 @@ import { BaseService } from '../bases/base/base-service';
 import { ResultEntity } from '../models/result-entity.model';
 import {
   CardPurchaseResponse,
+  ChangeCardPurchaseAmountRequest,
   CreateCardPurchaseRequest,
   DeactivateCardPurchaseRequest,
   UpdateCardPurchaseRequest,
@@ -23,5 +24,11 @@ export class CardPurchaseService extends BaseService {
 
   deactivate(request: DeactivateCardPurchaseRequest): Observable<ResultEntity<CardPurchaseResponse>> {
     return this.http.delete<ResultEntity<CardPurchaseResponse>>(this.apiUrl, { body: request });
+  }
+
+  changeAmount(
+    request: ChangeCardPurchaseAmountRequest,
+  ): Observable<ResultEntity<CardPurchaseResponse>> {
+    return this.http.put<ResultEntity<CardPurchaseResponse>>(`${this.apiUrl}/amount`, request);
   }
 }
