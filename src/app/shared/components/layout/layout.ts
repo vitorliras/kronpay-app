@@ -4,6 +4,7 @@ import { Sidebar } from './sidebar/sidebar';
 import { CommonModule } from '@angular/common';
 import { RouterOutlet } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
+import { AuthService } from '../../../core/services/auth.service';
 import { NotificationService } from '../../../core/services/notification.service';
 import { NotificationCriticalModalComponent } from '../notification-critical-modal/notification-critical-modal';
 import { AssistantSwitcherComponent } from '../assistant-switcher/assistant-switcher';
@@ -28,6 +29,7 @@ import { AchievementToastComponent } from '../achievement-toast/achievement-toas
 export class LayoutComponent implements OnInit {
   private notificationService = inject(NotificationService);
   private dialog = inject(MatDialog);
+  private authService = inject(AuthService);
 
   collapsed = false;
 
@@ -41,6 +43,8 @@ export class LayoutComponent implements OnInit {
     this.notificationService.markCriticalModalShown();
 
     this.notificationService.getCritical().subscribe((result) => {
+      if (!this.authService.isAuthenticated()) return;
+
       if (result.isSuccess && result.value && result.value.length > 0) {
         this.dialog.open(NotificationCriticalModalComponent, {
           data: { notifications: result.value },

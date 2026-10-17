@@ -5,7 +5,6 @@ import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ToastrService } from 'ngx-toastr';
 import { Observable } from 'rxjs';
 import { Base } from '../../../core/bases/base/base';
@@ -26,7 +25,6 @@ export interface AiTextEntryModalData {
     FormsModule,
     MatButtonModule,
     MatIconModule,
-    MatProgressSpinnerModule,
     DragDropModule,
   ],
   templateUrl: './ai-text-entry-modal.html',

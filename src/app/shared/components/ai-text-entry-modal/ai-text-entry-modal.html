@@ -21,8 +21,16 @@
       <div class="counter">{{ text.length }} / {{ maxLength }}</div>
 
       <div mat-dialog-actions>
-        <button mat-raised-button color="primary" (click)="interpret()" [disabled]="isLoading || !text.trim()">
-          <mat-spinner *ngIf="isLoading" diameter="18"></mat-spinner>
+        <button
+          mat-raised-button
+          color="primary"
+          class="interpret-btn"
+          [class.is-loading]="isLoading"
+          [attr.aria-busy]="isLoading"
+          (click)="interpret()"
+          [disabled]="!isLoading && !text.trim()"
+        >
+          <span class="interpret-spinner" *ngIf="isLoading"></span>
           <mat-icon *ngIf="!isLoading">auto_awesome</mat-icon>
           {{ t['Interpret'] }}
         </button>

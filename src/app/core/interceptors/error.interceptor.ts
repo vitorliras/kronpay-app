@@ -1,16 +1,21 @@
 import { HttpErrorResponse, HttpInterceptorFn, HttpResponse } from '@angular/common/http';
-import { catchError, of, switchMap, throwError } from 'rxjs';
+import { Observable, catchError, finalize, of, shareReplay, switchMap, throwError } from 'rxjs';
 import { Router } from '@angular/router';
+import { MatDialog } from '@angular/material/dialog';
 import { ToastrService } from 'ngx-toastr';
 
 import { ResultEntity } from '../models/result-entity.model';
+import { RefreshTokenResponse } from '../models/auth/refresh-token-response.model';
 import { AuthService } from '../services/auth.service';
 import { inject } from '@angular/core';
 import { TranslationService } from '../services/translation.service';
 import { ConfigService } from '../services/config.service';
 
+let refreshInFlight$: Observable<ResultEntity<RefreshTokenResponse>> | null = null;
+
 export const errorInterceptor: HttpInterceptorFn = (req, next) => {
   const router = inject(Router);
+  const dialog = inject(MatDialog);
   const toastr = inject(ToastrService);
   const authService = inject(AuthService);
   const translate = inject(TranslationService);
@@ -60,6 +65,7 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
         const expireSession = () =>
           authService.logout().pipe(
             switchMap(() => {
+              dialog.closeAll();
               translate.getByKey('ExpiredToken').subscribe((message) => {
                 toastr.error(message);
               });
@@ -68,12 +74,24 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
             }),
           );
 
+        const currentToken = authService.getToken();
+        if (currentToken && req.headers.get('Authorization') !== `Bearer ${currentToken}`) {
+          return next(req.clone({ setHeaders: { Authorization: `Bearer ${currentToken}` } }));
+        }
+
         const refreshToken = authService.getRefreshToken();
         if (!refreshToken) {
           return expireSession();
         }
 
-        return authService.refresh().pipe(
+        if (!refreshInFlight$) {
+          refreshInFlight$ = authService.refresh().pipe(
+            finalize(() => (refreshInFlight$ = null)),
+            shareReplay(1),
+          );
+        }
+
+        return refreshInFlight$.pipe(
           switchMap((result) => {
             if (result.isSuccess && result.value) {
               const retriedRequest = req.clone({

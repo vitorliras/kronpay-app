@@ -36,4 +36,34 @@
     align-items: center;
     gap: 8px;
   }
+
+  .interpret-btn.is-loading {
+    pointer-events: none;
+    color: #fff;
+    background: linear-gradient(110deg, #1b3c88 30%, #3b62c9 50%, #1b3c88 70%) 0 0 / 200% 100%;
+    animation: interpret-sheen 1.4s linear infinite;
+  }
+
+  .interpret-spinner {
+    flex-shrink: 0;
+    width: 16px;
+    height: 16px;
+    box-sizing: border-box;
+    border: 2px solid rgba(255, 255, 255, 0.35);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: interpret-spin 0.7s linear infinite;
+  }
+}
+
+@keyframes interpret-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes interpret-sheen {
+  to {
+    background-position: -200% 0;
+  }
 }
