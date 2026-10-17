@@ -146,11 +146,21 @@
               {{ t['Attach'] }}
             </button>
 
-            <input #fileInput type="file" hidden accept=".csv,.ofx" (change)="onFileSelected($event)" />
+            <input #fileInput type="file" hidden [attr.accept]="acceptFor(aiStatus$ | async)" (change)="onFileSelected($event)" />
 
             <p class="drag-text">{{t['OrDragFile']}} </p>
 
           </div>
+
+          <button mat-stroked-button color="primary" *ngIf="!isAttaching && (aiStatus$ | async)?.enabled" (click)="openTextModal()">
+            <mat-icon>auto_awesome</mat-icon>
+            {{ t['AddByText'] }}
+          </button>
+
+          <button mat-stroked-button color="primary" *ngIf="isAttaching" (click)="addAttachRow()">
+            <mat-icon>add</mat-icon>
+            {{ t['AddRow'] }}
+          </button>
 
           <button class="btn-circle-2" *ngIf="isAttaching" (click)="cancelAttach()">
             <mat-icon class="icon">
@@ -379,6 +389,8 @@
 
             <td mat-cell *matCellDef="let row">
 
+              <div class="source-cell">
+
               <select class="table-select w-100" [(ngModel)]="row.categoryId" (change)="onCategoryChange(row)">
 
                 <option *ngFor="let c of getCategoriesByType(row.type)" [ngValue]="c.id">
@@ -388,6 +400,10 @@
                 </option>
 
               </select>
+
+              <span class="source-badge" *ngIf="row.classificationSource" [class.memory]="row.classificationSource === 'memory'">{{ row.classificationSource === 'memory' ? t['ClassifiedByMemory'] : t['ClassifiedByAi'] }}</span>
+
+            </div>
 
             </td>
           </ng-container>

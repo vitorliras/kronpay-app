@@ -18,6 +18,7 @@ import { Base } from '../../../core/bases/base/base';
 import { MatSelectModule } from '@angular/material/select';
 import { CategoryItemResponse } from '../../../core/models/config/category-item/category-item-response.model';
 import { DragDropModule } from '@angular/cdk/drag-drop';
+import { SubcategoryDraft } from '../../../core/models/ai-chat/subcategory-draft.model';
 
 @Component({
   selector: 'app-config-category-item-modal',
@@ -43,7 +44,7 @@ export class ConfigCategoryItemModal extends Base {
   constructor(
     private fb: FormBuilder,
     private dialogRef: MatDialogRef<ConfigCategoryItemModal>,
-    @Inject(MAT_DIALOG_DATA) public data: { categories: CategoryResponse[], item :CategoryItemResponse, category: number,  width?: string },
+    @Inject(MAT_DIALOG_DATA) public data: { categories: CategoryResponse[], item?: CategoryItemResponse | null, category?: number | null,  width?: string, prefill?: SubcategoryDraft },
   ) {
     super();
     const category = data.item;
@@ -62,6 +63,11 @@ export class ConfigCategoryItemModal extends Base {
         isActive: category.isActive,
         description: category.description,
         categoryId: category.categoryId,
+      });
+    } else if (data.prefill) {
+      this.form.patchValue({
+        description: data.prefill.description,
+        categoryId: data.prefill.categoryId,
       });
     }
   }

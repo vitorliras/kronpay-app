@@ -26,6 +26,7 @@ import {
   TransactionResponse,
 } from '../models/transaction/transaction-response.model';
 import { BaseService } from '../bases/base/base-service';
+import { ParseTransactionsFromTextRequest } from '../models/transaction/parse-transactions-from-text-request.model';
 
 @Injectable({
   providedIn: 'root',
@@ -115,6 +116,15 @@ export class TransactionService extends BaseService {
     return this.http.delete<ResultEntity<TransactionRangeResponse>>(`${this.apiUrl}/DeleteRange`, {
       body: request,
     });
+  }
+
+  parseText(
+    request: ParseTransactionsFromTextRequest,
+  ): Observable<ResultEntity<ImportTransactionsResponse>> {
+    return this.http.post<ResultEntity<ImportTransactionsResponse>>(
+      `${this.apiUrl}/ParseText`,
+      request,
+    );
   }
 
   import(

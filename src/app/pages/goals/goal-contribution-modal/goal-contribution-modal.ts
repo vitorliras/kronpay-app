@@ -22,12 +22,12 @@ export class GoalContributionModal extends Base {
   constructor(
     private fb: FormBuilder,
     private dialogRef: MatDialogRef<GoalContributionModal>,
-    @Inject(MAT_DIALOG_DATA) public data: { goal: FinancialGoalResponse },
+    @Inject(MAT_DIALOG_DATA) public data: { goal: FinancialGoalResponse; prefillAmount?: number },
   ) {
     super();
 
     this.form = this.fb.group({
-      amount: [null, [Validators.required, Validators.min(0.01)]],
+      amount: [data.prefillAmount ?? null, [Validators.required, Validators.min(0.01)]],
     });
   }
 

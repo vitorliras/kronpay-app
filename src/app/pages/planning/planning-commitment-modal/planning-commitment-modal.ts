@@ -11,6 +11,7 @@ import { DragDropModule } from '@angular/cdk/drag-drop';
 import { Base } from '../../../core/bases/base/base';
 import { CategoryResponse } from '../../../core/models/config/category/category-response.model';
 import { PlannedCommitmentResponse } from '../../../core/models/planning/planned-commitment-response.model';
+import { PlannedCommitmentDraft } from '../../../core/models/ai-chat/planned-commitment-draft.model';
 
 @Component({
   selector: 'app-planning-commitment-modal',
@@ -53,6 +54,7 @@ export class PlanningCommitmentModal extends Base {
     public data: {
       categories: CategoryResponse[];
       commitment?: PlannedCommitmentResponse | null;
+      prefill?: PlannedCommitmentDraft;
     },
   ) {
     super();
@@ -60,16 +62,17 @@ export class PlanningCommitmentModal extends Base {
     this.editing = !!data.commitment;
 
     const c = data.commitment;
+    const p = data.prefill;
 
     this.form = this.fb.group({
       id: [c?.id ?? null],
-      description: [c?.description ?? '', [Validators.required, Validators.maxLength(60)]],
-      amount: [c?.amount ?? null, [Validators.required, Validators.min(0.01)]],
-      direction: [c?.direction ?? 'O', Validators.required],
-      periodicity: [c?.periodicity ?? 'M', Validators.required],
-      startDate: [this.toIso(c?.startDate) ?? this.todayIso(), Validators.required],
-      endDate: [this.toIso(c?.endDate) ?? null],
-      categoryId: [c?.categoryId ?? null],
+      description: [c?.description ?? p?.description ?? '', [Validators.required, Validators.maxLength(60)]],
+      amount: [c?.amount ?? p?.amount ?? null, [Validators.required, Validators.min(0.01)]],
+      direction: [c?.direction ?? p?.direction ?? 'O', Validators.required],
+      periodicity: [c?.periodicity ?? p?.periodicity ?? 'M', Validators.required],
+      startDate: [this.toIso(c?.startDate ?? p?.startDate) ?? this.todayIso(), Validators.required],
+      endDate: [this.toIso(c?.endDate ?? p?.endDate) ?? null],
+      categoryId: [c?.categoryId ?? p?.categoryId ?? null],
     });
   }
 

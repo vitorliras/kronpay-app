@@ -27,6 +27,7 @@ export interface ImportedTransactionResponse {
   categoryItemId?: number | null;
   transactionGroupId?: number | null;
   id?: number | null;
+  classificationSource?: string | null;
 }
 
 export interface ImportTransactionsResponse {

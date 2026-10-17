@@ -25,6 +25,17 @@ import {
   PayCardInvoiceRequest,
 } from '../../../core/models/card/card-invoice';
 import { CreateCardPurchaseRequest } from '../../../core/models/card/card-purchase';
+import { catchError, firstValueFrom, map, of, shareReplay } from 'rxjs';
+import { AiService } from '../../../core/services/ai.service';
+import { AiStatusResponse } from '../../../core/models/ai/ai-status-response.model';
+import { AiTextEntryModal } from '../../../shared/components/ai-text-entry-modal/ai-text-entry-modal';
+import { CardPurchasePreviewModal } from '../card-purchase-preview-modal/card-purchase-preview-modal';
+import { CardPurchasePreviewResponse } from '../../../core/models/card/card-purchase-preview-response.model';
+import {
+  allowedImportExtensions,
+  importAcceptAttribute,
+  isAiOnlyFile,
+} from '../../../core/utils/ai-file-extensions';
 
 @Component({
   selector: 'app-card-invoices',
@@ -54,6 +65,15 @@ export class CardInvoicesComponent extends Base implements OnInit {
   private toastr = inject(ToastrService);
   private cdr = inject(ChangeDetectorRef);
   private activatedRoute = inject(ActivatedRoute);
+  private aiService = inject(AiService);
+
+  private aiStatus: AiStatusResponse | null = null;
+
+  aiStatus$ = this.aiService.getStatus().pipe(
+    map((res) => (res.isSuccess ? (res.value ?? null) : null)),
+    catchError(() => of(null)),
+    shareReplay(1),
+  );
 
   cards: CreditCardResponse[] = [];
   categories: CategoryResponse[] = [];
@@ -83,6 +103,8 @@ export class CardInvoicesComponent extends Base implements OnInit {
   private readonly maxMonths = 12;
 
   ngOnInit(): void {
+    this.aiStatus$.subscribe((status) => (this.aiStatus = status));
+
     this.loadCards();
     this.loadCategories();
     this.loadPaymentMethods();
@@ -274,6 +296,108 @@ export class CardInvoicesComponent extends Base implements OnInit {
           this.isLoading = false;
         },
       });
+    });
+  }
+
+  acceptFor(status: AiStatusResponse | null): string {
+    return importAcceptAttribute(status);
+  }
+
+  openTextModal(): void {
+    if (!this.creditCardId) return;
+
+    const creditCardId = this.creditCardId;
+
+    const dialogRef = this.dialog.open(AiTextEntryModal, {
+      width: '520px',
+      maxWidth: '92vw',
+      autoFocus: false,
+      data: {
+        titleKey: 'AddByText',
+        hintKey: 'AddCardPurchasesByTextHint',
+        placeholderKey: 'AddCardPurchasesByTextPlaceholder',
+        parse: (text: string) => this.purchaseService.parseText({ creditCardId, text }),
+      },
+    });
+
+    dialogRef.afterClosed().subscribe((preview?: CardPurchasePreviewResponse) => {
+      if (preview) this.openPreview(preview);
+    });
+  }
+
+  onFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+
+    input.value = '';
+
+    if (!file || !this.creditCardId) return;
+
+    const extension = file.name.split('.').pop()?.toLowerCase() ?? '';
+
+    if (!allowedImportExtensions(this.aiStatus).includes(extension)) {
+      this.messageWarning('AllowedFiles');
+      return;
+    }
+
+    this.attachStatement(file);
+  }
+
+  private async attachStatement(file: File): Promise<void> {
+    this.isLoading = true;
+    this.cdr.detectChanges();
+
+    if (isAiOnlyFile(file.name)) {
+      this.importStatement(file, false);
+      return;
+    }
+
+    const status = await firstValueFrom(this.aiStatus$);
+
+    if (!status?.enabled) {
+      this.importStatement(file, false);
+      return;
+    }
+
+    this.confirmModal('Atentition', 'DoYouWantToUseAi', 'Yes', 'No', '380', 'help_outline').subscribe(
+      (useAi) => this.importStatement(file, useAi),
+    );
+  }
+
+  private importStatement(file: File, useAi: boolean): void {
+    this.purchaseService.import(file, this.creditCardId!, useAi).subscribe({
+      next: (res) => {
+        this.isLoading = false;
+        this.cdr.detectChanges();
+
+        if (res.isSuccess && res.value) {
+          this.openPreview(res.value);
+          return;
+        }
+
+        this.toastr.warning(res.message);
+      },
+      error: () => {
+        this.isLoading = false;
+        this.cdr.detectChanges();
+      },
+    });
+  }
+
+  private openPreview(preview: CardPurchasePreviewResponse): void {
+    const dialogRef = this.dialog.open(CardPurchasePreviewModal, {
+      width: '980px',
+      maxWidth: '96vw',
+      autoFocus: false,
+      data: {
+        creditCardId: this.creditCardId,
+        preview,
+        categories: this.categories,
+      },
+    });
+
+    dialogRef.afterClosed().subscribe((saved?: boolean) => {
+      if (saved) this.onCardChange();
     });
   }
 

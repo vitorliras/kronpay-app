@@ -1,0 +1,97 @@
+<ng-container *ngIf="translations$ | async as t">
+  <div class="modal-register-2 card-preview-modal" cdkDrag cdkDragRootElement=".cdk-overlay-pane">
+    <div class="modal-register-title">
+      <h2 mat-dialog-title>{{ t['CardPurchasesPreview'] }}</h2>
+      <button class="close-btn" (click)="close()"><mat-icon>close</mat-icon></button>
+    </div>
+
+    <div class="modal-register-body">
+      <p class="note" *ngIf="data.preview.skipped > 0">
+        <mat-icon>info</mat-icon>
+        {{ data.preview.skipped }} {{ t['CardImportSkipped'] }}
+      </p>
+
+      <div class="table-scroll">
+        <table class="preview-table">
+          <thead>
+            <tr>
+              <th class="col-include">{{ t['IncludeInSave'] }}</th>
+              <th class="col-date">{{ t['Date'] }}</th>
+              <th>{{ t['Description'] }}</th>
+              <th class="col-amount">{{ t['Total'] }}</th>
+              <th class="col-installments">{{ t['Installments'] }}</th>
+              <th>{{ t['Category'] }}</th>
+              <th>{{ t['Subcategories'] }}</th>
+              <th class="col-actions"></th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr *ngFor="let row of rows" [class.duplicate]="row.possibleDuplicate" [class.excluded]="!row.include">
+              <td class="col-include">
+                <mat-checkbox [(ngModel)]="row.include"></mat-checkbox>
+              </td>
+
+              <td class="col-date">
+                <input type="date" class="cell-input" [(ngModel)]="row.purchaseDate" />
+              </td>
+
+              <td>
+                <input type="text" class="cell-input" maxlength="60" [(ngModel)]="row.description" />
+                <div class="badges">
+                  <span class="badge dup" *ngIf="row.possibleDuplicate" [matTooltip]="t['PossibleDuplicateHint']">
+                    <mat-icon>warning</mat-icon>{{ t['PossibleDuplicate'] }}
+                  </span>
+                  <span class="badge source" *ngIf="row.classificationSource" [class.memory]="row.classificationSource === 'memory'">
+                    {{ row.classificationSource === 'memory' ? t['ClassifiedByMemory'] : t['ClassifiedByAi'] }}
+                  </span>
+                </div>
+              </td>
+
+              <td class="col-amount">
+                <input type="text" class="cell-input" inputmode="decimal" moneyInput [(ngModel)]="row.totalAmount" />
+              </td>
+
+              <td class="col-installments">
+                <input type="number" class="cell-input" min="1" max="48" step="1" [(ngModel)]="row.installmentsCount" />
+              </td>
+
+              <td>
+                <select class="cell-input" [(ngModel)]="row.categoryId" (change)="onCategoryChange(row)">
+                  <option [ngValue]="null"></option>
+                  <option *ngFor="let c of data.categories" [ngValue]="c.id">{{ c.description }}</option>
+                </select>
+              </td>
+
+              <td>
+                <select class="cell-input" [(ngModel)]="row.categoryItemId" [disabled]="!row.categoryId">
+                  <option [ngValue]="null"></option>
+                  <option *ngFor="let s of subcategoriesOf(row.categoryId)" [ngValue]="s.id">{{ s.description }}</option>
+                </select>
+              </td>
+
+              <td class="col-actions">
+                <button type="button" class="icon-btn" (click)="removeRow(row)">
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="footer">
+        <button mat-stroked-button color="primary" (click)="addRow()" [disabled]="isLoading">
+          <mat-icon>add</mat-icon>
+          {{ t['AddRow'] }}
+        </button>
+
+        <button mat-raised-button color="primary" (click)="save()" [disabled]="isLoading || includedCount === 0">
+          <mat-spinner *ngIf="isLoading" diameter="18"></mat-spinner>
+          <mat-icon *ngIf="!isLoading">save</mat-icon>
+          {{ t['Save'] }} ({{ includedCount }})
+        </button>
+      </div>
+    </div>
+  </div>
+</ng-container>

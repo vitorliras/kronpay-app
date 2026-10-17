@@ -18,6 +18,7 @@ import { Base } from '../../../core/bases/base/base';
 import { MatSelectModule } from '@angular/material/select';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { DragDropModule } from '@angular/cdk/drag-drop';
+import { CategoryDraft } from '../../../core/models/ai-chat/category-draft.model';
 
 @Component({
   selector: 'app-config-category-modal',
@@ -52,7 +53,7 @@ export class ConfigCategoryModal extends Base {
   constructor(
     private fb: FormBuilder,
     private dialogRef: MatDialogRef<ConfigCategoryModal>,
-    @Inject(MAT_DIALOG_DATA) public data: { category: CategoryResponse, width?: string },
+    @Inject(MAT_DIALOG_DATA) public data: { category?: CategoryResponse | null, width?: string, prefill?: CategoryDraft },
   ) {
     super();
     const category = data.category;
@@ -73,6 +74,11 @@ export class ConfigCategoryModal extends Base {
         description: category.description,
         codTypeTransaction: category.codTypeTransaction,
         isCardInvoiceCategory: category.isCardInvoiceCategory,
+      });
+    } else if (data.prefill) {
+      this.form.patchValue({
+        description: data.prefill.description,
+        codTypeTransaction: data.prefill.type,
       });
     }
   }

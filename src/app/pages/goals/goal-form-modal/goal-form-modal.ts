@@ -13,6 +13,8 @@ import { CategoryResponse } from '../../../core/models/config/category/category-
 import { FinancialGoalResponse } from '../../../core/models/goals/financial-goal-response.model';
 import { CategoryBudgetGoalResponse } from '../../../core/models/goals/category-budget-goal-response.model';
 import { GoalPriority } from '../../../core/models/goals/goal-priority.model';
+import { CategoryBudgetGoalDraft } from '../../../core/models/ai-chat/category-budget-goal-draft.model';
+import { FinancialGoalDraft } from '../../../core/models/ai-chat/financial-goal-draft.model';
 
 export type GoalFormResult =
   | { type: 'financial'; value: any }
@@ -58,29 +60,41 @@ export class GoalFormModal extends Base {
       financialGoal?: FinancialGoalResponse | null;
       categoryGoal?: CategoryBudgetGoalResponse | null;
       categories: CategoryResponse[];
+      financialPrefill?: FinancialGoalDraft;
+      categoryPrefill?: CategoryBudgetGoalDraft;
     },
   ) {
     super();
 
     this.categories = (data.categories ?? []).filter((c) => c.codTypeTransaction === 'E');
     this.editing = !!(data.financialGoal || data.categoryGoal);
-    this.goalType = data.financialGoal ? 'financial' : data.categoryGoal ? 'category' : data.type ?? 'financial';
+    this.goalType = data.financialGoal
+      ? 'financial'
+      : data.categoryGoal
+        ? 'category'
+        : data.categoryPrefill
+          ? 'category'
+          : data.financialPrefill
+            ? 'financial'
+            : data.type ?? 'financial';
 
     const fg = data.financialGoal;
+    const fp = data.financialPrefill;
     this.financialForm = this.fb.group({
       id: [fg?.id ?? null],
-      description: [fg?.description ?? '', [Validators.required, Validators.maxLength(200)]],
-      targetAmount: [fg?.targetAmount ?? null, [Validators.required, Validators.min(0.01)]],
-      targetDate: [this.toIso(fg?.targetDate), Validators.required],
-      priority: [fg?.priority ?? GoalPriority.Medium, Validators.required],
+      description: [fg?.description ?? fp?.description ?? '', [Validators.required, Validators.maxLength(200)]],
+      targetAmount: [fg?.targetAmount ?? fp?.targetAmount ?? null, [Validators.required, Validators.min(0.01)]],
+      targetDate: [this.toIso(fg?.targetDate ?? fp?.targetDate), Validators.required],
+      priority: [fg?.priority ?? fp?.priority ?? GoalPriority.Medium, Validators.required],
     });
 
     const cg = data.categoryGoal;
+    const cp = data.categoryPrefill;
     this.categoryForm = this.fb.group({
       id: [cg?.id ?? null],
-      categoryId: [cg?.categoryId ?? null, Validators.required],
-      monthlyLimit: [cg?.monthlyLimit ?? null, [Validators.required, Validators.min(0.01)]],
-      priority: [cg?.priority ?? GoalPriority.Medium, Validators.required],
+      categoryId: [cg?.categoryId ?? cp?.categoryId ?? null, Validators.required],
+      monthlyLimit: [cg?.monthlyLimit ?? cp?.monthlyLimit ?? null, [Validators.required, Validators.min(0.01)]],
+      priority: [cg?.priority ?? cp?.priority ?? GoalPriority.Medium, Validators.required],
     });
   }
 

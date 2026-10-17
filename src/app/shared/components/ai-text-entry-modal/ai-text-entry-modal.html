@@ -1,0 +1,32 @@
+<ng-container *ngIf="translations$ | async as t">
+  <div class="modal-register-2 ai-text-entry-modal" cdkDrag cdkDragRootElement=".cdk-overlay-pane">
+    <div class="modal-register-title">
+      <h2 mat-dialog-title>{{ t[data.titleKey] }}</h2>
+      <button class="close-btn" (click)="close()"><mat-icon>close</mat-icon></button>
+    </div>
+
+    <div class="modal-register-body">
+      <p class="hint">{{ t[data.hintKey] }}</p>
+
+      <textarea
+        class="text-input"
+        rows="6"
+        cdkFocusInitial
+        [(ngModel)]="text"
+        [maxlength]="maxLength"
+        [placeholder]="t[data.placeholderKey]"
+        [disabled]="isLoading"
+      ></textarea>
+
+      <div class="counter">{{ text.length }} / {{ maxLength }}</div>
+
+      <div mat-dialog-actions>
+        <button mat-raised-button color="primary" (click)="interpret()" [disabled]="isLoading || !text.trim()">
+          <mat-spinner *ngIf="isLoading" diameter="18"></mat-spinner>
+          <mat-icon *ngIf="!isLoading">auto_awesome</mat-icon>
+          {{ t['Interpret'] }}
+        </button>
+      </div>
+    </div>
+  </div>
+</ng-container>

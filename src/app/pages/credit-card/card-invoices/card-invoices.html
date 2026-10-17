@@ -13,9 +13,21 @@
           </mat-form-field>
         </div>
 
-        <button *ngIf="creditCardId" class="mt-4" mat-raised-button color="primary" (click)="openPurchaseModal()">
-          <mat-icon>add</mat-icon> {{ t['NewPurchase'] }}
-        </button>
+        <div class="d-flex mt-4" style="gap: 10px; align-items: flex-start; flex-wrap: wrap;" *ngIf="creditCardId">
+          <button mat-stroked-button color="primary" *ngIf="(aiStatus$ | async)?.enabled" [disabled]="isLoading" (click)="openTextModal()">
+            <mat-icon>auto_awesome</mat-icon> {{ t['AddByText'] }}
+          </button>
+
+          <button mat-stroked-button color="primary" [disabled]="isLoading" (click)="fileInput.click()">
+            <mat-icon>attach_file</mat-icon> {{ t['AttachStatement'] }}
+          </button>
+
+          <input #fileInput type="file" hidden [attr.accept]="acceptFor(aiStatus$ | async)" (change)="onFileSelected($event)" />
+
+          <button mat-raised-button color="primary" (click)="openPurchaseModal()">
+            <mat-icon>add</mat-icon> {{ t['NewPurchase'] }}
+          </button>
+        </div>
       </div>
     </div>
 

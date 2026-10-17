@@ -1,0 +1,39 @@
+.ai-text-entry-modal {
+  width: 520px;
+  max-width: 92vw;
+
+  .hint {
+    margin: 0 0 12px;
+    color: #64748b;
+    font-size: 13px;
+  }
+
+  .text-input {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 12px;
+    border: 1px solid var(--brand-border, #e2e6ef);
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 14px;
+    resize: vertical;
+
+    &:focus {
+      outline: none;
+      border-color: #1b3c88;
+    }
+  }
+
+  .counter {
+    margin: 4px 0 12px;
+    text-align: right;
+    color: #94a3b8;
+    font-size: 12px;
+  }
+
+  button[mat-raised-button] {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+}

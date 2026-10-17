@@ -3,7 +3,4 @@ export interface Config {
   headers: {
     [key: string]: string;
   };
-  features: {
-    enableAiImport: boolean;
-  };
 }

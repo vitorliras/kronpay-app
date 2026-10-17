@@ -6,7 +6,7 @@ import { RouterOutlet } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { NotificationService } from '../../../core/services/notification.service';
 import { NotificationCriticalModalComponent } from '../notification-critical-modal/notification-critical-modal';
-import { AssistantWidgetComponent } from '../assistant-widget/assistant-widget';
+import { AssistantSwitcherComponent } from '../assistant-switcher/assistant-switcher';
 import { TourOverlayComponent } from '../tour-overlay/tour-overlay';
 import { AchievementToastComponent } from '../achievement-toast/achievement-toast';
 
@@ -18,7 +18,7 @@ import { AchievementToastComponent } from '../achievement-toast/achievement-toas
     Sidebar,
     Header,
     RouterOutlet,
-    AssistantWidgetComponent,
+    AssistantSwitcherComponent,
     TourOverlayComponent,
     AchievementToastComponent,
   ],

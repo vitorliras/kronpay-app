@@ -1,8 +1,23 @@
 import { ToastrService } from 'ngx-toastr';
-import { Component, inject, OnInit, ViewChild, viewChild } from '@angular/core';
+import {
+  ChangeDetectorRef,
+  Component,
+  inject,
+  OnInit,
+  ViewChild,
+  viewChild,
+} from '@angular/core';
 import { Base } from '../../core/bases/base/base';
 import { CategoryService } from '../../core/services/category.service';
-import { ConfigService } from '../../core/services/config.service';
+import { AiService } from '../../core/services/ai.service';
+import { AiStatusResponse } from '../../core/models/ai/ai-status-response.model';
+import { catchError, firstValueFrom, map, of, shareReplay } from 'rxjs';
+import { AiTextEntryModal } from '../../shared/components/ai-text-entry-modal/ai-text-entry-modal';
+import {
+  allowedImportExtensions,
+  importAcceptAttribute,
+  isAiOnlyFile,
+} from '../../core/utils/ai-file-extensions';
 import { CategoryItemService } from '../../core/services/category-item.service';
 import { PaymentMethodService } from '../../core/services/payment-method.service';
 import { CommonModule } from '@angular/common';
@@ -41,7 +56,10 @@ import { Paginator } from '../../shared/ui/paginator';
 import { TransactionDialogComponente } from './transaction-dialog/transaction-dialog';
 import { MatTooltip } from '@angular/material/tooltip';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { ImportedTransactionResponse } from '../../core/models/transaction/transaction-response.model';
+import {
+  ImportedTransactionResponse,
+  ImportTransactionsResponse,
+} from '../../core/models/transaction/transaction-response.model';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { ActivatedRoute } from '@angular/router';
 import { TourAnchorDirective } from '../../shared/directives/tour-anchor.directive';
@@ -134,7 +152,7 @@ export class TransactionComponente extends Base implements OnInit {
   selectionTransactionsAttach = new SelectionModel<ImportedTransactionResponse>(true, []);
 
   categories: CategoryResponse[] = [];
-  allowedExtensions = ['csv', 'ofx'];
+  private aiStatus: AiStatusResponse | null = null;
 
   subcategories: CategoryItemResponse[] = [];
 
@@ -144,7 +162,14 @@ export class TransactionComponente extends Base implements OnInit {
   private categoryItemService = inject(CategoryItemService);
   private paymentMethodService = inject(PaymentMethodService);
   private transactionService = inject(TransactionService);
-  private configService = inject(ConfigService);
+  private aiService = inject(AiService);
+  private cdr = inject(ChangeDetectorRef);
+
+  aiStatus$ = this.aiService.getStatus().pipe(
+    map((res) => (res.isSuccess ? (res.value ?? null) : null)),
+    catchError(() => of(null)),
+    shareReplay(1),
+  );
   private dialog = inject(MatDialog);
   private toastr = inject(ToastrService);
 
@@ -190,6 +215,8 @@ export class TransactionComponente extends Base implements OnInit {
   private tourService = inject(TourService);
 
   ngOnInit(): void {
+    this.aiStatus$.subscribe((status) => (this.aiStatus = status));
+
     this.getDatas();
     this.applyFilters();
 
@@ -741,28 +768,95 @@ export class TransactionComponente extends Base implements OnInit {
 
   isDragging = false;
 
-  attachTransactions(file: File) {
+  get allowedExtensions(): string[] {
+    return allowedImportExtensions(this.aiStatus);
+  }
+
+  acceptFor(status: AiStatusResponse | null): string {
+    return importAcceptAttribute(status);
+  }
+
+  async attachTransactions(file: File) {
     this.isLoading = true;
+    this.preview = true;
 
-    this.confirmModal('Atention', 'DoYouWantToView', 'Yes', 'No', '380', 'help_outline').subscribe(
-      (resultPreview) => {
-        this.preview = resultPreview;
+    if (isAiOnlyFile(file.name)) {
+      this.importTransactions(file, false);
+      return;
+    }
 
-        if (!this.configService.config.features.enableAiImport) {
-          this.importTransactions(file, false);
-          return;
-        }
+    const status = await firstValueFrom(this.aiStatus$);
 
-        this.confirmModal(
-          'Atentition',
-          'DoYouWantToUseAi',
-          'Yes',
-          'No',
-          '380',
-          'help_outline',
-        ).subscribe((resultAi) => this.importTransactions(file, resultAi));
+    if (!status?.enabled) {
+      this.importTransactions(file, false);
+      return;
+    }
+
+    this.confirmModal(
+      'Atentition',
+      'DoYouWantToUseAi',
+      'Yes',
+      'No',
+      '380',
+      'help_outline',
+    ).subscribe((useAi) => this.importTransactions(file, useAi));
+  }
+
+  openTextModal() {
+    const dialogRef = this.dialog.open(AiTextEntryModal, {
+      width: '520px',
+      maxWidth: '92vw',
+      autoFocus: false,
+      data: {
+        titleKey: 'AddByText',
+        hintKey: 'AddByTextHint',
+        placeholderKey: 'AddByTextPlaceholder',
+        parse: (text: string) => this.transactionService.parseText({ text }),
       },
-    );
+    });
+
+    dialogRef.afterClosed().subscribe((result?: ImportTransactionsResponse) => {
+      if (!result) return;
+
+      this.preview = true;
+      this.showPreview(result.transactions ?? []);
+    });
+  }
+
+  addAttachRow() {
+    const row: ImportedTransactionResponse = {
+      transactionDate: new Date(),
+      amount: 0,
+      description: '',
+      type: 'E',
+      status: 'P',
+      paymentMethod: 1,
+      categoryId: null,
+      categoryItemId: null,
+      transactionGroupId: null,
+      id: null,
+      classificationSource: null,
+    };
+
+    this.transactionsAttach = [row, ...this.transactionsAttach];
+    this.transactionsAttachFilterDataSource.data = [
+      row,
+      ...this.transactionsAttachFilterDataSource.data,
+    ];
+  }
+
+  private showPreview(transactions: ImportedTransactionResponse[]) {
+    this.isAttaching = true;
+    this.typeFilter = null;
+
+    const normalized = transactions.map((t) => ({
+      ...t,
+      transactionDate: t.transactionDate ? new Date(t.transactionDate) : new Date(),
+    }));
+
+    this.transactionsAttach = normalized;
+    this.transactionsAttachFilterDataSource.data = [...normalized];
+    this.isLoading = false;
   }
 
   private importTransactions(file: File, useAi: boolean) {
@@ -775,19 +869,7 @@ export class TransactionComponente extends Base implements OnInit {
     this.transactionService.import(request).subscribe(
       (res) => {
         if (res.isSuccess) {
-          this.isAttaching = true;
-          this.typeFilter = null;
-
-          const transactions: ImportedTransactionResponse[] = (
-            res.value?.transactions ?? []
-          ).map((t) => ({
-            ...t,
-            transactionDate: t.transactionDate ? new Date(t.transactionDate) : new Date(),
-          }));
-
-          this.transactionsAttach = transactions;
-          this.transactionsAttachFilterDataSource.data = [...transactions];
-          this.isLoading = false;
+          this.showPreview(res.value?.transactions ?? []);
         } else {
           this.toastr.warning(res.message);
           this.isLoading = false;
@@ -866,6 +948,7 @@ export class TransactionComponente extends Base implements OnInit {
 
   onCategoryChange(row: any) {
     row.categoryItemId = null;
+    row.classificationSource = null;
   }
 
   saveAttach() {

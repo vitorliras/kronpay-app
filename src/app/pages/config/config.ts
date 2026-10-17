@@ -1,7 +1,9 @@
 import { ToastrService } from 'ngx-toastr';
+import { catchError, map, of } from 'rxjs';
 import { Component, inject, OnInit, viewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Base } from '../../core/bases/base/base';
+import { AiService } from '../../core/services/ai.service';
 import { CategoryService } from '../../core/services/category.service';
 import { CategoryItemService } from '../../core/services/category-item.service';
 import { PaymentMethodService } from '../../core/services/payment-method.service';
@@ -76,7 +78,9 @@ export class ConfigComponent extends Base implements OnInit {
   readonly paginatorCategories = viewChild.required<MatPaginator>('paginatorCategories');
   readonly paginatorPaymentMethod = viewChild.required<MatPaginator>('paginatorPaymentMethod');
 
-  activeTab: 'categories' | 'subcategories' | 'payments' = 'categories';
+  activeTab: 'categories' | 'subcategories' | 'payments' | 'ai' = 'categories';
+
+  aiUsageColumns = ['feature', 'calls', 'tokens', 'cost'];
 
   categoryColumns = ['select', 'description', 'type', 'actions'];
   subcategoryColumns = ['select', 'description', 'category', 'actions'];
@@ -99,8 +103,10 @@ export class ConfigComponent extends Base implements OnInit {
     categories: 0,
     subcategories: 1,
     payments: 2,
+    ai: 3,
   };
 
+  private aiService = inject(AiService);
   private categoryService = inject(CategoryService);
   private categoryItemService = inject(CategoryItemService);
   private paymentMethodService = inject(PaymentMethodService);
@@ -108,6 +114,16 @@ export class ConfigComponent extends Base implements OnInit {
   private toastr = inject(ToastrService);
   private activatedRoute = inject(ActivatedRoute);
   private tourService = inject(TourService);
+
+  aiStatus$ = this.aiService.getStatus().pipe(
+    map((res) => (res.isSuccess ? (res.value ?? null) : null)),
+    catchError(() => of(null)),
+  );
+
+  aiUsage$ = this.aiService.getCurrentMonthUsage().pipe(
+    map((res) => (res.isSuccess ? (res.value ?? null) : null)),
+    catchError(() => of(null)),
+  );
 
   selectedTabIndex = 0;
 

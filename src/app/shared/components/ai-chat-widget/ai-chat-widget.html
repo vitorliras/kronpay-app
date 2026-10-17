@@ -1,0 +1,155 @@
+<ng-container *ngIf="translations$ | async as t">
+
+<div class="assistant-widget">
+  <button
+    class="assistant-fab"
+    [class.open]="isOpen$ | async"
+    (click)="togglePanel()"
+    matTooltip="{{ t['AssistantOpenTooltip'] }}"
+    matTooltipPosition="left"
+  >
+    <mat-icon>{{ (isOpen$ | async) ? 'close' : 'auto_awesome' }}</mat-icon>
+  </button>
+
+  <div class="assistant-panel" [class.expanded]="expanded$ | async" *ngIf="isOpen$ | async">
+    <div class="assistant-panel-header">
+      <div class="header-icon">
+        <mat-icon>auto_awesome</mat-icon>
+      </div>
+
+      <div class="header-text">
+        <h3>{{ t['AiChatTitle'] }}</h3>
+      </div>
+
+      <button
+        class="header-action"
+        (click)="newConversation()"
+        matTooltip="{{ t['AiChatNewConversation'] }}"
+        matTooltipPosition="below"
+      >
+        <mat-icon>refresh</mat-icon>
+      </button>
+
+      <button
+        class="header-action expand-action"
+        (click)="toggleExpanded()"
+        matTooltip="{{ (expanded$ | async) ? t['AiChatCollapse'] : t['AiChatExpand'] }}"
+        matTooltipPosition="below"
+      >
+        <mat-icon>{{ (expanded$ | async) ? 'close_fullscreen' : 'open_in_full' }}</mat-icon>
+      </button>
+
+      <button
+        class="header-action"
+        (click)="togglePanel()"
+        matTooltip="{{ t['Close'] }}"
+        matTooltipPosition="below"
+      >
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+
+    <div class="assistant-messages" #scrollContainer>
+      <div class="message-row">
+        <div class="bubble">{{ t['AiChatGreeting'] }}</div>
+
+        <div class="options-row" *ngIf="(bubbles$ | async)?.length === 0 && (starters$ | async) as starters">
+          <button *ngFor="let starter of starters" class="option-chip" (click)="sendSuggestion(starter)">
+            {{ starter }}
+          </button>
+        </div>
+      </div>
+
+      <ng-container *ngIf="bubbles$ | async as bubbles">
+        <div class="message-row" *ngFor="let msg of bubbles" [class.user]="msg.role === 'user'">
+          <div class="bubble chat-text" [class.error-bubble]="msg.isError">
+            {{ msg.isError ? (t[msg.text] || msg.text) : msg.text }}
+          </div>
+
+          <div class="payment-card" *ngIf="msg.payment as pay">
+            <div class="payment-title">
+              <mat-icon>receipt_long</mat-icon>
+              {{ t['AiChatPayInvoiceTitle'] }}
+            </div>
+
+            <div class="payment-summary">
+              <strong>{{ pay.proposal.cardName }}</strong>
+              <span>{{ pay.proposal.referenceMonth | number: '2.0-0' }}/{{ pay.proposal.referenceYear }}</span>
+              <span class="payment-amount">{{ pay.proposal.amount | currency: 'BRL' }}</span>
+              <span class="payment-due">{{ t['AiChatInvoiceDue'] }}: {{ formatDueDate(pay.proposal.dueDate) }}</span>
+            </div>
+
+            <ng-container *ngIf="pay.status !== 'paid'; else paidState">
+              <div class="payment-question">{{ t['AiChatPayInvoiceQuestion'] }}</div>
+
+              <div class="options-row">
+                <button
+                  *ngFor="let method of pay.proposal.paymentMethods"
+                  class="option-chip"
+                  [disabled]="pay.status === 'paying'"
+                  (click)="payWith(msg, method)"
+                >
+                  {{ method.description }}
+                </button>
+              </div>
+            </ng-container>
+
+            <ng-template #paidState>
+              <div class="payment-paid">
+                <mat-icon>check_circle</mat-icon>
+                {{ t['AiChatInvoicePaid'] }}
+              </div>
+            </ng-template>
+          </div>
+
+          <div class="navigate-row" *ngIf="manualActions(msg).length">
+            <button *ngFor="let action of manualActions(msg)" class="navigate-btn" (click)="runAction(action)">
+              <mat-icon>{{ actionIcon(action) }}</mat-icon>
+              {{ action.type === 'start_tour' ? t['AiChatStartTourLabel'] : t['AiChatOpenScreen'] }}
+              {{ action.labelKey ? t[action.labelKey] : '' }}
+            </button>
+          </div>
+
+          <div class="options-row" *ngIf="msg.suggestions.length && isLatestAssistant(msg)">
+            <button *ngFor="let suggestion of msg.suggestions" class="option-chip" (click)="sendSuggestion(suggestion)">
+              {{ suggestion }}
+            </button>
+          </div>
+
+          <div class="options-row" *ngIf="msg.isError">
+            <button class="option-chip" (click)="retry()">{{ t['AiChatRetry'] }}</button>
+            <button class="option-chip back" (click)="useBasic.emit()">{{ t['AiChatUseBasic'] }}</button>
+          </div>
+        </div>
+
+        <div class="message-row" *ngIf="isLoading$ | async">
+          <div class="bubble typing-bubble">
+            <span class="dot"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+          </div>
+        </div>
+      </ng-container>
+    </div>
+
+    <div class="assistant-input-bar">
+      <input
+        type="text"
+        class="assistant-input"
+        [formControl]="inputControl"
+        maxlength="1000"
+        (keydown.enter)="sendTyped()"
+        placeholder="{{ t['AiChatPlaceholder'] }}"
+      />
+      <button
+        class="send-btn"
+        (click)="sendTyped()"
+        [disabled]="!inputControl.value.trim() || (isLoading$ | async)"
+      >
+        <mat-icon>send</mat-icon>
+      </button>
+    </div>
+  </div>
+</div>
+
+</ng-container>

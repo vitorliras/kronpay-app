@@ -11,6 +11,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { Base } from '../../../core/bases/base/base';
 import { PaymentMethodResponse } from '../../../core/models/config/payment-method/payment-method.models';
 import { DragDropModule } from '@angular/cdk/drag-drop';
+import { PaymentMethodDraft } from '../../../core/models/ai-chat/payment-method-draft.model';
 
 @Component({
   selector: 'app-config-payment-method-modal',
@@ -36,7 +37,7 @@ export class ConfigPaymentMethodModal extends Base {
   constructor(
     private fb: FormBuilder,
     private dialogRef: MatDialogRef<ConfigPaymentMethodModal>,
-    @Inject(MAT_DIALOG_DATA) public data: { paymentMethod: PaymentMethodResponse ,width?: string },
+    @Inject(MAT_DIALOG_DATA) public data: { paymentMethod?: PaymentMethodResponse | null, width?: string, prefill?: PaymentMethodDraft },
   ) {
     super();
     var paymentMethod = data.paymentMethod;
@@ -54,6 +55,8 @@ export class ConfigPaymentMethodModal extends Base {
         isActive: paymentMethod.isActive,
         description: paymentMethod.description,
       });
+    } else if (data.prefill) {
+      this.form.patchValue({ description: data.prefill.description });
     }
   }
 

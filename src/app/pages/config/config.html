@@ -300,5 +300,104 @@
       </div>
     </mat-tab>
 
+    <mat-tab label="{{ t['ArtificialIntelligence'] }}">
+
+      <div class="card-wrapper ai-tab">
+
+        <ng-container *ngIf="aiStatus$ | async as status">
+          <div class="ai-header">
+            <div class="ai-badge">
+              <mat-icon>auto_awesome</mat-icon>
+            </div>
+
+            <div class="ai-header-text">
+              <span class="ai-title">{{ t['ArtificialIntelligence'] }}</span>
+
+              <span class="ai-subtitle" *ngIf="status.enabled">
+                {{ t['AiProvider'] }}: <b>{{ status.provider }}</b>
+                &nbsp;·&nbsp;
+                {{ t['AiModel'] }}: <b>{{ status.model }}</b>
+              </span>
+
+              <span class="ai-subtitle" *ngIf="!status.enabled">{{ t['AiDisabledHint'] }}</span>
+            </div>
+
+            <span class="ai-pill" [class.on]="status.enabled">
+              <span class="dot"></span>
+              {{ status.enabled ? t['AiStatusEnabled'] : t['AiStatusDisabled'] }}
+            </span>
+          </div>
+        </ng-container>
+
+        <ng-container *ngIf="aiUsage$ | async as usage">
+          <div class="ai-section-head">
+            <span class="ai-section-title">{{ t['AiMonthUsage'] }}</span>
+            <span class="ai-month">{{ usage.month }}/{{ usage.year }}</span>
+          </div>
+
+          <div class="ai-summary">
+            <div class="summary-card quantity">
+              <div class="title">{{ t['AiCalls'] }}</div>
+              <div class="value">{{ usage.calls | number: '1.0-0' }}</div>
+            </div>
+
+            <div class="summary-card investment">
+              <div class="title">{{ t['AiTokens'] }}</div>
+              <div class="value">{{ usage.inputTokens + usage.outputTokens | number: '1.0-0' }}</div>
+            </div>
+
+            <div class="summary-card income">
+              <div class="title">{{ t['AiEstimatedCost'] }}</div>
+              <div class="value">{{ usage.estimatedCostUsd | currency: 'USD' : 'US$' : '1.2-6' }}</div>
+            </div>
+          </div>
+
+          <div class="ai-empty" *ngIf="usage.calls === 0">
+            <mat-icon>insights</mat-icon>
+            <span>{{ t['AiNoUsage'] }}</span>
+          </div>
+
+          <ng-container *ngIf="usage.byFeature.length > 0">
+            <div class="ai-section-head">
+              <span class="ai-section-title">{{ t['AiByFeature'] }}</span>
+            </div>
+
+            <div class="table-wrapper-1">
+              <table mat-table [dataSource]="usage.byFeature" class="table">
+                <ng-container matColumnDef="feature">
+                  <th mat-header-cell *matHeaderCellDef>{{ t['AiFeature'] }}</th>
+                  <td mat-cell *matCellDef="let row">{{ t['AiFeature' + row.feature] || row.feature }}</td>
+                </ng-container>
+
+                <ng-container matColumnDef="calls">
+                  <th mat-header-cell *matHeaderCellDef>{{ t['AiCalls'] }}</th>
+                  <td mat-cell *matCellDef="let row">{{ row.calls | number: '1.0-0' }}</td>
+                </ng-container>
+
+                <ng-container matColumnDef="tokens">
+                  <th mat-header-cell *matHeaderCellDef>{{ t['AiTokens'] }}</th>
+                  <td mat-cell *matCellDef="let row">{{ row.inputTokens + row.outputTokens | number: '1.0-0' }}</td>
+                </ng-container>
+
+                <ng-container matColumnDef="cost">
+                  <th mat-header-cell *matHeaderCellDef>{{ t['AiEstimatedCost'] }}</th>
+                  <td mat-cell *matCellDef="let row">{{ row.estimatedCostUsd | currency: 'USD' : 'US$' : '1.2-6' }}</td>
+                </ng-container>
+
+                <tr mat-header-row *matHeaderRowDef="aiUsageColumns"></tr>
+                <tr mat-row *matRowDef="let row; columns: aiUsageColumns"></tr>
+              </table>
+            </div>
+          </ng-container>
+
+          <div class="ai-notice">
+            <mat-icon>info</mat-icon>
+            <span>{{ t['AiCostNotice'] }}</span>
+          </div>
+        </ng-container>
+
+      </div>
+    </mat-tab>
+
   </mat-tab-group>
 </ng-container>

@@ -2,8 +2,5 @@
   "apiUrl": "https://kronpay.onrender.com",
   "headers": {
     "X-Access-Key": "FSDF4523GKIOP13Y642F526109A"
-  },
-  "features": {
-    "enableAiImport": true
   }
 }
