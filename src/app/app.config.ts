@@ -5,6 +5,7 @@ import {
   inject,
 } from '@angular/core';
 
+import { OVERLAY_DEFAULT_CONFIG } from '@angular/cdk/overlay';
 import { provideRouter } from '@angular/router';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
@@ -27,6 +28,7 @@ Chart.register(...registerables);
 
 export const appConfig: ApplicationConfig = {
   providers: [
+    { provide: OVERLAY_DEFAULT_CONFIG, useValue: { usePopover: false } },
     provideAnimations(),
     provideBrowserGlobalErrorListeners(),
     provideRouter(routes),

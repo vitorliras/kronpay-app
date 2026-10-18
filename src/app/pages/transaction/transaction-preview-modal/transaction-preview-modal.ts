@@ -24,6 +24,10 @@ export interface TransactionPreviewModalData {
   paymentMethods: PaymentMethodResponse[];
 }
 
+type RequiredField = 'Date' | 'Description' | 'Type' | 'Amount' | 'PaymentMethods';
+
+const REQUIRED_FIELDS: RequiredField[] = ['Date', 'Description', 'Type', 'Amount', 'PaymentMethods'];
+
 interface PreviewRow {
   include: boolean;
   date: string;
@@ -35,6 +39,8 @@ interface PreviewRow {
   categoryItemId: number | null;
   status: string;
   classificationSource: string | null;
+  duplicateKind: string | null;
+  isCardInvoicePayment: boolean;
 }
 
 @Component({
@@ -65,10 +71,12 @@ export class TransactionPreviewModal extends Base implements OnInit {
   rows: PreviewRow[] = [];
   subcategories: CategoryItemResponse[] = [];
   isLoading = false;
+  submitted = false;
+  bulkPaymentMethodId: number | null = null;
 
   ngOnInit(): void {
     this.rows = this.data.drafts.map((d) => ({
-      include: true,
+      include: !d.duplicateKind,
       date: d.date.substring(0, 10),
       description: d.description,
       type: d.type,
@@ -78,6 +86,8 @@ export class TransactionPreviewModal extends Base implements OnInit {
       categoryItemId: d.categoryItemId,
       status: this.defaultStatus(d.date),
       classificationSource: d.classificationSource,
+      duplicateKind: d.duplicateKind,
+      isCardInvoicePayment: d.isCardInvoicePayment,
     }));
 
     this.categoryItemService.getAllByUser().subscribe((res) => {
@@ -99,6 +109,12 @@ export class TransactionPreviewModal extends Base implements OnInit {
   subcategoriesOf(categoryId: number | null): CategoryItemResponse[] {
     if (!categoryId) return [];
     return this.subcategories.filter((s) => s.categoryId === Number(categoryId));
+  }
+
+  applyPaymentMethodToAll(): void {
+    if (!this.bulkPaymentMethodId) return;
+
+    this.rows.filter((r) => !r.paymentMethodId).forEach((r) => (r.paymentMethodId = Number(this.bulkPaymentMethodId)));
   }
 
   onTypeChange(row: PreviewRow): void {
@@ -131,6 +147,8 @@ export class TransactionPreviewModal extends Base implements OnInit {
         categoryItemId: null,
         status: 'P',
         classificationSource: null,
+        duplicateKind: null,
+        isCardInvoicePayment: false,
       },
       ...this.rows,
     ];
@@ -143,8 +161,10 @@ export class TransactionPreviewModal extends Base implements OnInit {
   save(): void {
     const included = this.rows.filter((r) => r.include);
 
-    if (included.length === 0 || included.some((r) => !this.isValid(r))) {
-      this.toastr.warning(this.translate('SaveAttachInvalid'));
+    this.submitted = true;
+
+    if (included.length === 0 || included.some((r) => this.missingFields(r).length > 0)) {
+      this.toastr.warning(this.invalidMessage(included));
       return;
     }
 
@@ -196,14 +216,34 @@ export class TransactionPreviewModal extends Base implements OnInit {
     return date.substring(0, 10) <= new Date().toISOString().substring(0, 10) ? 'P' : 'O';
   }
 
-  private isValid(row: PreviewRow): boolean {
-    return (
-      row.description.trim().length > 0 &&
-      /^\d{4}-\d{2}-\d{2}$/.test(row.date) &&
-      !!row.type &&
-      !!row.paymentMethodId &&
-      this.parseAmount(row.amount) > 0
+  isMissing(row: PreviewRow, field: RequiredField): boolean {
+    if (!this.submitted || !row.include) return false;
+
+    return this.missingFields(row).includes(field);
+  }
+
+  private missingFields(row: PreviewRow): RequiredField[] {
+    const missing: RequiredField[] = [];
+
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(row.date)) missing.push('Date');
+    if (row.description.trim().length === 0) missing.push('Description');
+    if (!row.type) missing.push('Type');
+    if (this.parseAmount(row.amount) <= 0) missing.push('Amount');
+    if (!row.paymentMethodId) missing.push('PaymentMethods');
+
+    return missing;
+  }
+
+  private invalidMessage(included: PreviewRow[]): string {
+    const fields = REQUIRED_FIELDS.filter((field) =>
+      included.some((row) => this.missingFields(row).includes(field)),
     );
+
+    const base = this.translate('SaveAttachInvalid');
+
+    if (fields.length === 0) return base;
+
+    return `${base} ${fields.map((field) => this.translate(field)).join(', ')}.`;
   }
 
   private parseAmount(value: string): number {

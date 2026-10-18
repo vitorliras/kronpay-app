@@ -7,4 +7,6 @@ export interface TransactionDraft {
   categoryId: number | null;
   categoryItemId: number | null;
   classificationSource: string | null;
+  duplicateKind: string | null;
+  isCardInvoicePayment: boolean;
 }

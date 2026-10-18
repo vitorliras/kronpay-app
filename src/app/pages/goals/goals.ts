@@ -1,3 +1,4 @@
+import { skip } from 'rxjs';
 import { ChangeDetectorRef, Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
@@ -57,6 +58,8 @@ export class Goals extends Base implements OnInit {
         this.tourService.start(GOALS_TOUR_STEPS);
       }
     });
+
+    this.activatedRoute.queryParamMap.pipe(skip(1)).subscribe(() => this.openGoalFromQueryParam());
   }
 
   loadCategories(): void {

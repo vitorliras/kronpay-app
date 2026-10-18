@@ -18,11 +18,16 @@
             <mat-icon>auto_awesome</mat-icon> {{ t['AddByText'] }}
           </button>
 
-          <button mat-stroked-button color="primary" [disabled]="isLoading" (click)="fileInput.click()">
-            <mat-icon>attach_file</mat-icon> {{ t['AttachStatement'] }}
-          </button>
+          <div class="attach-container" [class.dragging]="isDragging"
+            (dragover)="onDragOver($event)" (dragleave)="onDragLeave($event)" (drop)="onDrop($event)">
+            <button mat-stroked-button color="primary" [disabled]="isLoading" (click)="fileInput.click()">
+              <mat-icon>attach_file</mat-icon> {{ t['AttachStatement'] }}
+            </button>
 
-          <input #fileInput type="file" hidden [attr.accept]="acceptFor(aiStatus$ | async)" (change)="onFileSelected($event)" />
+            <input #fileInput type="file" hidden [attr.accept]="acceptFor(aiStatus$ | async)" (change)="onFileSelected($event)" />
+
+            <p class="drag-text">{{ t['OrDragFile'] }}</p>
+          </div>
 
           <button mat-raised-button color="primary" (click)="openPurchaseModal()">
             <mat-icon>add</mat-icon> {{ t['NewPurchase'] }}
@@ -108,7 +113,7 @@
       <div
         class="invoice-card"
         [class.expanded]="selectedInvoiceId === inv.id"
-        [class.paid]="isPaid(inv)"
+        [class.paid]="isSettled(inv)"
         [class.overdue]="isOverdue(inv)"
       >
         <div class="invoice-head" (click)="viewItems(inv)">
@@ -119,8 +124,8 @@
 
           <div class="inv-info">
             <span class="due"><mat-icon>event</mat-icon> {{ t['DueWord'] }} {{ inv.dueDate | date: 'dd/MM/yyyy' }}</span>
-            <span class="badge" [ngClass]="isOverdue(inv) ? 'overdue' : inv.status">
-              {{ isOverdue(inv) ? t['Overdue'] : t[statusLabel(inv.status)] }}
+            <span class="badge" [ngClass]="isOverdue(inv) ? 'overdue' : isSettled(inv) ? 'P' : inv.status">
+              {{ isOverdue(inv) ? t['Overdue'] : t[invoiceStatusLabel(inv)] }}
             </span>
           </div>
 
@@ -130,7 +135,7 @@
             <button
               mat-stroked-button
               color="primary"
-              *ngIf="!isPaid(inv)"
+              *ngIf="canPay(inv)"
               (click)="startPay(inv); $event.stopPropagation()"
             >
               <mat-icon>payments</mat-icon> {{ t['Pay'] }}
@@ -182,7 +187,7 @@
     <div class="pay-overlay" *ngIf="payingInvoice">
       <div class="pay-box">
         <h3>{{ t['PayInvoice'] }} {{ t[monthLabel(payingInvoice.referenceMonth)] }}/{{ payingInvoice.referenceYear }}</h3>
-        <p class="pay-total">{{ t['Total'] }}: <strong>{{ payingInvoice.totalAmount | currency: 'BRL' }}</strong></p>
+        <p class="pay-total">{{ t['Total'] }}: <strong>{{ payingInvoice.pendingAmount | currency: 'BRL' }}</strong></p>
         <mat-form-field appearance="outline" class="pay-field">
           <mat-label>{{ t['PaymentMethod'] }}</mat-label>
           <mat-select [(ngModel)]="selectedPaymentMethodId">

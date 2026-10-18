@@ -92,6 +92,11 @@
     font-family: inherit;
     font-size: 13px;
 
+    &.invalid {
+      border-color: var(--brand-danger, #dc2626);
+      box-shadow: 0 0 0 1px var(--brand-danger, #dc2626);
+    }
+
     &:focus {
       outline: none;
       border-color: #1b3c88;

@@ -135,7 +135,7 @@
 
           <div class="search-box-1">
             <mat-icon style="margin-top: 7px;" class="search-icon">search</mat-icon>
-            <input type="text" [placeholder]="t['Search']" (input)="onSearchTransactions($event)" />
+            <input type="text" [placeholder]="t['Search']" [value]="searchTerm" (input)="onSearchTransactions($event)" />
           </div>
 
           <div class="attach-container" *ngIf="!isAttaching" [class.dragging]="isDragging"

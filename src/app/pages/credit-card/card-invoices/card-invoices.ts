@@ -1,3 +1,6 @@
+import { readIntParam } from '../../../core/utils/query-param-readers';
+import { ParamMap } from '@angular/router';
+import { skip } from 'rxjs';
 import { ChangeDetectorRef, Component, inject, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
@@ -64,6 +67,7 @@ export class CardInvoicesComponent extends Base implements OnInit {
   private dialog = inject(MatDialog);
   private toastr = inject(ToastrService);
   private cdr = inject(ChangeDetectorRef);
+  isDragging = false;
   private activatedRoute = inject(ActivatedRoute);
   private aiService = inject(AiService);
 
@@ -88,6 +92,7 @@ export class CardInvoicesComponent extends Base implements OnInit {
   availableYears: number[] = [];
   monthsOfYear: number[] = [];
   filterYear: number | null = null;
+  private pendingPeriod: { year: number; month: number | null } | null = null;
   filterMonths: number[] = [];
   monthsList = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
 
@@ -109,11 +114,64 @@ export class CardInvoicesComponent extends Base implements OnInit {
     this.loadCategories();
     this.loadPaymentMethods();
 
-    const cardId = Number(this.activatedRoute.snapshot.queryParamMap.get('cardId'));
+    const params = this.activatedRoute.snapshot.queryParamMap;
+    this.readQueryPeriod(params);
+
+    const cardId = Number(params.get('cardId'));
     if (cardId) {
       this.creditCardId = cardId;
       this.onCardChange();
     }
+
+    this.activatedRoute.queryParamMap.pipe(skip(1)).subscribe((next) => this.onQueryChange(next));
+  }
+
+  private onQueryChange(params: ParamMap): void {
+    this.readQueryPeriod(params);
+
+    const cardId = Number(params.get('cardId'));
+
+    if (cardId && cardId !== this.creditCardId) {
+      this.creditCardId = cardId;
+      this.onCardChange();
+      return;
+    }
+
+    if (!this.creditCardId) return;
+
+    if (this.pendingPeriod) this.applyPendingPeriod();
+    else this.clearFilters();
+
+    this.applyView();
+    this.cdr.detectChanges();
+  }
+
+  private readQueryPeriod(params: ParamMap): void {
+    const year = readIntParam(params, 'year', 2000, 2100);
+    const month = readIntParam(params, 'month', 1, 12);
+
+    this.pendingPeriod =
+      year !== null || month !== null
+        ? { year: year ?? new Date().getFullYear(), month }
+        : null;
+  }
+
+  private applyPendingPeriod(): void {
+    const period = this.pendingPeriod;
+    this.pendingPeriod = null;
+
+    if (!period || !this.availableYears.includes(period.year)) return;
+
+    this.filterYear = period.year;
+    this.monthsOfYear = this.monthsAvailableIn(period.year);
+    this.filterMonths =
+      period.month !== null && this.monthsOfYear.includes(period.month) ? [period.month] : [];
+  }
+
+  private monthsAvailableIn(year: number): number[] {
+    return Array.from(
+      new Set(this.invoices.filter((i) => i.referenceYear === year).map((i) => i.referenceMonth)),
+    ).sort((a, b) => a - b);
   }
 
   loadCards(): void {
@@ -167,6 +225,7 @@ export class CardInvoicesComponent extends Base implements OnInit {
         this.availableYears = Array.from(new Set(this.invoices.map((i) => i.referenceYear))).sort(
           (a, b) => b - a,
         );
+        this.applyPendingPeriod();
         this.applyView();
         this.cdr.detectChanges();
       },
@@ -215,7 +274,7 @@ export class CardInvoicesComponent extends Base implements OnInit {
   }
 
   isOverdue(inv: CardInvoiceResponse): boolean {
-    if (this.isPaid(inv)) return false;
+    if (this.isPaid(inv) || inv.pendingAmount <= 0) return false;
     const due = new Date(inv.dueDate);
     due.setHours(0, 0, 0, 0);
     const today = new Date();
@@ -226,13 +285,7 @@ export class CardInvoicesComponent extends Base implements OnInit {
   selectYear(year: number): void {
     this.filterYear = this.filterYear === year ? null : year;
     this.filterMonths = [];
-    this.monthsOfYear = this.filterYear
-      ? Array.from(
-          new Set(
-            this.invoices.filter((i) => i.referenceYear === this.filterYear).map((i) => i.referenceMonth),
-          ),
-        ).sort((a, b) => a - b)
-      : [];
+    this.monthsOfYear = this.filterYear ? this.monthsAvailableIn(this.filterYear) : [];
     this.applyView();
   }
 
@@ -331,7 +384,31 @@ export class CardInvoicesComponent extends Base implements OnInit {
 
     input.value = '';
 
-    if (!file || !this.creditCardId) return;
+    this.handleFile(file);
+  }
+
+  onDragOver(event: DragEvent): void {
+    event.preventDefault();
+    event.stopPropagation();
+    this.isDragging = true;
+  }
+
+  onDragLeave(event: DragEvent): void {
+    event.preventDefault();
+    event.stopPropagation();
+    this.isDragging = false;
+  }
+
+  onDrop(event: DragEvent): void {
+    event.preventDefault();
+    event.stopPropagation();
+    this.isDragging = false;
+
+    this.handleFile(event.dataTransfer?.files?.[0]);
+  }
+
+  private handleFile(file: File | undefined): void {
+    if (!file || !this.creditCardId || this.isLoading) return;
 
     const extension = file.name.split('.').pop()?.toLowerCase() ?? '';
 
@@ -570,5 +647,17 @@ export class CardInvoicesComponent extends Base implements OnInit {
 
   isPaid(invoice: CardInvoiceResponse): boolean {
     return invoice.status === 'P';
+  }
+
+  isSettled(invoice: CardInvoiceResponse): boolean {
+    return this.isPaid(invoice) || (invoice.pendingAmount <= 0 && invoice.totalAmount > 0);
+  }
+
+  canPay(invoice: CardInvoiceResponse): boolean {
+    return !this.isPaid(invoice) && invoice.pendingAmount > 0;
+  }
+
+  invoiceStatusLabel(invoice: CardInvoiceResponse): string {
+    return this.isSettled(invoice) ? 'Paid' : this.statusLabel(invoice.status);
   }
 }

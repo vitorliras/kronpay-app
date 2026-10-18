@@ -1,6 +1,9 @@
+import { hasAnyParam, readEnumParam, readIntParam } from '../../core/utils/query-param-readers';
+import { ParamMap } from '@angular/router';
+import { skip } from 'rxjs';
 import { ToastrService } from 'ngx-toastr';
 import { catchError, map, of } from 'rxjs';
-import { Component, inject, OnInit, viewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, inject, OnInit, viewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Base } from '../../core/bases/base/base';
 import { AiService } from '../../core/services/ai.service';
@@ -113,6 +116,9 @@ export class ConfigComponent extends Base implements OnInit {
   private dialog = inject(MatDialog);
   private toastr = inject(ToastrService);
   private activatedRoute = inject(ActivatedRoute);
+  private cdr = inject(ChangeDetectorRef);
+  private pendingCategoryId: number | null = null;
+  private hasPendingQueryFilters = false;
   private tourService = inject(TourService);
 
   aiStatus$ = this.aiService.getStatus().pipe(
@@ -139,16 +145,47 @@ export class ConfigComponent extends Base implements OnInit {
   ngOnInit(): void {
     this.getDatas();
 
-    const tab = this.activatedRoute.snapshot.queryParamMap.get('tab');
-    if (tab && tab in ConfigComponent.TAB_INDEX_BY_NAME) {
-      this.selectedTabIndex = ConfigComponent.TAB_INDEX_BY_NAME[tab];
-    }
+    this.readQueryFilters(this.activatedRoute.snapshot.queryParamMap);
 
     this.activatedRoute.queryParamMap.subscribe((params) => {
       if (params.get('tour') === 'true') {
         this.tourService.start(CONFIG_TOUR_STEPS);
       }
     });
+
+    this.activatedRoute.queryParamMap.pipe(skip(1)).subscribe((params) => {
+      this.readQueryFilters(params);
+      this.applyQueryFiltersToLoadedData();
+      this.cdr.detectChanges();
+    });
+  }
+
+  private readQueryFilters(params: ParamMap): void {
+    const tab = readEnumParam(params, 'tab', Object.keys(ConfigComponent.TAB_INDEX_BY_NAME));
+
+    if (tab) this.selectedTabIndex = ConfigComponent.TAB_INDEX_BY_NAME[tab];
+
+    if (!hasAnyParam(params, ['type', 'categoryId'])) return;
+
+    this.typeFilter = readEnumParam(params, 'type', ['E', 'I', 'V'] as const);
+    this.pendingCategoryId = readIntParam(params, 'categoryId', 1, Number.MAX_SAFE_INTEGER);
+    this.hasPendingQueryFilters = true;
+  }
+
+  private applyQueryFiltersToLoadedData(): void {
+    if (!this.hasPendingQueryFilters || this.categories.length === 0) return;
+
+    this.hasPendingQueryFilters = false;
+    this.applyFilters();
+    this.applyPendingCategory();
+  }
+
+  private applyPendingCategory(): void {
+    if (this.pendingCategoryId === null) return;
+
+    this.subcategoryFilter = String(this.pendingCategoryId);
+    this.pendingCategoryId = null;
+    this.getSubCategoriesByIdCategory(this.subcategoryFilter);
   }
 
   getDatas() {
@@ -163,6 +200,7 @@ export class ConfigComponent extends Base implements OnInit {
         this.categoriesFilter = [...this.categories];
         this.categoriesFilterDataSource.data = [...this.categories];
         this.categoriesFilterDataSource.paginator = this.paginatorCategories();
+        this.applyQueryFiltersToLoadedData();
       }
     });
   }

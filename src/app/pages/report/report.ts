@@ -1,3 +1,6 @@
+import { readDateParam, readEnumParam } from '../../core/utils/query-param-readers';
+import { ParamMap } from '@angular/router';
+import { skip } from 'rxjs';
 import { ChartConfiguration, ChartData, ChartOptions, ChartType } from 'chart.js';
 import { ChangeDetectorRef, Component, ElementRef, inject, OnInit, ViewChild } from '@angular/core';
 import { Base } from '../../core/bases/base/base';
@@ -47,6 +50,8 @@ import { ActivatedRoute } from '@angular/router';
 import { TourAnchorDirective } from '../../shared/directives/tour-anchor.directive';
 import { TourService } from '../../core/services/tour/tour.service';
 import { REPORT_TOUR_STEPS } from '../../core/services/tour/tour-steps/report-tour-steps';
+
+const REPORT_TABS = ['expense', 'income', 'investment', 'comparison', 'card'] as const;
 
 @Component({
   selector: 'app-report',
@@ -478,17 +483,53 @@ export class ReportComponent extends Base implements OnInit {
   ccRankingColumns = ['name', 'total', 'limit', 'available', 'utilization', 'overdue'];
 
   ngOnInit(): void {
-    this.startDate.setDate(this.endDate.getDate() - 90);
+    const initial = this.activatedRoute.snapshot.queryParamMap;
+
+    if (!this.readQueryPeriod(initial)) this.startDate.setDate(this.endDate.getDate() - 90);
+
     this.isLoading = true;
     this.getTransactionsByDates();
     this.getCategories();
     this.load();
+    this.readQueryTab(initial, true);
 
     this.activatedRoute.queryParamMap.subscribe((params) => {
       if (params.get('tour') === 'true') {
         this.tourService.start(REPORT_TOUR_STEPS);
       }
     });
+
+    this.activatedRoute.queryParamMap.pipe(skip(1)).subscribe((params) => {
+      if (this.readQueryPeriod(params)) {
+        this.isLoading = true;
+        this.getTransactionsByDates();
+      }
+
+      this.readQueryTab(params, false);
+      this.cdr.detectChanges();
+    });
+  }
+
+  private readQueryPeriod(params: ParamMap): boolean {
+    const start = readDateParam(params, 'startDate');
+    const end = readDateParam(params, 'endDate');
+
+    if (!start || !end || start > end) return false;
+
+    this.startDate = start;
+    this.endDate = end;
+    return true;
+  }
+
+  private readQueryTab(params: ParamMap, initial: boolean): void {
+    const tab = readEnumParam(params, 'tab', REPORT_TABS);
+    if (!tab) return;
+
+    const index = REPORT_TABS.indexOf(tab);
+    if (index === this.selectedTabIndex) return;
+
+    this.selectedTabIndex = index;
+    if (initial) this.onTabChange({ index });
   }
 
   getCategories() {

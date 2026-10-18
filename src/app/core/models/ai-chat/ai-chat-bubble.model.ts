@@ -12,6 +12,7 @@ export interface AiChatBubble {
   id: string;
   role: 'user' | 'assistant';
   text: string;
+  attachmentNames: string[];
   suggestions: string[];
   actions: AiChatAction[];
   payment: AiChatBubblePayment | null;

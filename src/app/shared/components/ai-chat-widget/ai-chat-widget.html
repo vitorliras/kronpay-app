@@ -49,7 +49,14 @@
       </button>
     </div>
 
-    <div class="assistant-messages" #scrollContainer>
+    <div
+      class="assistant-messages"
+      #scrollContainer
+      [class.dragging]="isDragging"
+      (dragover)="onDragOver($event)"
+      (dragleave)="onDragLeave($event)"
+      (drop)="onDrop($event)"
+    >
       <div class="message-row">
         <div class="bubble">{{ t['AiChatGreeting'] }}</div>
 
@@ -64,6 +71,12 @@
         <div class="message-row" *ngFor="let msg of bubbles" [class.user]="msg.role === 'user'">
           <div class="bubble chat-text" [class.error-bubble]="msg.isError">
             {{ msg.isError ? (t[msg.text] || msg.text) : msg.text }}
+          </div>
+
+          <div class="attachment-chips sent" *ngIf="msg.attachmentNames.length">
+            <span class="attachment-chip" *ngFor="let name of msg.attachmentNames">
+              <mat-icon>description</mat-icon>{{ name }}
+            </span>
           </div>
 
           <div class="payment-card" *ngIf="msg.payment as pay">
@@ -118,7 +131,6 @@
 
           <div class="options-row" *ngIf="msg.isError">
             <button class="option-chip" (click)="retry()">{{ t['AiChatRetry'] }}</button>
-            <button class="option-chip back" (click)="useBasic.emit()">{{ t['AiChatUseBasic'] }}</button>
           </div>
         </div>
 
@@ -127,12 +139,40 @@
             <span class="dot"></span>
             <span class="dot"></span>
             <span class="dot"></span>
+            <span class="reading-label" *ngIf="isUploading$ | async">{{ t['AiChatReadingDocument'] }}</span>
           </div>
         </div>
       </ng-container>
     </div>
 
+    <div class="attachment-chips pending" *ngIf="pendingFiles$ | async as pending">
+      <span class="attachment-chip" *ngFor="let file of pending">
+        <mat-icon>description</mat-icon>{{ file.name }}
+        <button type="button" class="chip-remove" (click)="removePendingFile(file)">
+          <mat-icon>close</mat-icon>
+        </button>
+      </span>
+    </div>
+
     <div class="assistant-input-bar">
+      <input
+        #fileInput
+        type="file"
+        hidden
+        multiple
+        [accept]="acceptAttribute"
+        (change)="onFilesSelected($event)"
+      />
+      <button
+        class="attach-btn"
+        type="button"
+        (click)="fileInput.click()"
+        [disabled]="isLoading$ | async"
+        matTooltip="{{ t['AiChatAttach'] }}"
+        matTooltipPosition="above"
+      >
+        <mat-icon>attach_file</mat-icon>
+      </button>
       <input
         type="text"
         class="assistant-input"
@@ -144,7 +184,7 @@
       <button
         class="send-btn"
         (click)="sendTyped()"
-        [disabled]="!inputControl.value.trim() || (isLoading$ | async)"
+        [disabled]="(!inputControl.value.trim() && !(pendingFiles$ | async)?.length) || (isLoading$ | async)"
       >
         <mat-icon>send</mat-icon>
       </button>

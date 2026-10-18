@@ -1,3 +1,6 @@
+import { readIntParam } from '../../core/utils/query-param-readers';
+import { ParamMap } from '@angular/router';
+import { skip } from 'rxjs';
 import { ChangeDetectorRef, Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -104,6 +107,7 @@ export class PlanningComponent extends Base implements OnInit {
   };
 
   ngOnInit(): void {
+    this.readQueryFilters(this.activatedRoute.snapshot.queryParamMap);
     this.loadCategories();
     this.loadCards();
     this.loadCommitments();
@@ -114,6 +118,22 @@ export class PlanningComponent extends Base implements OnInit {
         this.tourService.start(PLANNING_TOUR_STEPS);
       }
     });
+
+    this.activatedRoute.queryParamMap.pipe(skip(1)).subscribe((params) => {
+      if (!this.readQueryFilters(params)) return;
+
+      this.loadProjection();
+      this.cdr.detectChanges();
+    });
+  }
+
+  private readQueryFilters(params: ParamMap): boolean {
+    const horizon = readIntParam(params, 'horizonMonths', 1, 120);
+
+    if (horizon === null || !this.horizonOptions.includes(horizon)) return false;
+
+    this.horizonMonths = horizon;
+    return true;
   }
 
   loadCategories(): void {

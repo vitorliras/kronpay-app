@@ -6,6 +6,14 @@
     </div>
 
     <div class="modal-register-body">
+      <div class="bulk-bar" *ngIf="rows.length > 1">
+        <label>{{ t['PaymentMethodForAll'] }}</label>
+        <select class="cell-input" [(ngModel)]="bulkPaymentMethodId" (change)="applyPaymentMethodToAll()">
+          <option [ngValue]="null"></option>
+          <option *ngFor="let p of data.paymentMethods" [ngValue]="p.id">{{ p.description }}</option>
+        </select>
+      </div>
+
       <div class="table-scroll">
         <table class="preview-table">
           <thead>
@@ -24,18 +32,22 @@
           </thead>
 
           <tbody>
-            <tr *ngFor="let row of rows" [class.excluded]="!row.include">
+            <tr *ngFor="let row of rows" [class.excluded]="!row.include" [class.duplicate]="row.duplicateKind">
               <td class="col-include">
                 <mat-checkbox [(ngModel)]="row.include"></mat-checkbox>
               </td>
 
               <td class="col-date">
-                <input type="date" class="cell-input" [(ngModel)]="row.date" (ngModelChange)="onDateChange(row)" />
+                <input type="date" class="cell-input" [class.invalid]="isMissing(row, 'Date')" [(ngModel)]="row.date" (ngModelChange)="onDateChange(row)" />
               </td>
 
               <td>
-                <input type="text" class="cell-input" maxlength="100" [(ngModel)]="row.description" />
+                <input type="text" class="cell-input" maxlength="100" [class.invalid]="isMissing(row, 'Description')" [(ngModel)]="row.description" />
                 <div class="badges">
+                  <span class="badge dup" *ngIf="row.duplicateKind">
+                    {{ row.duplicateKind === 'existing' ? t['DuplicateAlreadyRegistered'] : t['DuplicateRepeatedInFile'] }}
+                  </span>
+                  <span class="badge invoice" *ngIf="row.isCardInvoicePayment">{{ t['CardInvoicePaymentTag'] }}</span>
                   <span class="badge source" *ngIf="row.classificationSource" [class.memory]="row.classificationSource === 'memory'">
                     {{ row.classificationSource === 'memory' ? t['ClassifiedByMemory'] : t['ClassifiedByAi'] }}
                   </span>
@@ -52,11 +64,11 @@
               </td>
 
               <td class="col-amount">
-                <input type="text" class="cell-input" inputmode="decimal" moneyInput [(ngModel)]="row.amount" />
+                <input type="text" class="cell-input" inputmode="decimal" moneyInput [class.invalid]="isMissing(row, 'Amount')" [(ngModel)]="row.amount" />
               </td>
 
               <td>
-                <select class="cell-input" [(ngModel)]="row.paymentMethodId">
+                <select class="cell-input" [class.invalid]="isMissing(row, 'PaymentMethods')" [(ngModel)]="row.paymentMethodId">
                   <option [ngValue]="null"></option>
                   <option *ngFor="let p of data.paymentMethods" [ngValue]="p.id">{{ p.description }}</option>
                 </select>

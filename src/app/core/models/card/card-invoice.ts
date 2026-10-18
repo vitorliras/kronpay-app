@@ -14,6 +14,7 @@ export interface CardInvoiceResponse {
   totalAmount: number;
   status: string;
   paidAt?: string | null;
+  pendingAmount: number;
 }
 
 export interface CardInstallmentResponse {

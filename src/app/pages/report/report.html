@@ -9,7 +9,7 @@
     <div class="report-header">
 
 
-      <mat-tab-group class="tabs" animationDuration="200ms" (selectedTabChange)="onTabChange($event)" appTourAnchor="report-tabs">
+      <mat-tab-group class="tabs" animationDuration="200ms" [selectedIndex]="selectedTabIndex" (selectedTabChange)="onTabChange($event)" appTourAnchor="report-tabs">
         <div class="row d-flex" style="justify-content: space-between; ">
 
           <mat-tab label="{{ t['Expense'] }}"></mat-tab>

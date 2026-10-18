@@ -1,3 +1,6 @@
+import { readTextParam } from '../../core/utils/query-param-readers';
+import { ActivatedRoute } from '@angular/router';
+import { skip } from 'rxjs';
 import { ChangeDetectorRef, Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
@@ -23,6 +26,7 @@ import { GoalRetryModal } from './goal-retry-modal/goal-retry-modal';
 })
 export class GoalsHistory extends Base implements OnInit {
   private goalService = inject(GoalService);
+  private activatedRoute = inject(ActivatedRoute);
   private dialog = inject(MatDialog);
   private toastr = inject(ToastrService);
   private cdr = inject(ChangeDetectorRef);
@@ -32,6 +36,7 @@ export class GoalsHistory extends Base implements OnInit {
   readonly FinancialGoalStatus = FinancialGoalStatus;
 
   goals: FinancialGoalResponse[] = [];
+  searchText = '';
   isLoading = false;
 
   constructor() {
@@ -43,7 +48,14 @@ export class GoalsHistory extends Base implements OnInit {
   }
 
   ngOnInit(): void {
-    this.loadHistory();
+    this.searchText = readTextParam(this.activatedRoute.snapshot.queryParamMap, 'search') ?? '';
+    this.loadHistory(this.searchText || undefined);
+
+    this.activatedRoute.queryParamMap.pipe(skip(1)).subscribe((params) => {
+      this.searchText = readTextParam(params, 'search') ?? '';
+      this.loadHistory(this.searchText || undefined);
+      this.cdr.detectChanges();
+    });
   }
 
   loadHistory(search?: string): void {
@@ -62,6 +74,7 @@ export class GoalsHistory extends Base implements OnInit {
 
   onSearch(event: Event): void {
     const input = event.target as HTMLInputElement;
+    this.searchText = input.value;
     this.search$.next(input.value.trim());
   }
 

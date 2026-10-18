@@ -11,6 +11,7 @@ import { TransactionDraft } from './transaction-draft.model';
 
 export type AiChatActionType =
   | 'navigate'
+  | 'navigate_now'
   | 'start_tour'
   | 'confirm_invoice_payment'
   | 'open_transactions_modal'

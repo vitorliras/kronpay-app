@@ -1,3 +1,6 @@
+import { hasAnyParam, readEnumParam, readIntParam, readTextParam } from '../../core/utils/query-param-readers';
+import { ParamMap } from '@angular/router';
+import { skip } from 'rxjs';
 import { ToastrService } from 'ngx-toastr';
 import {
   ChangeDetectorRef,
@@ -11,7 +14,7 @@ import { Base } from '../../core/bases/base/base';
 import { CategoryService } from '../../core/services/category.service';
 import { AiService } from '../../core/services/ai.service';
 import { AiStatusResponse } from '../../core/models/ai/ai-status-response.model';
-import { catchError, firstValueFrom, map, of, shareReplay } from 'rxjs';
+import { catchError, firstValueFrom, map, of, shareReplay, take } from 'rxjs';
 import { AiTextEntryModal } from '../../shared/components/ai-text-entry-modal/ai-text-entry-modal';
 import {
   allowedImportExtensions,
@@ -217,6 +220,7 @@ export class TransactionComponente extends Base implements OnInit {
   ngOnInit(): void {
     this.aiStatus$.subscribe((status) => (this.aiStatus = status));
 
+    this.readQueryFilters(this.activatedRoute.snapshot.queryParamMap);
     this.getDatas();
     this.applyFilters();
 
@@ -225,6 +229,28 @@ export class TransactionComponente extends Base implements OnInit {
         this.tourService.start(TRANSACTIONS_TOUR_STEPS);
       }
     });
+
+    this.activatedRoute.queryParamMap.pipe(skip(1)).subscribe((params) => {
+      if (!this.readQueryFilters(params)) return;
+
+      this.applyFilters();
+      this.cdr.detectChanges();
+    });
+  }
+
+  private readQueryFilters(params: ParamMap): boolean {
+    if (!hasAnyParam(params, ['month', 'year', 'type', 'categoryId', 'search'])) return false;
+
+    const now = new Date();
+    const categoryId = readIntParam(params, 'categoryId', 1, Number.MAX_SAFE_INTEGER);
+
+    this.month = readIntParam(params, 'month', 1, 12) ?? now.getMonth() + 1;
+    this.year = readIntParam(params, 'year', 2000, this.currentYear) ?? now.getFullYear();
+    this.typeFilter = readEnumParam(params, 'type', ['E', 'I', 'V'] as const);
+    this.categoryFilter = categoryId ? [categoryId] : [];
+    this.searchTerm = (readTextParam(params, 'search') ?? '').toLowerCase();
+
+    return true;
   }
 
   getDatas() {
@@ -952,12 +978,21 @@ export class TransactionComponente extends Base implements OnInit {
   }
 
   saveAttach() {
-    const hasInvalid = this.transactionsAttachFilterDataSource.data.some(
-      (t) => !t.description?.trim() || !t.transactionDate || !t.type || !t.paymentMethod,
-    );
+    const rows = this.transactionsAttachFilterDataSource.data;
 
-    if (hasInvalid) {
-      this.messageWarning('SaveAttachInvalid');
+    const missing = [
+      { key: 'Date', isMissing: (t: any) => !t.transactionDate },
+      { key: 'Description', isMissing: (t: any) => !t.description?.trim() },
+      { key: 'Type', isMissing: (t: any) => !t.type },
+      { key: 'PaymentMethods', isMissing: (t: any) => !t.paymentMethod },
+    ].filter((field) => rows.some(field.isMissing));
+
+    if (missing.length > 0) {
+      this.translations$.pipe(take(1)).subscribe((t) => {
+        this.toastr.warning(
+          `${t['SaveAttachInvalid']} ${missing.map((field) => t[field.key]).join(', ')}.`,
+        );
+      });
       return;
     }
 

@@ -98,3 +98,81 @@
     display: none;
   }
 }
+
+.attach-btn {
+  border: none;
+  background: transparent;
+  color: #64748b;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  padding: 4px;
+  border-radius: 8px;
+
+  &:hover:not(:disabled) {
+    background: rgba(27, 60, 136, 0.08);
+    color: #1b3c88;
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: default;
+  }
+}
+
+.attachment-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+
+  &.pending {
+    padding: 6px 12px 0;
+  }
+
+  &.sent {
+    justify-content: flex-end;
+    margin-top: 4px;
+  }
+}
+
+.attachment-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  max-width: 220px;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: rgba(27, 60, 136, 0.1);
+  color: #1b3c88;
+  font-size: 12px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  mat-icon {
+    font-size: 14px;
+    width: 14px;
+    height: 14px;
+  }
+
+  .chip-remove {
+    display: inline-flex;
+    border: none;
+    background: transparent;
+    color: inherit;
+    cursor: pointer;
+    padding: 0;
+  }
+}
+
+.assistant-messages.dragging {
+  outline: 2px dashed #1b3c88;
+  outline-offset: -6px;
+}
+
+.reading-label {
+  margin-left: 8px;
+  font-size: 12px;
+  color: #64748b;
+}
+

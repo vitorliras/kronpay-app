@@ -1,3 +1,6 @@
+import { readIntParam } from '../../core/utils/query-param-readers';
+import { ParamMap } from '@angular/router';
+import { skip } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { ChangeDetectorRef, Component, inject, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
@@ -128,6 +131,7 @@ export class DashboardComponente extends Base implements OnInit {
   }
 
   ngOnInit(): void {
+    this.readQueryFilters(this.activatedRoute.snapshot.queryParamMap);
     this.getDatas();
     this.applyFiltersMonth();
     this.applyFiltersYear();
@@ -137,6 +141,23 @@ export class DashboardComponente extends Base implements OnInit {
         this.tourService.start(DASHBOARD_TOUR_STEPS);
       }
     });
+
+    this.activatedRoute.queryParamMap.pipe(skip(1)).subscribe((params) => {
+      if (!this.readQueryFilters(params)) return;
+
+      this.applyFiltersMonth();
+      this.cdr.detectChanges();
+    });
+  }
+
+  private readQueryFilters(params: ParamMap): boolean {
+    const month = readIntParam(params, 'month', 1, 12);
+    const year = readIntParam(params, 'year', 2000, this.currentYear);
+
+    if (month !== null) this.month = month;
+    if (year !== null) this.year = year;
+
+    return month !== null || year !== null;
   }
 
   public pieChartData: ChartConfiguration<'doughnut'>['data'] = {
